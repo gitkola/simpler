@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ThreeDotsIcon, DeleteIcon } from './Icons';
 import { ProjectListItem } from "../types";
 import { getFolderNameFromPath } from '../utils/getFolderNameFromPath';
@@ -13,7 +13,7 @@ const ProjectItem: React.FC<{ project: ProjectListItem, isActive: boolean, onSel
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
