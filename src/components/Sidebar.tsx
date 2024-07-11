@@ -1,33 +1,52 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   ChevronRight,
   Plus,
   Settings,
 } from "./Icons";
-import { ProjectListItem } from "../types";
 import ProjectItem from "./ProjectItem";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import {
+  selectProjectFolder,
+} from "../utils/projectUtils";
+import { setActiveProject, deleteProject } from "../store/projectsSlice";
 
-interface SidebarProps {
-  projects: ProjectListItem[];
-  activeProjectId: number | null;
-  onNewProject: () => void;
-  onSelectProject: (projectId: number) => void;
-  onDeleteProject: (projectId: number) => void;
-}
 
-const Sidebar: React.FC<SidebarProps> = ({
-  projects,
-  activeProjectId,
-  onNewProject,
-  onSelectProject,
-  onDeleteProject,
-}) => {
+const Sidebar: React.FC = () => {
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
   const navItems = [
     { name: "Settings", icon: Settings, path: "/" },
   ];
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { list, activeProjectId } = useSelector(
+    (state: RootState) => state.projects,
+  );
+
+  const handleNewProject = async () => {
+    try {
+      const project = await selectProjectFolder();
+      if (project) {
+        dispatch(setActiveProject(project.id));
+        navigate(`/project/${project.id}`);
+      }
+    } catch (error) {
+      console.error("Failed to create/open project:", error);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: number) => {
+    dispatch(deleteProject(projectId));
+  };
+
+  const handleSelectProject = (projectId: number) => {
+    dispatch(setActiveProject(projectId));
+    navigate(`/project/${projectId}`);
+  };
 
   return (
     <div className="w-64 bg-gray-800 text-white h-full flex flex-col">
@@ -67,20 +86,20 @@ const Sidebar: React.FC<SidebarProps> = ({
             {isProjectsExpanded && (
               <div className="mx-2">
                 <button
-                  onClick={onNewProject}
+                  onClick={handleNewProject}
                   className="flex items-center w-full h-[40px] px-4 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
                 >
                   <Plus className="mr-2" size={16} />
                   Open Project
                 </button>
                 <ul>
-                  {projects.map((project) => (
+                  {list.map((project) => (
                     <li key={project.id}>
                       <ProjectItem
                         project={project}
                         isActive={project.id === activeProjectId}
-                        onSelectProject={() => onSelectProject(project.id)}
-                        onDeleteProject={onDeleteProject}
+                        onSelectProject={() => handleSelectProject(project.id)}
+                        onDeleteProject={handleDeleteProject}
                       />
                     </li>
                   ))}
