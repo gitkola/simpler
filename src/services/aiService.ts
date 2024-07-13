@@ -3,7 +3,7 @@ import { fetch } from "@tauri-apps/api/http";
 import { Body, Response } from "@tauri-apps/api/http";
 
 import { parseAIResponse } from "../utils/responseParser";
-import { ModelResponse } from "../types";
+import { MessageContent } from "../types";
 
 const AI_INSTRUCTIONS = `You are an AI assistant for Simpler, a developer productivity tool. Your role is to help users with coding tasks, explain concepts, and provide assistance with software development. Always strive to give clear, concise, and accurate responses.
 To support Client applications, you need to provide responses in a specific format.
@@ -13,12 +13,12 @@ Respond in a JSON array format. Each item in the array should be an object with 
 2. {"text": "string"} - Use for explanations, descriptions, or any non-code text.
 3. {"code": ["code_string", "file_ext", "file_path", "description"]}
    - code_string: The actual code (required)
-   - file_ext: File extension (e.g., "js", "py", "tsx"). Use 0 if unknown.
-   - file_path: Suggested file path. Use 0 if not applicable.
-   - description: Brief description of the code. Use 0 if not needed.
+   - file_ext: File extension (e.g., "js", "py", "tsx"). Use null if unknown.
+   - file_path: Suggested file path. Use null if not applicable.
+   - description: Brief description of the code. Use null if not needed.
 4. {"link": ["url", "description"]}
    - url: The URL of the link (required)
-   - description: Brief description of the link. Use 0 if not provided.
+   - description: Brief description of the link. Use null if not provided.
 
 Ensure your response is well-structured and easy to understand. Use appropriate content types to organize your response effectively.`;
 
@@ -29,7 +29,7 @@ export const getAIResponse = async (
   apiKey: string,
   temperature: number,
   max_tokens: number
-): Promise<ModelResponse> => {
+): Promise<MessageContent> => {
   if (service === "openai") {
     try {
       const response = await axios.post(

@@ -2677,6 +2677,7 @@ name = "simpler"
 version = "0.0.0"
 dependencies = [
  "nfd",
+ "open",
  "serde",
  "serde_json",
  "tauri",

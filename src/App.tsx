@@ -10,7 +10,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Settings />} />
-          <Route path="project/:projectId" element={<SimplerProject />} />
+          <Route path="/project" element={<SimplerProject />} />
         </Route>
       </Routes>
     </Router>

@@ -1,37 +1,13 @@
-export interface ProjectSettings {
-  service: "openai" | "anthropic";
-  model: string;
-  temperature: number;
-  max_tokens: number;
-  // Add other model-specific settings as needed
-}
-
-export interface Project {
-  id: number;
-  name: string;
-  path: string;
-  messages: Message[];
-  settings: ProjectSettings;
-  createdAt: number;
-  updatedAt: number;
-}
-
-export interface ProjectListItem {
-  id: number;
-  path: string;
-  name: string;
-}
+export type ProjectPathListItem = string;
 
 export interface Message {
-  id: number;
+  role: "user" | "assistant" | "system";
   content: string;
-  sender: "user" | "ai";
   createdAt: number;
   updatedAt: number;
-  edited?: boolean;
 }
 
-export type Entity = Project | Message;
+export type Entity = ProjectState | Message;
 
 export const createTimestamps = () => {
   const now = Date.now();
@@ -42,7 +18,7 @@ export const updateTimestamp = (entity: Entity) => {
   return { ...entity, updatedAt: Date.now() };
 };
 
-export type ModelResponse = ContentItem[];
+export type MessageContent = ContentItem[];
 
 export type ContentItem =
   | { title: string }
@@ -100,3 +76,33 @@ export const createLinkItem = (
 ): { link: LinkTuple } => ({
   link: [url, description],
 });
+
+export interface ProjectFile {
+  path: string;
+  content: string;
+  createdAt: number;
+  updatedAt: number;
+  metadata: { [key: string]: any };
+}
+
+export interface ProjectSettings {
+  service: "openai" | "anthropic";
+  model: string;
+  temperature: number;
+  max_tokens: number;
+}
+
+export interface ProjectState {
+  name: string;
+  version: string;
+  description: string;
+  requirements: string[];
+  files: ProjectFile[];
+  ai_instructions: string[];
+  current_task: string;
+  messages?: Message[];
+  settings: ProjectSettings;
+  createdAt: number;
+  updatedAt: number;
+  metadata: { [key: string]: any };
+}

@@ -1,11 +1,11 @@
-import { ModelResponse, ContentItem } from "../types";
+import { MessageContent, ContentItem } from "../types";
 
-export function parseAIResponse(response: string): ModelResponse {
+export function parseAIResponse(response: string): MessageContent {
   try {
     // First, try to parse as JSON
     const parsedResponse = JSON.parse(response);
     if (Array.isArray(parsedResponse)) {
-      return parsedResponse as ModelResponse;
+      return parsedResponse as MessageContent;
     }
     throw new Error("Response is not an array");
   } catch (error) {
@@ -14,7 +14,7 @@ export function parseAIResponse(response: string): ModelResponse {
   }
 }
 
-function parseStringResponse(response: string): ModelResponse {
+function parseStringResponse(response: string): MessageContent {
   const lines = response.split("\n");
   const result: ContentItem[] = [];
   let currentContent: string[] = [];
@@ -33,7 +33,7 @@ function parseStringResponse(response: string): ModelResponse {
       if (isInCodeBlock) {
         // End of code block
         result.push({
-          code: [currentContent.join("\n"), codeLanguage || "0", "0", "0"],
+          code: [currentContent.join("\n"), codeLanguage || null, null, null],
         });
         currentContent = [];
         codeLanguage = "";
@@ -50,7 +50,7 @@ function parseStringResponse(response: string): ModelResponse {
       result.push({ title: line.slice(2).trim() });
     } else if (line.startsWith("http://") || line.startsWith("https://")) {
       addTextContent();
-      result.push({ link: [line.trim(), "0"] });
+      result.push({ link: [line.trim(), null] });
     } else {
       currentContent.push(line);
     }
@@ -59,7 +59,7 @@ function parseStringResponse(response: string): ModelResponse {
   // Add any remaining content
   if (isInCodeBlock) {
     result.push({
-      code: [currentContent.join("\n"), codeLanguage || "0", "0", "0"],
+      code: [currentContent.join("\n"), codeLanguage || null, null, null],
     });
   } else {
     addTextContent();

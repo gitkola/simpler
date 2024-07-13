@@ -1,7 +1,7 @@
 import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Message as MessageType, ModelResponse, ContentItem } from '../types';
+import { Message as MessageType, MessageContent, ContentItem } from '../types';
 
 interface MessageProps {
   message: MessageType;
@@ -27,7 +27,7 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet }) => {
             {code}
           </SyntaxHighlighter>
           {description && <p className="text-sm text-gray-500">{description}</p>}
-          <div className="flex items-center mt-2">
+          <div className="flex items-center my-2">
             <button
               onClick={() => onSaveCodeSnippet(code, filePath || '')}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-sm mr-2"
@@ -49,12 +49,12 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet }) => {
     return <p>Unexpected content type</p>;
   };
 
-  const parseMessageContent = (content: string): ModelResponse | JSX.Element[] => {
+  const parseMessageContent = (content: string): MessageContent | JSX.Element[] => {
     try {
       // First, try to parse as JSON
       const parsedContent = JSON.parse(content);
       if (Array.isArray(parsedContent)) {
-        return parsedContent as ModelResponse;
+        return parsedContent as MessageContent;
       }
       // If it's JSON but not an array, treat it as a string
       return parseTextWithCodeBlocks(JSON.stringify(parsedContent, null, 2));
@@ -74,7 +74,7 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet }) => {
             <SyntaxHighlighter language={language || undefined} style={vscDarkPlus}>
               {code.trim()}
             </SyntaxHighlighter>
-            <div className="flex items-center mt-2">
+            <div className="flex items-center my-2">
               <button
                 onClick={() => onSaveCodeSnippet(code.trim(), '')}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-sm mr-2"
@@ -94,8 +94,8 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet }) => {
   const parsedContent = parseMessageContent(message.content);
 
   return (
-    <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-      <div className={`max-w-3xl px-4 py-2 rounded-lg ${message.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
+    <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
+      <div className={`max-w-3xl px-4 py-2 rounded-lg ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
         }`}>
         {Array.isArray(parsedContent) ? (
           parsedContent.map((item, index) => (
@@ -108,7 +108,7 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet }) => {
         )}
         <div className="mt-1 text-xs opacity-70">
           {new Date(message.createdAt).toLocaleString()}
-          {message.edited && " (edited)"}
+          {(message.createdAt !== message.updatedAt) && " (edited)"}
         </div>
       </div>
     </div>

@@ -5,14 +5,14 @@ import { join } from '@tauri-apps/api/path';
 import { RootState } from "../store";
 import { getAIResponse } from "../services/aiService";
 import { ArrowUp } from "./Icons";
-import { addMessageToChat, editProjectSettings, getProject } from "../utils/projectUtils";
-import { Message as MessageType, ModelResponse, Project } from "../types";
+import { addMessageToChat, editProjectStateSettings, getProjectState } from "../utils/projectStateUtils";
+import { Message as MessageType, MessageContent, ProjectState } from "../types";
 import Message from "./Message";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 
 
 const SimplerProject: React.FC = () => {
-  const [simplerProject, setSimplerProject] = useState<Project | null>(null);
+  const [projectState, setProjectState] = useState<ProjectState | null>(null);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,67 +20,56 @@ const SimplerProject: React.FC = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const settings = useSelector((state: RootState) => state.settings);
-  const { list, activeProjectId } = useSelector((state: RootState) => state.projects);
-
+  const { activeProjectPath } = useSelector((state: RootState) => state.projects);
+  if (!activeProjectPath) return null;
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [simplerProject?.messages]);
+  useEffect(scrollToBottom, [projectState?.messages]);
 
   useEffect(() => {
-    loadProject();
-  }, [activeProjectId]);
+    loadProjectState();
+  }, [activeProjectPath]);
 
-  const loadProject = async () => {
-    if (activeProjectId) {
-      setIsLoadingProject(true);
-      const currentProject = list.find((p) => p.id === (activeProjectId));
-      const path = currentProject?.path;
-      if (path) {
-        try {
-          const simpler_project = await getProject(path);
-          setSimplerProject(simpler_project || null);
-        } catch (error) {
-          console.error("Failed to load chat:", error);
-          setError("Failed to load chat history");
-        }
-      }
-      setIsLoadingProject(false);
+  const loadProjectState = async () => {
+    setIsLoadingProject(true);
+    try {
+      const projectState = await getProjectState(activeProjectPath);
+      setProjectState(projectState || null);
+    } catch (error) {
+      console.error("Failed to load chat:", error);
+      setError("Failed to load chat history");
     }
+    setIsLoadingProject(false);
   };
 
   const handleSendMessage = async () => {
-    if (!simplerProject || inputMessage.trim() === '' || !activeProjectId) return;
+    if (!projectState || inputMessage.trim() === '') return;
 
     setIsLoading(true);
     setError(null);
     const now = Date.now();
     const userMessage: MessageType = {
-      id: now,
       content: inputMessage,
-      sender: 'user',
+      role: 'user',
       createdAt: now,
       updatedAt: now,
     };
-    setSimplerProject(prev => {
+    setProjectState(prev => {
       if (!prev) return prev;
       return ({ ...prev, messages: [...prev?.messages || [], userMessage] });
     });
 
     try {
-      await addMessageToChat(simplerProject.path, inputMessage, 'user');
+      await addMessageToChat(activeProjectPath, inputMessage, 'user');
       setInputMessage('');
-
-      const { service, model, temperature, max_tokens } = simplerProject?.settings;
-
-      const aiResponse: ModelResponse = await getAIResponse(inputMessage, service, model, settings.apiKeys[service], temperature, max_tokens);
-
-      // Convert ModelResponse to a string
+      const { service, model, temperature, max_tokens } = projectState?.settings;
+      const aiResponse: MessageContent = await getAIResponse(inputMessage, service, model, settings.apiKeys[service], temperature, max_tokens);
+      // Convert MessageContent to a string
       const responseString = JSON.stringify(aiResponse);
-
-      await addMessageToChat(simplerProject.path, responseString, 'ai');
-      await loadProject();
+      await addMessageToChat(activeProjectPath, responseString, 'assistant');
+      await loadProjectState();
     } catch (error) {
       console.error('Error in message exchange:', error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
@@ -90,7 +79,7 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleSaveCodeSnippet = async (code: string, suggestedPath: string) => {
-    if (!simplerProject || !activeProjectId) return;
+    if (!projectState) return;
 
     try {
       let fileName: string;
@@ -111,7 +100,7 @@ const SimplerProject: React.FC = () => {
         fileName += '.txt';
       }
 
-      const fullPath = await join(simplerProject.path, directoryPath, fileName);
+      const fullPath = await join(activeProjectPath, directoryPath, fileName);
 
       // Use the write_file Rust function
       await invoke('write_file', { filePath: fullPath, content: code });
@@ -125,34 +114,36 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleServiceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!simplerProject) return;
+    if (!projectState) return;
+
     const service = e.target.value as "openai" | "anthropic";
-    if (service === simplerProject.settings.service) return;
+    if (service === projectState.settings.service) return;
     const model = service === 'openai' ? openaiModels[0] : anthropicModels[0];
-    const newSettings = { ...simplerProject.settings, service, model };
-    await editProjectSettings(simplerProject.path, newSettings);
-    setSimplerProject({ ...simplerProject, settings: newSettings });
+    const newSettings = { ...projectState.settings, service, model };
+    await editProjectStateSettings(activeProjectPath, newSettings);
+    setProjectState({ ...projectState, settings: newSettings });
   };
 
   const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!simplerProject) return;
+    if (!projectState) return;
+
     const model = e.target.value;
-    if (model === simplerProject.settings.model) return;
-    const newSettings = { ...simplerProject.settings, model };
-    await editProjectSettings(simplerProject.path, newSettings);
-    setSimplerProject({ ...simplerProject, settings: newSettings });
+    if (model === projectState.settings.model) return;
+    const newSettings = { ...projectState.settings, model };
+    await editProjectStateSettings(activeProjectPath, newSettings);
+    setProjectState({ ...projectState, settings: newSettings });
   };
 
   if (isLoadingProject) return (<div>Loading...</div>);
 
-  if (!simplerProject) return (<button onClick={loadProject} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Load Project</button>)
+  if (!projectState) return (<button onClick={loadProjectState} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Load Project</button>)
 
   return (
     <div className="flex flex-col h-full bg-white shadow-lg rounded-lg">
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
-        {simplerProject.messages.map((message) => (
+        {projectState.messages?.map((message) => (
           <Message
-            key={message.id}
+            key={message.createdAt}
             message={message}
             onSaveCodeSnippet={handleSaveCodeSnippet}
           />
@@ -201,7 +192,7 @@ const SimplerProject: React.FC = () => {
         </div>
         <div className="mt-2 columns-2">
           <select
-            value={simplerProject.settings.service}
+            value={projectState.settings.service}
             onChange={handleServiceChange}
             className="w-full` p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -209,12 +200,12 @@ const SimplerProject: React.FC = () => {
             <option value="anthropic">Anthropic</option>
           </select>
           <select
-            value={simplerProject.settings.model}
+            value={projectState.settings.model}
             onChange={handleModelChange}
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {
-              simplerProject.settings.service === 'openai' ?
+              projectState.settings.service === 'openai' ?
                 openaiModels.map((model) => (
                   <option key={model} value={model}>{model}</option>
                 )) :

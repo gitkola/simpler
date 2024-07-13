@@ -22,6 +22,11 @@ fn select_folder() -> String {
 }
 
 #[tauri::command]
+fn open_folder(path: &str) -> Result<(), String> {
+    open::that(path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn write_file(filePath: &str, content: &str) -> Result<(), String> {
     // Ensure the directory exists
     if let Some(parent) = Path::new(filePath).parent() {
@@ -45,6 +50,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             create_folder,
             select_folder,
+            open_folder,
             write_file,
             read_file,
             file_exists

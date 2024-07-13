@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
@@ -10,9 +11,10 @@ import ProjectItem from "./ProjectItem";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import {
-  selectProjectFolder,
-} from "../utils/projectUtils";
+  selectProjectStateFolder,
+} from "../utils/projectStateUtils";
 import { setActiveProject, deleteProject } from "../store/projectsSlice";
+import { getFolderNameFromPath } from "../utils/getFolderNameFromPath";
 
 
 const Sidebar: React.FC = () => {
@@ -23,29 +25,37 @@ const Sidebar: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { list, activeProjectId } = useSelector(
+  const { list, activeProjectPath } = useSelector(
     (state: RootState) => state.projects,
   );
 
-  const handleNewProject = async () => {
+  const handleOpenProject = async () => {
     try {
-      const project = await selectProjectFolder();
-      if (project) {
-        dispatch(setActiveProject(project.id));
-        navigate(`/project/${project.id}`);
+      const projectPath = await selectProjectStateFolder();
+      if (projectPath) {
+        dispatch(setActiveProject(projectPath));
+        navigate(`/project`);
       }
     } catch (error) {
       console.error("Failed to create/open project:", error);
     }
   };
 
-  const handleDeleteProject = async (projectId: number) => {
-    dispatch(deleteProject(projectId));
+  const handleSelectProject = (projectPath: string) => {
+    dispatch(setActiveProject(projectPath));
+    navigate(`/project`);
   };
 
-  const handleSelectProject = (projectId: number) => {
-    dispatch(setActiveProject(projectId));
-    navigate(`/project/${projectId}`);
+  const handleDeleteProject = async (projectPath: string) => {
+    dispatch(deleteProject(projectPath));
+  };
+
+  const handleOpenProjectFolder = async (projectPath: string) => {
+    try {
+      await invoke("open_folder", { path: projectPath });
+    } catch (error) {
+      console.error("Failed to open project folder:", error);
+    }
   };
 
   return (
@@ -86,20 +96,21 @@ const Sidebar: React.FC = () => {
             {isProjectsExpanded && (
               <div className="mx-2">
                 <button
-                  onClick={handleNewProject}
+                  onClick={handleOpenProject}
                   className="flex items-center w-full h-[40px] px-4 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
                 >
                   <Plus className="mr-2" size={16} />
                   Open Project
                 </button>
                 <ul>
-                  {list.map((project) => (
-                    <li key={project.id}>
+                  {list.map((projectPath) => (
+                    <li key={projectPath}>
                       <ProjectItem
-                        project={project}
-                        isActive={project.id === activeProjectId}
-                        onSelectProject={() => handleSelectProject(project.id)}
+                        projectPath={getFolderNameFromPath(projectPath)}
+                        isActive={projectPath === activeProjectPath}
+                        onSelectProject={() => handleSelectProject(projectPath)}
                         onDeleteProject={handleDeleteProject}
+                        onOpenProjectFolder={() => handleOpenProjectFolder(projectPath)}
                       />
                     </li>
                   ))}
