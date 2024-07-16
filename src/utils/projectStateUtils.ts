@@ -1,11 +1,12 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import {
-  Message,
+  IMessage,
   ProjectPathListItem,
   ProjectSettings,
-  ProjectState,
+  IProjectState,
   createTimestamps,
   updateTimestamp,
+  IMessageRole,
 } from "../types";
 import { PROJECT_STATE_FILE_NAME } from "../constants";
 import { getFolderNameFromPath } from "./getFolderNameFromPath";
@@ -15,22 +16,47 @@ import { addProject } from "../store/projectsSlice";
 
 export const generateInitialProjectState = (
   projectPath: string
-): ProjectState => {
+): IProjectState => {
   const { createdAt, updatedAt } = createTimestamps();
   return {
     name: getFolderNameFromPath(projectPath),
     description: "",
-    version: "0.0.1",
+    versionHistory: [
+      {
+        version: "0.0.0",
+        timestamp: createdAt,
+        description: "Initial Project State.",
+      },
+    ],
     requirements: [],
     files: [],
-    ai_instructions: [],
-    current_task: "",
+    ai_instructions: [
+      "You are an AI assistant for software development. Your task is to help create and improve code, project structure, and documentation.",
+      "Analyze the current state of the project and provide recommendations for the next steps in development in 'suggested_tasks'.",
+      "Answer the developer's questions and generate code according to the project requirements.",
+      "If there are no tasks or the existing tasks are not relevant to the current description and requirements, create or edit tasks according to the ProjectTask interface.",
+      "If there are no files or the existing files are not relevant to the current description and requirements, create or edit files according to the ProjectFile interface.",
+      "Always keep the Project State up-to-date and consistent with the current development stage.",
+      "Understand and use the following interfaces when working with the Project State:",
+      "ProjectTask: { id: string, description: string, status: 'todo' | 'in_progress' | 'done', createdAt: number, updatedAt: number }",
+      "ProjectFile: { path: string, content: string | null, createdAt: number, updatedAt: number, metadata: { [key: string]: any } }",
+      "SyncState: { lastSynced: number | null, status: 'initial' | 'synced' | 'local_changes' | 'remote_changes' | 'conflict' }",
+      "Requirement: { id: string, description: string, status: 'not_started' | 'in_progress' | 'completed', priority: 'low' | 'medium' | 'high' }",
+      "When modifying the Project State, ensure all changes adhere to these interfaces.",
+    ],
+    tasks: [],
+    suggested_tasks: [],
+    current_task: null,
     messages: [],
+    syncState: { lastSynced: null, status: "initial" },
     settings: {
       service: "openai",
       model: openaiModels[0],
       temperature: 0,
       max_tokens: 4096,
+      indentation: "spaces",
+      indentationSize: 2,
+      lineEnding: "LF",
     },
     createdAt,
     updatedAt,
@@ -40,7 +66,7 @@ export const generateInitialProjectState = (
 
 export const saveProjectState = async (
   projectPath: string,
-  projectState: ProjectState
+  projectState: IProjectState
 ): Promise<void> => {
   const projectStateFilePath = `${projectPath}/${PROJECT_STATE_FILE_NAME}`;
   try {
@@ -53,21 +79,21 @@ export const saveProjectState = async (
       throw new Error(result as string);
     }
   } catch (error) {
-    console.error("Failed to save project state:", error);
-    throw new Error("Failed to save project state");
+    console.error("Failed to save Project State:", error);
+    throw new Error("Failed to save Project State");
   }
 };
 
 export const getProjectState = async (
   projectPath: string
-): Promise<ProjectState | null> => {
+): Promise<IProjectState | null> => {
   const projectStateFilePath = `${projectPath}/${PROJECT_STATE_FILE_NAME}`;
   try {
     const fileExists = await invoke("file_exists", {
       filePath: projectStateFilePath,
     });
     if (!fileExists) {
-      // If the file doesn't exist, create a new empty project state
+      // If the file doesn't exist, create a new empty Project State
       const newProjectState = generateInitialProjectState(projectPath);
       await saveProjectState(projectPath, newProjectState);
       return newProjectState;
@@ -77,24 +103,26 @@ export const getProjectState = async (
       filePath: projectStateFilePath,
     });
     if (typeof result !== "string") {
-      throw new Error("Invalid project state file content");
+      throw new Error("Invalid Project State file content");
     }
-    const projectState: ProjectState = JSON.parse(result);
+    const projectState: IProjectState = JSON.parse(result);
     return projectState;
   } catch (error) {
-    console.error("Error reading project state file:", error);
-    // If there's any error, return a new empty project state
-    return null;
+    console.error("Error reading Project State file:", error);
+    // If there's any error, return a new empty Project State
+    const newProjectState = generateInitialProjectState(projectPath);
+    await saveProjectState(projectPath, newProjectState);
+    return newProjectState;
   }
 };
 
 export const addMessageToChat = async (
   projectPath: string,
   content: string,
-  role: "user" | "assistant" | "system"
+  role: IMessageRole
 ): Promise<void> => {
   let projectState = await getProjectState(projectPath);
-  const newMessage: Message = {
+  const newMessage: IMessage = {
     content,
     role,
     ...createTimestamps(),
@@ -107,7 +135,7 @@ export const addMessageToChat = async (
     projectState.messages.push(newMessage);
     await saveProjectState(
       projectPath,
-      updateTimestamp(projectState) as ProjectState
+      updateTimestamp(projectState) as IProjectState
     );
   }
 };
@@ -118,12 +146,12 @@ export const editProjectStateSettings = async (
 ): Promise<void> => {
   const projectState = await getProjectState(projectPath);
   if (!projectState) {
-    throw new Error("ProjectState not found");
+    throw new Error("IProjectState not found");
   }
   projectState.settings = settings;
   await saveProjectState(
     projectPath,
-    updateTimestamp(projectState) as ProjectState
+    updateTimestamp(projectState) as IProjectState
   );
 };
 
@@ -133,14 +161,14 @@ export const deleteMessage = async (
 ): Promise<void> => {
   const projectState = await getProjectState(projectPath);
   if (!projectState) {
-    throw new Error("ProjectState not found");
+    throw new Error("IProjectState not found");
   }
   projectState.messages = projectState.messages?.filter(
     (m) => m.createdAt !== messageCreatedAt
   );
   await saveProjectState(
     projectPath,
-    updateTimestamp(projectState) as ProjectState
+    updateTimestamp(projectState) as IProjectState
   );
 };
 

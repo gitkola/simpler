@@ -1,11 +1,11 @@
-import { MessageContent, ContentItem } from "../types";
+import { IMessageContent, ContentItem } from "../types";
 
-export function parseAIResponse(response: string): MessageContent {
+export function parseAIResponse(response: string): IMessageContent {
   try {
     // First, try to parse as JSON
     const parsedResponse = JSON.parse(response);
     if (Array.isArray(parsedResponse)) {
-      return parsedResponse as MessageContent;
+      return parsedResponse as IMessageContent;
     }
     throw new Error("Response is not an array");
   } catch (error) {
@@ -14,7 +14,7 @@ export function parseAIResponse(response: string): MessageContent {
   }
 }
 
-function parseStringResponse(response: string): MessageContent {
+function parseStringResponse(response: string): IMessageContent {
   const lines = response.split("\n");
   const result: ContentItem[] = [];
   let currentContent: string[] = [];

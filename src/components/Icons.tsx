@@ -48,6 +48,49 @@ export const ChevronRight: React.FC<IconProps> = ({
   </svg>
 );
 
+export const ChevronLeft: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <polyline points="15 18 9 12 15 6"></polyline>
+  </svg>
+);
+
+export const ChevronDoubleRight: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <polyline points="13 17 18 12 13 7"></polyline>
+    <polyline points="6 17 11 12 6 7"></polyline>
+  </svg>
+);
+
 export const Plus: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
@@ -270,5 +313,27 @@ export const Folder: React.FC<IconProps> = ({
       strokeWidth={2}
       d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
     />
+  </svg>
+);
+
+export const File: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+    <polyline points="13 2 13 9 20 9"></polyline>
   </svg>
 );

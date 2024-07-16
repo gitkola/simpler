@@ -3,16 +3,18 @@ import { useSelector } from "react-redux";
 import { invoke } from '@tauri-apps/api/tauri';
 import { join } from '@tauri-apps/api/path';
 import { RootState } from "../store";
-import { getAIResponse } from "../services/aiService";
+import { getAIResponseWithProjectState } from "../services/aiService";
 import { ArrowUp } from "./Icons";
-import { addMessageToChat, editProjectStateSettings, getProjectState } from "../utils/projectStateUtils";
-import { Message as MessageType, MessageContent, ProjectState } from "../types";
+import { editProjectStateSettings, generateInitialProjectState, getProjectState, saveProjectState } from "../utils/projectStateUtils";
+import { IMessage, IMessageAction, IProjectState, Requirement } from "../types";
+import ProjectStateView from "./ProjectStateView";
+import ResizablePanel from "./ResizablePanel";
 import Message from "./Message";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 
 
 const SimplerProject: React.FC = () => {
-  const [projectState, setProjectState] = useState<ProjectState | null>(null);
+  const [projectState, setProjectState] = useState<IProjectState | null>(null);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +28,7 @@ const SimplerProject: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [projectState?.messages]);
+  useEffect(scrollToBottom, [projectState?.messages?.length]);
 
   useEffect(() => {
     loadProjectState();
@@ -35,46 +37,180 @@ const SimplerProject: React.FC = () => {
   const loadProjectState = async () => {
     setIsLoadingProject(true);
     try {
-      const projectState = await getProjectState(activeProjectPath);
-      setProjectState(projectState || null);
+      let projectState = await getProjectState(activeProjectPath);
+      if (!projectState) {
+        projectState = generateInitialProjectState(activeProjectPath);
+      }
+      setProjectState(() => projectState);
+
+      if (!projectState.description) {
+        addAppMessage("Please provide a description for the application you want to build.");
+      } else if (!projectState.requirements || projectState.requirements.length === 0) {
+        addAppMessage("Please provide a list of requirements for the application. Each requirement should be on a new line.");
+      } else if ((!projectState.tasks || projectState.tasks.length === 0) || (!projectState.files || projectState.files.length === 0)) {
+        addAppMessage("There are no tasks or file structure in the project state. Would you like me to generate initial tasks and file structure based on the project description and requirements?", "generate_tasks_and_files");
+        setIsLoadingProject(false);
+      }
     } catch (error) {
-      console.error("Failed to load chat:", error);
-      setError("Failed to load chat history");
+      console.error("Failed to load project state:", error);
+      setError("Failed to load project state");
     }
     setIsLoadingProject(false);
   };
 
-  const handleSendMessage = async () => {
-    if (!projectState || inputMessage.trim() === '') return;
+  const handleGenerateTasksAndFiles = async (projectState: IProjectState) => {
+    if (!projectState) return;
 
     setIsLoading(true);
     setError(null);
+
+    try {
+      const { service, model, temperature, max_tokens } = projectState.settings;
+      const { updatedProjectState, aiResponse } = await getAIResponseWithProjectState(
+        "Generate or update tasks and file structure based on the project description and requirements.",
+        { ...projectState, messages: [] },
+        service,
+        model,
+        settings.apiKeys[service],
+        temperature,
+        max_tokens
+      );
+
+      const prevMessages = projectState.messages || [];
+      const now = Date.now();
+      const assistantMessage: IMessage = {
+        content: aiResponse,
+        role: 'assistant',
+        createdAt: now,
+        updatedAt: now,
+      };
+      const nextProjectState = { ...projectState, ...updatedProjectState, messages: [...prevMessages, assistantMessage] };
+      setProjectState({
+        ...nextProjectState
+      });
+      if (!nextProjectState.suggested_tasks || nextProjectState.suggested_tasks.length === 0) {
+        addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks for the developer?", "generate_suggested_tasks");
+      } else {
+        addAppMessage("Here are some suggested next steps:");
+        nextProjectState.suggested_tasks.forEach(task => {
+          addAppMessage(`Suggested task - ${task.description}`);
+        });
+      }
+      await saveProjectState(activeProjectPath, { ...nextProjectState });
+      if (!nextProjectState.suggested_tasks || nextProjectState.suggested_tasks.length === 0) {
+        addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks for the developer?", "generate_suggested_tasks");
+        // throw new Error("No updatedProjectState.suggested_tasks found in AI response.");
+      } else {
+        addAppMessage("I've generated initial tasks and file structure. Here are some suggested next steps:");
+        nextProjectState.suggested_tasks.forEach(task => {
+          addAppMessage(`Suggested task - ${task.description}`);
+        });
+      }
+      await saveProjectState(activeProjectPath, { ...nextProjectState });
+    } catch (error) {
+      console.error('Error generating tasks and files:', error);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addMessageToThread = (message: IMessage) => {
+    setProjectState((prev) => {
+      if (!prev) return prev;
+      const updatedProjectState = { ...prev, messages: [...prev.messages || [], message] };
+      return updatedProjectState;
+    });
+  };
+
+  const addAppMessage = (content: string, action?: IMessageAction) => {
     const now = Date.now();
-    const userMessage: MessageType = {
-      content: inputMessage,
+    const appMessage: IMessage = {
+      content,
+      role: 'app',
+      createdAt: now,
+      updatedAt: now,
+      action,
+    };
+    addMessageToThread(appMessage);
+  };
+
+  const handleSendMessage = async (content: string) => {
+    if (!projectState || content.trim() === '') return;
+
+    setIsLoading(true);
+    setError(null);
+
+    const now = Date.now();
+    const userMessage: IMessage = {
+      content,
       role: 'user',
       createdAt: now,
       updatedAt: now,
     };
-    setProjectState(prev => {
-      if (!prev) return prev;
-      return ({ ...prev, messages: [...prev?.messages || [], userMessage] });
-    });
 
+    addMessageToThread(userMessage);
+    await saveProjectState(activeProjectPath, projectState);
     try {
-      await addMessageToChat(activeProjectPath, inputMessage, 'user');
-      setInputMessage('');
-      const { service, model, temperature, max_tokens } = projectState?.settings;
-      const aiResponse: MessageContent = await getAIResponse(inputMessage, service, model, settings.apiKeys[service], temperature, max_tokens);
-      // Convert MessageContent to a string
-      const responseString = JSON.stringify(aiResponse);
-      await addMessageToChat(activeProjectPath, responseString, 'assistant');
-      await loadProjectState();
+      if (!projectState.description) {
+        const updatedProjectState = { ...projectState, description: inputMessage, messages: [...projectState.messages || [], userMessage] };
+        await saveProjectState(activeProjectPath, updatedProjectState);
+        setProjectState(updatedProjectState);
+        addAppMessage("Description added. Now, please provide a list of requirements for the application. Each requirement should be on a new line.");
+      } else if (!projectState.requirements || projectState.requirements.length === 0) {
+        const requirementDescriptions = inputMessage.split('\n').filter(req => req.trim() !== '');
+        const requirements: Requirement[] = requirementDescriptions.map((description, index) => ({
+          id: `REQ-${index + 1}`,
+          description,
+          status: "not_started",
+          priority: "medium",
+          createdAt: now,
+          updatedAt: now,
+        }));
+        const updatedProjectState = { ...projectState, requirements, messages: [...projectState.messages || [], userMessage] };
+        await saveProjectState(activeProjectPath, updatedProjectState);
+        setProjectState(updatedProjectState);
+        addAppMessage("Requirements added. Do you want to generate initial tasks and file structure by the model?", "generate_tasks_and_files");
+        await handleGenerateTasksAndFiles(updatedProjectState);
+      } else {
+        const { service, model, temperature, max_tokens } = projectState.settings;
+        const { updatedProjectState, aiResponse } = await getAIResponseWithProjectState(
+          inputMessage,
+          { ...projectState, messages: [] },
+          service,
+          model,
+          settings.apiKeys[service],
+          temperature,
+          max_tokens
+        );
+        const prevMessages = projectState.messages || [];
+        const now = Date.now();
+        const assistantMessage: IMessage = {
+          content: aiResponse,
+          role: 'assistant',
+          createdAt: now,
+          updatedAt: now,
+        };
+        const nextProjectState = { ...projectState, ...updatedProjectState, messages: [...prevMessages, assistantMessage] };
+        setProjectState({
+          ...nextProjectState
+        });
+        if (!nextProjectState.suggested_tasks || nextProjectState.suggested_tasks.length === 0) {
+          addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks for the developer?", "generate_suggested_tasks");
+        } else {
+          addAppMessage("Here are some suggested next steps:");
+          nextProjectState.suggested_tasks.forEach(task => {
+            addAppMessage(`Suggested task - ${task.description}`);
+          });
+        }
+        await saveProjectState(activeProjectPath, { ...nextProjectState });
+      }
     } catch (error) {
       console.error('Error in message exchange:', error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setIsLoading(false);
+      setInputMessage('');
     }
   };
 
@@ -102,14 +238,9 @@ const SimplerProject: React.FC = () => {
 
       const fullPath = await join(activeProjectPath, directoryPath, fileName);
 
-      // Use the write_file Rust function
       await invoke('write_file', { filePath: fullPath, content: code });
-
-      console.log(`File saved successfully at: ${fullPath}`);
-      // Optionally, you can update the UI to show a success message
     } catch (error) {
       console.error('Error saving file:', error);
-      // Optionally, you can update the UI to show an error message
     }
   };
 
@@ -117,7 +248,7 @@ const SimplerProject: React.FC = () => {
     if (!projectState) return;
 
     const service = e.target.value as "openai" | "anthropic";
-    if (service === projectState.settings.service) return;
+    if (service === projectState?.settings?.service) return;
     const model = service === 'openai' ? openaiModels[0] : anthropicModels[0];
     const newSettings = { ...projectState.settings, service, model };
     await editProjectStateSettings(activeProjectPath, newSettings);
@@ -128,24 +259,40 @@ const SimplerProject: React.FC = () => {
     if (!projectState) return;
 
     const model = e.target.value;
-    if (model === projectState.settings.model) return;
+    if (model === projectState?.settings?.model) return;
     const newSettings = { ...projectState.settings, model };
     await editProjectStateSettings(activeProjectPath, newSettings);
     setProjectState({ ...projectState, settings: newSettings });
+  };
+
+  const handleProjectStateItemClick = (item: string, type: string) => {
+    console.log(`Clicked ${type}: ${item}`);
+    // You can implement specific actions here, like opening a file or focusing on a task
   };
 
   if (isLoadingProject) return (<div>Loading...</div>);
 
   if (!projectState) return (<button onClick={loadProjectState} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Load Project</button>)
 
-  return (
-    <div className="flex flex-col h-full bg-white shadow-lg rounded-lg">
+  const leftPanel = (
+    <ProjectStateView projectState={projectState} onItemClick={handleProjectStateItemClick} />
+  );
+  const rightPanel = (
+    <div className="flex flex-col h-full w-full bg-white shadow-lg rounded-lg">
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {projectState.messages?.map((message) => (
           <Message
             key={message.createdAt}
             message={message}
             onSaveCodeSnippet={handleSaveCodeSnippet}
+            onAction={(type: string, value: boolean | string) => {
+              if (type === "generate_tasks_and_files" && value === true) {
+                handleGenerateTasksAndFiles(projectState);
+              }
+              if (type === "suggestion") {
+                handleSendMessage(value as string);
+              }
+            }}
           />
         ))}
         {isLoading && (
@@ -173,7 +320,7 @@ const SimplerProject: React.FC = () => {
             onKeyPress={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                handleSendMessage();
+                handleSendMessage(inputMessage);
               }
             }}
             className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
@@ -183,7 +330,7 @@ const SimplerProject: React.FC = () => {
             style={{ minHeight: "2.5rem", maxHeight: "10rem" }}
           />
           <button
-            onClick={handleSendMessage}
+            onClick={() => handleSendMessage(inputMessage)}
             className="w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center justify-center"
             disabled={isLoading}
           >
@@ -192,7 +339,7 @@ const SimplerProject: React.FC = () => {
         </div>
         <div className="mt-2 columns-2">
           <select
-            value={projectState.settings.service}
+            value={projectState?.settings?.service}
             onChange={handleServiceChange}
             className="w-full` p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -200,12 +347,12 @@ const SimplerProject: React.FC = () => {
             <option value="anthropic">Anthropic</option>
           </select>
           <select
-            value={projectState.settings.model}
+            value={projectState?.settings?.model}
             onChange={handleModelChange}
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {
-              projectState.settings.service === 'openai' ?
+              projectState?.settings?.service === 'openai' ?
                 openaiModels.map((model) => (
                   <option key={model} value={model}>{model}</option>
                 )) :
@@ -216,6 +363,12 @@ const SimplerProject: React.FC = () => {
           </select>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="h-full w-full bg-white">
+      <ResizablePanel left={leftPanel} right={rightPanel} initialLeftWidth={300} />
     </div>
   );
 };

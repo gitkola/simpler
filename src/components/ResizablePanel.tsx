@@ -1,0 +1,91 @@
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from '../store';
+import { setProjectStateViewWidth } from '../store/layoutSlice';
+
+interface ResizablePanelProps {
+  left: React.ReactNode;
+  right: React.ReactNode;
+  initialLeftWidth?: number;
+  minLeftWidth?: number;
+  maxLeftWidth?: number;
+}
+
+const ResizablePanel: React.FC<ResizablePanelProps> = ({
+  left,
+  right,
+  minLeftWidth = 200,
+  maxLeftWidth = 1600
+}) => {
+  const dispatch = useDispatch();
+  const { projectStateViewWidth } = useSelector((state: RootState) => state.layout);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isDragging) {
+        const containerRect = containerRef.current?.getBoundingClientRect();
+        if (containerRect) {
+          const newLeftWidth = e.clientX - containerRect.left;
+          if (newLeftWidth >= minLeftWidth && newLeftWidth <= maxLeftWidth) {
+            dispatch(setProjectStateViewWidth(newLeftWidth));
+          }
+        }
+      }
+    },
+    [isDragging, minLeftWidth, maxLeftWidth]
+  );
+
+  useEffect(() => {
+    const handleMouseUpOutside = () => {
+      if (isDragging) {
+        setIsDragging(false);
+      }
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUpOutside);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUpOutside);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUpOutside);
+    };
+  }, [isDragging, handleMouseMove]);
+
+  return (
+    <div ref={containerRef} className="flex h-full relative">
+      <div style={{ width: projectStateViewWidth, minWidth: minLeftWidth, maxWidth: maxLeftWidth }} className="flex-shrink-0">
+        {left}
+      </div>
+      <div
+        className="w-1 bg-gray-300 cursor-col-resize hover:bg-gray-400 transition-colors absolute h-full"
+        style={{ left: projectStateViewWidth }}
+        onMouseDown={handleMouseDown}
+      />
+      <div className="flex w-full">{right}</div>
+      {isDragging && (
+        <div className="fixed inset-0 z-50 select-none"
+          onMouseUp={handleMouseUp}
+          style={{ cursor: 'col-resize' }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ResizablePanel;

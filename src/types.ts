@@ -1,13 +1,21 @@
 export type ProjectPathListItem = string;
 
-export interface Message {
-  role: "user" | "assistant" | "system";
-  content: string;
+export type IMessageAction =
+  | "generate_tasks_and_files"
+  | "generate_suggested_tasks"
+  | "suggestion";
+
+export type IMessageRole = "user" | "assistant" | "system" | "app";
+
+export interface IMessage {
+  role: IMessageRole;
+  content: IMessageContent | string;
   createdAt: number;
   updatedAt: number;
+  action?: IMessageAction;
 }
 
-export type Entity = ProjectState | Message;
+export type Entity = IProjectState | IMessage;
 
 export const createTimestamps = () => {
   const now = Date.now();
@@ -18,13 +26,14 @@ export const updateTimestamp = (entity: Entity) => {
   return { ...entity, updatedAt: Date.now() };
 };
 
-export type MessageContent = ContentItem[];
+export type IMessageContent = ContentItem[];
 
 export type ContentItem =
   | { title: string }
   | { text: string }
   | { code: CodeTuple }
-  | { link: LinkTuple };
+  | { link: LinkTuple }
+  | { updated_project_state: IProjectState };
 
 export type CodeTuple = [
   string, // code content (required)
@@ -47,6 +56,10 @@ export const isCode = (item: ContentItem): item is { code: CodeTuple } =>
   "code" in item;
 export const isLink = (item: ContentItem): item is { link: LinkTuple } =>
   "link" in item;
+export const isUpdatedProjectState = (
+  item: ContentItem
+): item is { updated_project_state: IProjectState } =>
+  "updated_project_state" in item;
 
 // Get type function
 export const getType = (
@@ -77,12 +90,52 @@ export const createLinkItem = (
   link: [url, description],
 });
 
+export interface FileMetadata {
+  lastSynced?: number;
+  status?: "created" | "modified" | "deleted";
+  coverage?: number;
+  [key: string]: any;
+}
+
 export interface ProjectFile {
   path: string;
-  content: string;
+  content: string | null;
   createdAt: number;
   updatedAt: number;
-  metadata: { [key: string]: any };
+  metadata: FileMetadata;
+}
+
+export interface Requirement {
+  id: string;
+  description: string;
+  status: "not_started" | "in_progress" | "completed";
+  priority: "low" | "medium" | "high";
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface VersionInfo {
+  version: string;
+  timestamp: number;
+  description: string;
+}
+
+export interface SyncState {
+  lastSynced: number | null;
+  status:
+    | "initial"
+    | "synced"
+    | "local_changes"
+    | "remote_changes"
+    | "conflict";
+}
+
+export interface ProjectTask {
+  id: string;
+  description: string;
+  status: "todo" | "in_progress" | "done";
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface ProjectSettings {
@@ -90,17 +143,23 @@ export interface ProjectSettings {
   model: string;
   temperature: number;
   max_tokens: number;
+  indentation?: "spaces" | "tabs";
+  indentationSize?: number;
+  lineEnding?: "LF" | "CRLF";
 }
 
-export interface ProjectState {
+export interface IProjectState {
   name: string;
-  version: string;
+  versionHistory: VersionInfo[];
   description: string;
-  requirements: string[];
+  requirements: Requirement[];
   files: ProjectFile[];
   ai_instructions: string[];
-  current_task: string;
-  messages?: Message[];
+  tasks: ProjectTask[];
+  suggested_tasks?: ProjectTask[];
+  current_task: ProjectTask | null;
+  messages?: IMessage[];
+  syncState: SyncState;
   settings: ProjectSettings;
   createdAt: number;
   updatedAt: number;

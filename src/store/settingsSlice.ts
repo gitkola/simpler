@@ -39,17 +39,3 @@ const settingsSlice = createSlice({
 export const { setApiKey } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
-
-// Middleware to save settings to localStorage after each change
-export const saveSettingsMiddleware =
-  (store: any) => (next: any) => (action: any) => {
-    const result = next(action);
-    if (action.type.startsWith("settings/")) {
-      const settingsState = store.getState().settings;
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY_SETTINGS,
-        JSON.stringify(settingsState)
-      );
-    }
-    return result;
-  };

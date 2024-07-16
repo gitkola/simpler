@@ -6,6 +6,8 @@ import {
   ChevronRight,
   Plus,
   Settings,
+  ChevronLeft,
+  ChevronDoubleRight,
 } from "./Icons";
 import ProjectItem from "./ProjectItem";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,9 +18,9 @@ import {
 import { setActiveProject, deleteProject } from "../store/projectsSlice";
 import { getFolderNameFromPath } from "../utils/getFolderNameFromPath";
 
-
 const Sidebar: React.FC = () => {
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
+  const [isMinimized, setIsMinimized] = useState(false);
   const navItems = [
     { name: "Settings", icon: Settings, path: "/" },
   ];
@@ -58,10 +60,17 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const toggleMinimize = () => {
+    setIsMinimized(!isMinimized);
+  };
+
   return (
-    <div className="w-64 bg-gray-800 text-white h-full flex flex-col">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold">Simpler</h1>
+    <div className={`bg-gray-800 text-white h-full flex flex-col transition-all duration-300 ${isMinimized ? 'w-16' : 'w-64'}`}>
+      <div className="p-4 flex justify-between items-center">
+        {!isMinimized && <h1 className="text-2xl font-bold">Simpler</h1>}
+        <button onClick={toggleMinimize} className="text-gray-300 hover:text-white">
+          {isMinimized ? <ChevronDoubleRight size={24} /> : <ChevronLeft size={24} />}
+        </button>
       </div>
       <nav className="flex-grow">
         <ul>
@@ -76,24 +85,26 @@ const Sidebar: React.FC = () => {
                   }`
                 }
               >
-                <item.icon className="mr-3" size={24} />
-                {item.name}
+                <item.icon className={isMinimized ? "" : "mr-3"} size={24} />
+                {!isMinimized && item.name}
               </NavLink>
             </li>
           ))}
           <li>
             <button
-              onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
+              onClick={() => !isMinimized && setIsProjectsExpanded(!isProjectsExpanded)}
               className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
             >
-              {isProjectsExpanded ? (
+              {isMinimized ? (
+                <ChevronRight size={24} />
+              ) : isProjectsExpanded ? (
                 <ChevronDown className="mr-3" size={24} />
               ) : (
                 <ChevronRight className="mr-3" size={24} />
               )}
-              Projects
+              {!isMinimized && "Projects"}
             </button>
-            {isProjectsExpanded && (
+            {!isMinimized && isProjectsExpanded && (
               <div className="mx-2">
                 <button
                   onClick={handleOpenProject}
