@@ -270,16 +270,20 @@ const SimplerProject: React.FC = () => {
     // You can implement specific actions here, like opening a file or focusing on a task
   };
 
-  if (isLoadingProject) return (<div>Loading...</div>);
+  if (isLoadingProject) return (<div className="flex h-full justify-center">
+    <h2 className="m-auto">Loading...</h2>
+  </div>);
 
-  if (!projectState) return (<button onClick={loadProjectState} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Load Project</button>)
+  if (!projectState) return (<div className="flex h-full justify-center">
+    <button onClick={loadProjectState} className="bg-blue-500 text-white px-4 py-2 m-auto rounded-lg">Load Project</button>
+  </div>);
 
   const leftPanel = (
     <ProjectStateView projectState={projectState} onItemClick={handleProjectStateItemClick} />
   );
   const rightPanel = (
-    <div className="flex flex-col h-full w-full bg-white shadow-lg rounded-lg">
-      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+    <div className="flex flex-col h-full w-full shadow-lg rounded-lg">
+      <div className="flex-grow overflow-y-auto p-4 space-y-4 no-scrollbar">
         {projectState.messages?.map((message) => (
           <Message
             key={message.createdAt}

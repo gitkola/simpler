@@ -25,11 +25,11 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction 
       const [code, fileExt, filePath, description] = item.code;
       return (
         <div >
-          <SyntaxHighlighter className='no-scrollbar' language={fileExt || undefined} style={vscDarkPlus}>
+          <SyntaxHighlighter className="no-scrollbar" language={fileExt || undefined} style={vscDarkPlus}>
             {code}
           </SyntaxHighlighter>
           {description && <p className="text-sm text-gray-500 mt-2">{description}</p>}
-          <div className="flex items-center my-2">
+          <div className="flex items-center my-4">
             <button
               onClick={() => onSaveCodeSnippet(code, filePath || '')}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-sm mr-2"
@@ -43,20 +43,20 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction 
     } else if (isLink(item)) {
       const [url, description] = item.link;
       return (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 my-4 hover:underline">
           {description || url}
         </a>
       );
     } else if (isUpdatedProjectState(item)) {
       return (
         <div>
-          <SyntaxHighlighter language={'json'} style={vscDarkPlus}>
+          <SyntaxHighlighter className="no-scrollbar" language={'json'} style={vscDarkPlus}>
             {JSON.stringify(item, null, 2)}
           </SyntaxHighlighter>
         </div>
       );
     };
-    return <p>Unexpected content type</p>;
+    return <p className="my-4">Unexpected content type</p>;
   };
 
   const parseMessageContent = (content: IMessageContent | string): IMessageContent | JSX.Element[] => {
@@ -138,7 +138,7 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction 
   const parsedContent = parseMessageContent(message.content);
 
   return (
-    <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4 overflow-auto`}>
+    <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-8`}>
       <div className={`max-w-3xl px-4 py-2 rounded-lg ${message.role === 'user' ? 'bg-blue-500 text-white' :
         message.role === 'app' ? 'bg-green-500 text-white' :
           message.role === 'system' ? 'bg-yellow-500 text-black' :

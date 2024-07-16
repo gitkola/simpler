@@ -64,18 +64,18 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
         onClick={() => toggleSection(title)}
       >
         {expandedSections[title] ? <ChevronDown className="mr-2" /> : <ChevronRight className="mr-2" />}
-        {title} {items.length > 0 && `(${items.length})`}
+        {title} {items?.length > 0 && `(${items?.length})`}
       </div>
       {expandedSections[title] && (
         <div className="pl-4">
-          {items.map(renderItem)}
+          {items?.map(renderItem)}
         </div>
       )}
     </div>
   );
 
   return (
-    <div className="bg-white h-full overflow-y-auto p-4">
+    <div className="bg-white h-full overflow-y-auto p-4 no-scrollbar">
       <h2 className="text-xl font-bold mb-4">Project State</h2>
 
       <div className="mb-4">
@@ -83,9 +83,9 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
         <p className="text-sm">{projectState.description}</p>
       </div>
 
-      {renderSection('Files', projectState.files, renderFile)}
-      {renderSection('Requirements', projectState.requirements, renderRequirement)}
-      {renderSection('Tasks', projectState.tasks, renderTask)}
+      {renderSection('Files', projectState?.files, renderFile)}
+      {renderSection('Requirements', projectState?.requirements, renderRequirement)}
+      {renderSection('Tasks', projectState?.tasks, renderTask)}
       {renderSection('Suggested Tasks', projectState?.suggested_tasks || [], (task) => renderTask(task, true))}
     </div>
   );

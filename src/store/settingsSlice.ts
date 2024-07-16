@@ -1,10 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LOCAL_STORAGE_KEY_SETTINGS } from "../constants";
+import {
+  AI_INSTRUCTIONS_PROJECT_STATE,
+  AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
+  AI_INSTRUCTIONS_RESPONSIBILITIES,
+  LOCAL_STORAGE_KEY_SETTINGS,
+} from "../constants";
 
 export interface SettingsState {
   apiKeys: {
     openai: string;
     anthropic: string;
+  };
+  instructions: {
+    responsibilitiesInstructions: string;
+    responseGuidelinesInstructions: string;
+    projectStateInstructions: string;
   };
 }
 
@@ -12,6 +22,11 @@ const defaultInitialState: SettingsState = {
   apiKeys: {
     openai: "",
     anthropic: "",
+  },
+  instructions: {
+    responsibilitiesInstructions: AI_INSTRUCTIONS_RESPONSIBILITIES,
+    responseGuidelinesInstructions: AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
+    projectStateInstructions: AI_INSTRUCTIONS_PROJECT_STATE,
   },
 };
 
@@ -33,9 +48,26 @@ const settingsSlice = createSlice({
     ) => {
       state.apiKeys[action.payload.service] = action.payload.key;
     },
+    setResponsibilitiesInstructions: (state, action: PayloadAction<string>) => {
+      state.instructions.responsibilitiesInstructions = action.payload;
+    },
+    setResponseGuidelinesInstructions: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.instructions.responseGuidelinesInstructions = action.payload;
+    },
+    setProjectStateInstructions: (state, action: PayloadAction<string>) => {
+      state.instructions.projectStateInstructions = action.payload;
+    },
   },
 });
 
-export const { setApiKey } = settingsSlice.actions;
+export const {
+  setApiKey,
+  setResponsibilitiesInstructions,
+  setResponseGuidelinesInstructions,
+  setProjectStateInstructions,
+} = settingsSlice.actions;
 
 export default settingsSlice.reducer;
