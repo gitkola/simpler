@@ -62,8 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath 
         className="flex items-center w-full px-2 py-2 text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
       >
         <div className="flex items-center">
-          <Plus className="flex mr-4" size={24} />
-          Open
+          <Plus className="flex mr-2" size={24} />
+          Open Project
         </div>
       </button>
       <ul className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-8">
@@ -98,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath 
         }
       >
         <div className="flex items-center">
-          <Settings className="flex mr-4" size={24} />
+          <Settings className="flex mr-2" size={24} />
           Settings
         </div>
       </NavLink>
