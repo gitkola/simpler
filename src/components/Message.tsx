@@ -2,11 +2,13 @@ import React from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { IMessage, IMessageContent, ContentItem, IProjectState } from '../types';
+import { MessageProjectStateUpdates } from './MessageProjectStateUpdates';
 
 interface MessageProps {
   message: IMessage;
   onSaveCodeSnippet: (code: string, filePath: string) => void;
   onAction?: (type: string, value: boolean | string) => void;
+  onSyncProjectState: (data: IProjectState) => void;
 }
 
 const isTitle = (item: ContentItem): item is { title: string } => 'title' in item;
@@ -15,7 +17,7 @@ const isCode = (item: ContentItem): item is { code: [string, string | null, stri
 const isLink = (item: ContentItem): item is { link: [string, string | null] } => 'link' in item;
 const isUpdatedProjectState = (item: ContentItem): item is { updated_project_state: IProjectState } => 'updated_project_state' in item;
 
-const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction }) => {
+const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction, onSyncProjectState }) => {
   const renderContent = (item: ContentItem): JSX.Element => {
     if (isTitle(item)) {
       return <h3 className="text-lg font-bold mt-4">{item.title}</h3>;
@@ -25,7 +27,7 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction 
       const [code, fileExt, filePath, description] = item.code;
       return (
         <div >
-          <SyntaxHighlighter className="no-scrollbar" language={fileExt || undefined} style={vscDarkPlus}>
+          <SyntaxHighlighter className="no-scrollbar rounded-md" language={fileExt || undefined} style={vscDarkPlus}>
             {code}
           </SyntaxHighlighter>
           {description && <p className="text-sm text-gray-500 mt-2">{description}</p>}
@@ -49,11 +51,7 @@ const Message: React.FC<MessageProps> = ({ message, onSaveCodeSnippet, onAction 
       );
     } else if (isUpdatedProjectState(item)) {
       return (
-        <div>
-          <SyntaxHighlighter className="no-scrollbar" language={'json'} style={vscDarkPlus}>
-            {JSON.stringify(item, null, 2)}
-          </SyntaxHighlighter>
-        </div>
+        <MessageProjectStateUpdates content={item?.updated_project_state} onPressSync={onSyncProjectState} />
       );
     };
     return <p className="my-4">Unexpected content type</p>;

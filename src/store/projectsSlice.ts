@@ -32,6 +32,10 @@ const projectsSlice = createSlice({
     },
     deleteProject: (state, action: PayloadAction<string>) => {
       state.list = state.list.filter((p) => p !== action.payload);
+      state.activeProjectPath =
+        state.activeProjectPath === action.payload
+          ? null
+          : state.activeProjectPath;
     },
     setActiveProject: (state, action: PayloadAction<string>) => {
       state.activeProjectPath = action.payload;

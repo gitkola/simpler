@@ -8,7 +8,10 @@ import {
   updateTimestamp,
   IMessageRole,
 } from "../types";
-import { PROJECT_STATE_FILE_NAME } from "../constants";
+import {
+  PROJECT_MESSAGES_FILE_NAME,
+  PROJECT_STATE_FILE_NAME,
+} from "../constants";
 import { getFolderNameFromPath } from "./getFolderNameFromPath";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
@@ -113,6 +116,49 @@ export const getProjectState = async (
     const newProjectState = generateInitialProjectState(projectPath);
     await saveProjectState(projectPath, newProjectState);
     return newProjectState;
+  }
+};
+
+export const saveMessages = async (
+  projectPath: string,
+  messages: IMessage[]
+) => {
+  const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
+  try {
+    const result = await invoke("write_file", {
+      filePath: messagesFilePath,
+      content: JSON.stringify(messages || [], null, 2),
+    });
+    if (result !== null) {
+      throw new Error(result as string);
+    }
+  } catch (error) {
+    console.error("Failed to save Project Messages:", error);
+    throw new Error("Failed to save Project Messages");
+  }
+};
+
+export const getMessages = async (projectPath: string): Promise<IMessage[]> => {
+  const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
+  try {
+    const fileExists = await invoke("file_exists", {
+      filePath: messagesFilePath,
+    });
+    if (!fileExists) {
+      return [];
+    }
+    const result = await invoke("read_file", {
+      filePath: messagesFilePath,
+    });
+    if (typeof result !== "string") {
+      throw new Error("Invalid Project State file content");
+    }
+    const messages: IMessage[] = JSON.parse(result);
+    return messages;
+  } catch (error) {
+    console.error("Error reading Project State file:", error);
+    // If there's any error, return an empty array
+    return [];
   }
 };
 

@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { invoke } from '@tauri-apps/api/tauri';
 import { join } from '@tauri-apps/api/path';
+import { useNavigate } from "react-router-dom";
 import { RootState } from "../store";
 import { getAIResponseWithProjectState } from "../services/aiService";
 import { ArrowUp } from "./Icons";
-import { editProjectStateSettings, generateInitialProjectState, getProjectState, saveProjectState } from "../utils/projectStateUtils";
+import { editProjectStateSettings, generateInitialProjectState, getProjectState, saveMessages, saveProjectState, selectProjectStateFolder } from "../utils/projectStateUtils";
 import { IMessage, IMessageAction, IProjectState, Requirement } from "../types";
 import ProjectStateView from "./ProjectStateView";
 import ResizablePanel from "./ResizablePanel";
 import Message from "./Message";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
+import { setActiveProject } from "../store/projectsSlice";
 
 
 const SimplerProject: React.FC = () => {
   const [projectState, setProjectState] = useState<IProjectState | null>(null);
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,18 +26,21 @@ const SimplerProject: React.FC = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const settings = useSelector((state: RootState) => state.settings);
   const { activeProjectPath } = useSelector((state: RootState) => state.projects);
-  if (!activeProjectPath) return null;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [projectState?.messages?.length]);
+  useEffect(scrollToBottom, [messages?.length]);
 
   useEffect(() => {
     loadProjectState();
   }, [activeProjectPath]);
 
   const loadProjectState = async () => {
+    if (!activeProjectPath) return;
     setIsLoadingProject(true);
     try {
       let projectState = await getProjectState(activeProjectPath);
@@ -59,7 +65,7 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleGenerateTasksAndFiles = async (projectState: IProjectState) => {
-    if (!projectState) return;
+    if (!projectState || !activeProjectPath) return;
 
     setIsLoading(true);
     setError(null);
@@ -68,7 +74,7 @@ const SimplerProject: React.FC = () => {
       const { service, model, temperature, max_tokens } = projectState.settings;
       const { updatedProjectState, aiResponse } = await getAIResponseWithProjectState(
         "Generate or update tasks and file structure based on the project description and requirements.",
-        { ...projectState, messages: [] },
+        projectState,
         service,
         model,
         settings.apiKeys[service],
@@ -76,7 +82,7 @@ const SimplerProject: React.FC = () => {
         max_tokens
       );
 
-      const prevMessages = projectState.messages || [];
+      const prevMessages = messages || [];
       const now = Date.now();
       const assistantMessage: IMessage = {
         content: aiResponse,
@@ -115,12 +121,10 @@ const SimplerProject: React.FC = () => {
     }
   };
 
-  const addMessageToThread = (message: IMessage) => {
-    setProjectState((prev) => {
-      if (!prev) return prev;
-      const updatedProjectState = { ...prev, messages: [...prev.messages || [], message] };
-      return updatedProjectState;
-    });
+  const addMessageToThread = async (message: IMessage) => {
+    if (!projectState || !activeProjectPath) return;
+    setMessages((prev) => [...prev || [], message]);
+    await saveMessages(activeProjectPath, [...(projectState?.messages || []), message]);
   };
 
   const addAppMessage = (content: string, action?: IMessageAction) => {
@@ -136,7 +140,7 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!projectState || content.trim() === '') return;
+    if (!projectState || !activeProjectPath || content.trim() === '') return;
 
     setIsLoading(true);
     setError(null);
@@ -215,7 +219,7 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleSaveCodeSnippet = async (code: string, suggestedPath: string) => {
-    if (!projectState) return;
+    if (!projectState || !activeProjectPath) return;
 
     try {
       let fileName: string;
@@ -245,7 +249,7 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleServiceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!projectState) return;
+    if (!projectState || !activeProjectPath) return;
 
     const service = e.target.value as "openai" | "anthropic";
     if (service === projectState?.settings?.service) return;
@@ -256,7 +260,7 @@ const SimplerProject: React.FC = () => {
   };
 
   const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!projectState) return;
+    if (!projectState || !activeProjectPath) return;
 
     const model = e.target.value;
     if (model === projectState?.settings?.model) return;
@@ -270,8 +274,35 @@ const SimplerProject: React.FC = () => {
     // You can implement specific actions here, like opening a file or focusing on a task
   };
 
+  const handleSyncProjectState = async (value: IProjectState) => {
+    if (!projectState || !activeProjectPath) return;
+    const newProjectState = { ...projectState, ...value };
+    try {
+      setProjectState(newProjectState);
+      await saveProjectState(activeProjectPath, newProjectState);
+    } catch (error) {
+      console.error('Error syncing project state:', error);
+    }
+  };
+
+  const handleOpenProject = async () => {
+    try {
+      const projectPath = await selectProjectStateFolder();
+      if (projectPath) {
+        dispatch(setActiveProject(projectPath));
+        navigate(`/project`);
+      }
+    } catch (error) {
+      console.error("Failed to create/open project:", error);
+    }
+  };
+
   if (isLoadingProject) return (<div className="flex h-full justify-center">
     <h2 className="m-auto">Loading...</h2>
+  </div>);
+
+  if (!activeProjectPath) return (<div className="flex h-full justify-center">
+    <button onClick={handleOpenProject} className="bg-blue-500 text-white px-4 py-2 m-auto rounded-lg">Open Project</button>
   </div>);
 
   if (!projectState) return (<div className="flex h-full justify-center">
@@ -297,6 +328,7 @@ const SimplerProject: React.FC = () => {
                 handleSendMessage(value as string);
               }
             }}
+            onSyncProjectState={handleSyncProjectState}
           />
         ))}
         {isLoading && (

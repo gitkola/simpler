@@ -57,18 +57,19 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
     </div>
   );
 
-  const renderSection = (title: string, items: any[], renderItem: (item: any) => JSX.Element) => (
+  const renderSection = (title: string, content: any[] | string, renderItem: (item: any) => JSX.Element) => (
     <div className="mb-4">
       <div
         className="flex items-center cursor-pointer font-bold mb-2"
         onClick={() => toggleSection(title)}
       >
         {expandedSections[title] ? <ChevronDown className="mr-2" /> : <ChevronRight className="mr-2" />}
-        {title} {items?.length > 0 && `(${items?.length})`}
+        {title} {Array.isArray(content) && content?.length > 0 && `(${content?.length})`}
       </div>
       {expandedSections[title] && (
         <div className="pl-4">
-          {items?.map(renderItem)}
+          {Array.isArray(content) && content?.map(renderItem)}
+          {typeof content === 'string' && content}
         </div>
       )}
     </div>
@@ -76,13 +77,8 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
 
   return (
     <div className="bg-white h-full overflow-y-auto p-4 no-scrollbar">
-      <h2 className="text-xl font-bold mb-4">Project State</h2>
-
-      <div className="mb-4">
-        <h3 className="font-bold">Description</h3>
-        <p className="text-sm">{projectState.description}</p>
-      </div>
-
+      <h2 className="text-xl font-bold mb-4">{projectState?.name}</h2>
+      {renderSection('Description', projectState?.description, renderFile)}
       {renderSection('Files', projectState?.files, renderFile)}
       {renderSection('Requirements', projectState?.requirements, renderRequirement)}
       {renderSection('Tasks', projectState?.tasks, renderTask)}
