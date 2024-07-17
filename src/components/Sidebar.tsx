@@ -1,27 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Plus,
   Settings,
-  SidebarIcon,
 } from "./Icons";
 import ProjectItem from "./ProjectItem";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store";
+import { useDispatch } from "react-redux";
 import {
   selectProjectStateFolder,
 } from "../utils/projectStateUtils";
 import { setActiveProject, deleteProject } from "../store/projectsSlice";
+import { ProjectPathListItem } from "../types";
 
-const Sidebar: React.FC = () => {
-  const [isMinimized, setIsMinimized] = useState(false);
+export interface SidebarProps {
+  isMinimized: boolean;
+  list: ProjectPathListItem[];
+  activeProjectPath: string | null;
+}
 
+const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { list, activeProjectPath } = useSelector(
-    (state: RootState) => state.projects,
-  );
 
   const handleOpenProject = async () => {
     try {
@@ -35,16 +35,19 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const handleSelectProject = (projectPath: string) => {
+  const handleSelectProject = (projectPath: string | null) => {
+    if (!projectPath) return;
     dispatch(setActiveProject(projectPath));
     navigate(`/project`);
   };
 
-  const handleDeleteProject = async (projectPath: string) => {
+  const handleDeleteProject = async (projectPath: string | null) => {
+    if (!projectPath) return;
     dispatch(deleteProject(projectPath));
   };
 
-  const handleOpenProjectFolder = async (projectPath: string) => {
+  const handleOpenProjectFolder = async (projectPath: string | null) => {
+    if (!projectPath) return;
     try {
       await invoke("open_folder", { path: projectPath });
     } catch (error) {
@@ -52,28 +55,18 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const toggleMinimize = () => {
-    setIsMinimized(!isMinimized);
-  };
-
   return (
-    <div className={`bg-gray-800 overflow-hidden text-white flex flex-col transition-all duration-300 ${isMinimized ? 'w-14' : 'w-64'}`}>
-      <button
-        onClick={toggleMinimize}
-        className="flex justify-start w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
-      >
-        <SidebarIcon size={24} />
-      </button>
+    <aside className={`bg-gray-800 flex flex-col overflow-x-hidden transition-all duration-100 ${isMinimized ? 'w-0' : 'w-64'}`}>
       <button
         onClick={handleOpenProject}
-        className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
+        className="flex items-center w-full px-2 py-2 text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
       >
         <div className="flex items-center">
           <Plus className="flex mr-4" size={24} />
           Open
         </div>
       </button>
-      <ul className="flex flex-col overflow-y-scroll overflow-x-hidden no-scrollbar pb-16">
+      <ul className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-8">
         {list.map((projectPath) => (
           <li key={projectPath}>
             <NavLink
@@ -98,7 +91,7 @@ const Sidebar: React.FC = () => {
       <NavLink
         to={"/"}
         className={({ isActive }) =>
-          `flex items-center px-4 py-2 text-sm ${isActive
+          `flex items-center px-2 py-2 text-sm ${isActive
             ? "bg-gray-700 text-white hover:bg-gray-400"
             : "text-gray-300 hover:bg-gray-400 hover:text-white"
           }`
@@ -109,7 +102,7 @@ const Sidebar: React.FC = () => {
           Settings
         </div>
       </NavLink>
-    </div>
+    </aside>
   );
 };
 

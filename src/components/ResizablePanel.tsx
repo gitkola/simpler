@@ -14,7 +14,7 @@ interface ResizablePanelProps {
 const ResizablePanel: React.FC<ResizablePanelProps> = ({
   left,
   right,
-  minLeftWidth = 200,
+  minLeftWidth = 300,
   maxLeftWidth = 1600
 }) => {
   const dispatch = useDispatch();
@@ -73,7 +73,7 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
         {left}
       </div>
       <div
-        className="w-1 bg-gray-300 cursor-col-resize hover:bg-gray-400 transition-colors absolute h-full"
+        className="w-0.5 bg-gray-100 cursor-col-resize hover:bg-gray-400 transition-colors absolute h-full"
         style={{ left: projectStateViewWidth }}
         onMouseDown={handleMouseDown}
       />

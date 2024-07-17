@@ -5,6 +5,9 @@
 @layer utilities {
   body {
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
   }
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
