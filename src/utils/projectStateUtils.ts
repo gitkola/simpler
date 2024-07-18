@@ -2,11 +2,9 @@ import { invoke } from "@tauri-apps/api/tauri";
 import {
   IMessage,
   ProjectPathListItem,
-  ProjectSettings,
   IProjectState,
   createTimestamps,
   updateTimestamp,
-  IMessageRole,
 } from "../types";
 import {
   PROJECT_MESSAGES_FILE_NAME,
@@ -50,7 +48,6 @@ export const generateInitialProjectState = (
     tasks: [],
     suggested_tasks: [],
     current_task: null,
-    messages: [],
     syncState: { lastSynced: null, status: "initial" },
     settings: {
       service: "openai",
@@ -119,7 +116,7 @@ export const getProjectState = async (
   }
 };
 
-export const saveMessages = async (
+export const saveProjectMessages = async (
   projectPath: string,
   messages: IMessage[]
 ) => {
@@ -138,7 +135,9 @@ export const saveMessages = async (
   }
 };
 
-export const getMessages = async (projectPath: string): Promise<IMessage[]> => {
+export const getProjectMessages = async (
+  projectPath: string
+): Promise<IMessage[]> => {
   const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
   try {
     const fileExists = await invoke("file_exists", {
@@ -157,65 +156,8 @@ export const getMessages = async (projectPath: string): Promise<IMessage[]> => {
     return messages;
   } catch (error) {
     console.error("Error reading Project State file:", error);
-    // If there's any error, return an empty array
     return [];
   }
-};
-
-export const addMessageToChat = async (
-  projectPath: string,
-  content: string,
-  role: IMessageRole
-): Promise<void> => {
-  let projectState = await getProjectState(projectPath);
-  const newMessage: IMessage = {
-    content,
-    role,
-    ...createTimestamps(),
-  };
-  if (
-    typeof projectState === "object" &&
-    projectState !== null &&
-    Array.isArray(projectState.messages)
-  ) {
-    projectState.messages.push(newMessage);
-    await saveProjectState(
-      projectPath,
-      updateTimestamp(projectState) as IProjectState
-    );
-  }
-};
-
-export const editProjectStateSettings = async (
-  projectPath: string,
-  settings: ProjectSettings
-): Promise<void> => {
-  const projectState = await getProjectState(projectPath);
-  if (!projectState) {
-    throw new Error("IProjectState not found");
-  }
-  projectState.settings = settings;
-  await saveProjectState(
-    projectPath,
-    updateTimestamp(projectState) as IProjectState
-  );
-};
-
-export const deleteMessage = async (
-  projectPath: string,
-  messageCreatedAt: number
-): Promise<void> => {
-  const projectState = await getProjectState(projectPath);
-  if (!projectState) {
-    throw new Error("IProjectState not found");
-  }
-  projectState.messages = projectState.messages?.filter(
-    (m) => m.createdAt !== messageCreatedAt
-  );
-  await saveProjectState(
-    projectPath,
-    updateTimestamp(projectState) as IProjectState
-  );
 };
 
 export const selectProjectStateFolder =
@@ -235,3 +177,42 @@ export const selectProjectStateFolder =
       return null;
     }
   };
+
+export const mergeProjectStates = (
+  prevState: IProjectState,
+  nextState: IProjectState
+) => {
+  return {
+    ...prevState,
+    ...nextState,
+    versionHistory: [
+      ...prevState.versionHistory,
+      ...nextState.versionHistory.filter(
+        (v) => !prevState.versionHistory.some((pv) => pv.version === v.version)
+      ),
+    ],
+    requirements: [
+      ...prevState.requirements,
+      ...nextState.requirements.filter(
+        (r) => !prevState.requirements.some((pr) => pr.id === r.id)
+      ),
+    ],
+    files: [
+      ...prevState.files,
+      ...nextState.files.filter(
+        (f) => !prevState.files.some((pf) => pf.path === f.path)
+      ),
+    ].sort((a, b) => a.path.localeCompare(b.path)),
+    tasks: [
+      ...prevState.tasks,
+      ...nextState.tasks.filter(
+        (t) => !prevState.tasks.some((pt) => pt.id === t.id)
+      ),
+    ],
+    suggested_tasks: [
+      ...nextState?.suggested_tasks?.filter(
+        (st) => !prevState?.suggested_tasks?.some((pst) => pst.id === st.id)
+      ),
+    ],
+  };
+};

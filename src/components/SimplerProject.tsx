@@ -1,65 +1,58 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../store";
 import { invoke } from '@tauri-apps/api/tauri';
 import { join } from '@tauri-apps/api/path';
-import { useNavigate } from "react-router-dom";
 import { RootState } from "../store";
 import { getAIResponseWithProjectState } from "../services/aiService";
 import {
-  editProjectStateSettings,
-  generateInitialProjectState,
-  getProjectState,
-  saveMessages,
-  saveProjectState,
-  selectProjectStateFolder
+  mergeProjectStates,
 } from "../utils/projectStateUtils";
 import { IMessage, IMessageAction, IProjectState, Requirement } from "../types";
 import ProjectStateView from "./ProjectStateView";
 import ResizablePanel from "./ResizablePanel";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
-import { setActiveProject } from "../store/projectsSlice";
 import { ChatView } from "./ChatView";
+import { loadProjectMessagesFromFile, loadProjectStateFromFile, saveProjectMessagesToFile, saveProjectStateToFile } from "../store/currentProjectSlice";
+import { useOpenProject } from "../hooks/useOpenProject";
 
 
 const SimplerProject: React.FC = () => {
-  const [projectState, setProjectState] = useState<IProjectState | null>(null);
-  const [messages, setMessages] = useState<IMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const settings = useSelector((state: RootState) => state.settings);
-  const { activeProjectPath } = useSelector((state: RootState) => state.projects);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const projectState = useAppSelector((state: RootState) => state.currentProject.currentProjectState);
+  const messages = useAppSelector((state: RootState) => state.currentProject.currentProjectMessages);
+  const settings = useAppSelector((state: RootState) => state.settings);
+  const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
+  const dispatch = useAppDispatch();
+  const handleOpenProject = useOpenProject();
 
   useEffect(() => {
-    loadProjectState();
+    loadData();
   }, [activeProjectPath]);
 
-  const loadProjectState = async () => {
+  const loadData = async () => {
     if (!activeProjectPath) return;
     setIsLoadingProject(true);
     try {
-      let projectState = await getProjectState(activeProjectPath);
-      if (!projectState) {
-        projectState = generateInitialProjectState(activeProjectPath);
+      await dispatch(loadProjectStateFromFile(activeProjectPath));
+      await dispatch(loadProjectMessagesFromFile(activeProjectPath));
+      if (!projectState?.description) {
+        await addAppMessage("Please provide a description for the application you want to build.");
+      } else if (!projectState?.requirements || projectState?.requirements.length === 0) {
+        await addAppMessage("Please provide a list of requirements for the application. Each requirement should be on a new line.");
+      } else if ((!projectState?.tasks || projectState?.tasks?.length === 0) || (!projectState?.files || projectState?.files?.length === 0)) {
+        await addAppMessage("There are no tasks or file structure in the project state. Would you like me to generate initial tasks and file structure based on the project description and requirements?", "generate_tasks_and_files");
       }
-      setProjectState(() => projectState);
-
-      if (!projectState.description) {
-        addAppMessage("Please provide a description for the application you want to build.");
-      } else if (!projectState.requirements || projectState.requirements.length === 0) {
-        addAppMessage("Please provide a list of requirements for the application. Each requirement should be on a new line.");
-      } else if ((!projectState.tasks || projectState.tasks.length === 0) || (!projectState.files || projectState.files.length === 0)) {
-        addAppMessage("There are no tasks or file structure in the project state. Would you like me to generate initial tasks and file structure based on the project description and requirements?", "generate_tasks_and_files");
-        setIsLoadingProject(false);
-      }
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Failed to load project state:", error);
       setError("Failed to load project state");
     }
-    setIsLoadingProject(false);
+    finally {
+      setIsLoadingProject(false);
+    }
   };
 
   const handleGenerateTasksAndFiles = async (projectState: IProjectState) => {
@@ -88,32 +81,20 @@ const SimplerProject: React.FC = () => {
         createdAt: now,
         updatedAt: now,
       };
-      const nextProjectState = { ...projectState, ...updatedProjectState, messages: [...prevMessages, assistantMessage] };
-      setProjectState({
-        ...nextProjectState
-      });
-      if (!nextProjectState.suggested_tasks || nextProjectState.suggested_tasks.length === 0) {
-        addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks for the developer?", "generate_suggested_tasks");
+      const nextProjectState = mergeProjectStates(projectState, updatedProjectState);
+      await dispatch(saveProjectStateToFile(activeProjectPath, nextProjectState));
+      await dispatch(saveProjectMessagesToFile(activeProjectPath, [...prevMessages, assistantMessage]));
+      if (!nextProjectState?.suggested_tasks || nextProjectState?.suggested_tasks?.length === 0) {
+        await addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks?", "generate_suggested_tasks");
       } else {
-        addAppMessage("Here are some suggested next steps:");
-        nextProjectState.suggested_tasks.forEach(task => {
-          addAppMessage(`Suggested task - ${task.description}`);
-        });
+        await addAppMessage("Here are some suggested next steps:");
+        for (const task of nextProjectState.suggested_tasks) {
+          await addAppMessage(`Suggested task - ${task.description}`);
+        }
       }
-      await saveProjectState(activeProjectPath, { ...nextProjectState });
-      if (!nextProjectState.suggested_tasks || nextProjectState.suggested_tasks.length === 0) {
-        addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks for the developer?", "generate_suggested_tasks");
-        // throw new Error("No updatedProjectState.suggested_tasks found in AI response.");
-      } else {
-        addAppMessage("I've generated initial tasks and file structure. Here are some suggested next steps:");
-        nextProjectState.suggested_tasks.forEach(task => {
-          addAppMessage(`Suggested task - ${task.description}`);
-        });
-      }
-      await saveProjectState(activeProjectPath, { ...nextProjectState });
     } catch (error) {
       console.error('Error generating tasks and files:', error);
-      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+      setError(error instanceof Error ? error.message : 'An unknown error occurred while generating tasks and files');
     } finally {
       setIsLoading(false);
     }
@@ -121,11 +102,10 @@ const SimplerProject: React.FC = () => {
 
   const addMessageToThread = async (message: IMessage) => {
     if (!projectState || !activeProjectPath) return;
-    setMessages((prev) => [...prev || [], message]);
-    await saveMessages(activeProjectPath, [...(projectState?.messages || []), message]);
+    await dispatch(saveProjectMessagesToFile(activeProjectPath, [...(messages || []), message]));
   };
 
-  const addAppMessage = (content: string, action?: IMessageAction) => {
+  const addAppMessage = async (content: string, action?: IMessageAction) => {
     const now = Date.now();
     const appMessage: IMessage = {
       content,
@@ -134,7 +114,7 @@ const SimplerProject: React.FC = () => {
       updatedAt: now,
       action,
     };
-    addMessageToThread(appMessage);
+    await addMessageToThread(appMessage);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -151,14 +131,13 @@ const SimplerProject: React.FC = () => {
       updatedAt: now,
     };
 
-    addMessageToThread(userMessage);
-    await saveProjectState(activeProjectPath, projectState);
     try {
+      await addMessageToThread(userMessage);
+      await dispatch(saveProjectStateToFile(activeProjectPath, projectState));
       if (!projectState.description) {
-        const updatedProjectState = { ...projectState, description: inputMessage, messages: [...projectState.messages || [], userMessage] };
-        await saveProjectState(activeProjectPath, updatedProjectState);
-        setProjectState(updatedProjectState);
-        addAppMessage("Description added. Now, please provide a list of requirements for the application. Each requirement should be on a new line.");
+        const updatedProjectState = { ...projectState, description: inputMessage, };
+        await dispatch(saveProjectStateToFile(activeProjectPath, updatedProjectState));
+        await addAppMessage("Description added. Now, please provide a list of requirements for the application. Each requirement should be on a new line.");
       } else if (!projectState.requirements || projectState.requirements.length === 0) {
         const requirementDescriptions = inputMessage.split('\n').filter(req => req.trim() !== '');
         const requirements: Requirement[] = requirementDescriptions.map((description, index) => ({
@@ -169,23 +148,22 @@ const SimplerProject: React.FC = () => {
           createdAt: now,
           updatedAt: now,
         }));
-        const updatedProjectState = { ...projectState, requirements, messages: [...projectState.messages || [], userMessage] };
-        await saveProjectState(activeProjectPath, updatedProjectState);
-        setProjectState(updatedProjectState);
-        addAppMessage("Requirements added. Do you want to generate initial tasks and file structure by the model?", "generate_tasks_and_files");
+        const updatedProjectState = { ...projectState, requirements };
+        await dispatch(saveProjectStateToFile(activeProjectPath, updatedProjectState));
+        await addAppMessage("Requirements added. Do you want to generate initial tasks and file structure by AI model?", "generate_tasks_and_files");
         await handleGenerateTasksAndFiles(updatedProjectState);
       } else {
         const { service, model, temperature, max_tokens } = projectState.settings;
         const { updatedProjectState, aiResponse } = await getAIResponseWithProjectState(
           inputMessage,
-          { ...projectState, messages: [] },
+          projectState,
           service,
           model,
           settings.apiKeys[service],
           temperature,
           max_tokens
         );
-        const prevMessages = projectState.messages || [];
+
         const now = Date.now();
         const assistantMessage: IMessage = {
           content: aiResponse,
@@ -193,19 +171,17 @@ const SimplerProject: React.FC = () => {
           createdAt: now,
           updatedAt: now,
         };
-        const nextProjectState = { ...projectState, ...updatedProjectState, messages: [...prevMessages, assistantMessage] };
-        setProjectState({
-          ...nextProjectState
-        });
+        await addMessageToThread(assistantMessage);
+        const nextProjectState = mergeProjectStates(projectState, updatedProjectState);
+        await dispatch(saveProjectStateToFile(activeProjectPath, nextProjectState));
         if (!nextProjectState.suggested_tasks || nextProjectState.suggested_tasks.length === 0) {
-          addAppMessage("No suggested tasks found in AI response. Do you want AI to suggest possible next tasks for the developer?", "generate_suggested_tasks");
+          await addAppMessage("No suggested tasks found in AI response. Do you want AI model to suggest possible next tasks?", "generate_suggested_tasks");
         } else {
-          addAppMessage("Here are some suggested next steps:");
-          nextProjectState.suggested_tasks.forEach(task => {
-            addAppMessage(`Suggested task - ${task.description}`);
-          });
+          await addAppMessage("Here are some suggested next steps:");
+          for (const task of nextProjectState.suggested_tasks) {
+            await addAppMessage(`Suggested task - ${task.description}`);
+          }
         }
-        await saveProjectState(activeProjectPath, { ...nextProjectState });
       }
     } catch (error) {
       console.error('Error in message exchange:', error);
@@ -253,8 +229,7 @@ const SimplerProject: React.FC = () => {
     if (service === projectState?.settings?.service) return;
     const model = service === 'openai' ? openaiModels[0] : anthropicModels[0];
     const newSettings = { ...projectState.settings, service, model };
-    await editProjectStateSettings(activeProjectPath, newSettings);
-    setProjectState({ ...projectState, settings: newSettings });
+    await dispatch(saveProjectStateToFile(activeProjectPath, { ...projectState, settings: { ...newSettings } }));
   };
 
   const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -263,8 +238,7 @@ const SimplerProject: React.FC = () => {
     const model = e.target.value;
     if (model === projectState?.settings?.model) return;
     const newSettings = { ...projectState.settings, model };
-    await editProjectStateSettings(activeProjectPath, newSettings);
-    setProjectState({ ...projectState, settings: newSettings });
+    await dispatch(saveProjectStateToFile(activeProjectPath, { ...projectState, settings: { ...newSettings } }));
   };
 
   const handleProjectStateItemClick = (item: string, type: string) => {
@@ -274,24 +248,11 @@ const SimplerProject: React.FC = () => {
 
   const handleSyncProjectState = async (value: IProjectState) => {
     if (!projectState || !activeProjectPath) return;
-    const newProjectState = { ...projectState, ...value };
+    const newProjectState = mergeProjectStates(projectState, value);
     try {
-      setProjectState(newProjectState);
-      await saveProjectState(activeProjectPath, newProjectState);
+      await dispatch(saveProjectStateToFile(activeProjectPath, newProjectState));
     } catch (error) {
       console.error('Error syncing project state:', error);
-    }
-  };
-
-  const handleOpenProject = async () => {
-    try {
-      const projectPath = await selectProjectStateFolder();
-      if (projectPath) {
-        dispatch(setActiveProject(projectPath));
-        navigate(`/project`);
-      }
-    } catch (error) {
-      console.error("Failed to create/open project:", error);
     }
   };
 
@@ -304,11 +265,11 @@ const SimplerProject: React.FC = () => {
   </div>);
 
   if (!projectState) return (<div className="flex h-full justify-center">
-    <button onClick={loadProjectState} className="bg-blue-500 text-white px-4 py-2 m-auto rounded-lg">Load Project</button>
+    <button onClick={loadData} className="bg-blue-500 text-white px-4 py-2 m-auto rounded-lg">Load Project</button>
   </div>);
 
   const leftPanel = (
-    <ProjectStateView projectState={projectState} onItemClick={handleProjectStateItemClick} />
+    <ProjectStateView onItemClick={handleProjectStateItemClick} />
   );
 
   const rightPanel = (
@@ -320,7 +281,7 @@ const SimplerProject: React.FC = () => {
       handleSyncProjectState={handleSyncProjectState}
       handleServiceChange={handleServiceChange}
       handleModelChange={handleModelChange}
-      messages={messages}
+      messages={messages || []}
       isLoading={isLoading}
       error={error}
     />

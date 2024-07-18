@@ -90,7 +90,7 @@ export const getAIResponseWithProjectState = async (
   updatedProjectState: IProjectState;
   aiResponse: IMessageContent;
 }> => {
-  const currentProjectState = `#Current Project State
+  const CURRENT_PROJECT_STATE = `#Current Project State
 \`\`\`
 ${JSON.stringify(projectState, null, 2)}
 \`\`\`
@@ -108,7 +108,7 @@ ${JSON.stringify(projectState, null, 2)}
           messages: [
             { role: "system", content: AI_INSTRUCTIONS_RESPONSIBILITIES },
             { role: "system", content: AI_INSTRUCTIONS_PROJECT_STATE },
-            { role: "system", content: currentProjectState },
+            { role: "system", content: CURRENT_PROJECT_STATE },
             { role: "system", content: AI_INSTRUCTIONS_RESPONSE_GUIDELINES },
             { role: "user", content: message },
           ],
@@ -138,7 +138,7 @@ ${JSON.stringify(projectState, null, 2)}
           },
         ],
         model,
-        system: `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${currentProjectState}\n\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
+        system: `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
       });
       const response: Response<{
         content: Array<{ type: "text"; text: string }>;

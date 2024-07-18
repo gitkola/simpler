@@ -151,14 +151,13 @@ export interface ProjectSettings {
 export interface IProjectState {
   name: string;
   versionHistory: VersionInfo[];
-  description: string;
+  description: string | null;
   requirements: Requirement[];
   files: ProjectFile[];
   ai_instructions: string[];
   tasks: ProjectTask[];
-  suggested_tasks?: ProjectTask[];
+  suggested_tasks: ProjectTask[];
   current_task: ProjectTask | null;
-  messages?: IMessage[];
   syncState: SyncState;
   settings: ProjectSettings;
   createdAt: number;

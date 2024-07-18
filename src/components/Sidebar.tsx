@@ -6,12 +6,10 @@ import {
   Settings,
 } from "./Icons";
 import ProjectItem from "./ProjectItem";
-import { useDispatch } from "react-redux";
-import {
-  selectProjectStateFolder,
-} from "../utils/projectStateUtils";
-import { setActiveProject, deleteProject } from "../store/projectsSlice";
+import { useAppDispatch } from "../store";
+import { handleSetActiveProject, deleteProject } from "../store/projectsSlice";
 import { ProjectPathListItem } from "../types";
+import { useOpenProject } from "../hooks/useOpenProject";
 
 export interface SidebarProps {
   isMinimized: boolean;
@@ -20,24 +18,14 @@ export interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleOpenProject = async () => {
-    try {
-      const projectPath = await selectProjectStateFolder();
-      if (projectPath) {
-        dispatch(setActiveProject(projectPath));
-        navigate(`/project`);
-      }
-    } catch (error) {
-      console.error("Failed to create/open project:", error);
-    }
-  };
+  const handleOpenProject = useOpenProject();
 
   const handleSelectProject = (projectPath: string | null) => {
     if (!projectPath) return;
-    dispatch(setActiveProject(projectPath));
+    dispatch(handleSetActiveProject(projectPath));
     navigate(`/project`);
   };
 

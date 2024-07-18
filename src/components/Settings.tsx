@@ -1,11 +1,11 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../store";
 import { RootState } from "../store";
 import { setApiKey, setProjectStateInstructions, setResponseGuidelinesInstructions, setResponsibilitiesInstructions } from "../store/settingsSlice";
 
 const Settings: React.FC = () => {
-  const settings = useSelector((state: RootState) => state.settings);
-  const dispatch = useDispatch();
+  const settings = useAppSelector((state: RootState) => state.settings);
+  const dispatch = useAppDispatch();
 
   const handleApiKeyChange = (service: "openai" | "anthropic", key: string) => {
     dispatch(setApiKey({ service, key }));

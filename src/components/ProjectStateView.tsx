@@ -1,27 +1,75 @@
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, File } from './Icons';
 import { IProjectState, ProjectFile, Requirement, ProjectTask } from '../types';
+import { RootState, useAppDispatch, useAppSelector } from '../store';
+import { saveProjectStateToFile } from '../store/currentProjectSlice';
 
-interface ProjectStateTreeProps {
-  projectState: IProjectState;
+export interface IProjectStateTreeProps {
   onItemClick: (item: string, type: string) => void;
 }
 
-const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onItemClick }) => {
+export const renderEditable = (value: string, onSave: (data: string) => void, placeholder: string) => {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedValue, setEditedValue] = useState(value);
+
+  if (isEditMode) {
+    return (
+      <div>
+        <textarea
+          value={editedValue}
+          onChange={(e) => setEditedValue(e.target.value)}
+          className="flex items-center p-2 hover:bg-white cursor-pointer rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm no-scrollbar"
+          placeholder={placeholder}
+          rows={8}
+        />
+        <button
+          onClick={() => {
+            onSave(editedValue);
+            setIsEditMode(false);
+          }}
+          className="bg-blue-500 text-white p-2 rounded-md mt-2"
+        >
+          Save
+        </button>
+      </div>
+    )
+  }
+  return (
+    <span
+      onClick={() => setIsEditMode(!isEditMode)}
+      className="flex items-center p-2 hover:bg-white cursor-pointer rounded-md"
+    >
+      {value}
+    </span>);
+};
+
+const ProjectStateView: React.FC<IProjectStateTreeProps> = ({ onItemClick }) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     files: true,
     requirements: true,
     tasks: true,
     suggestedTasks: true,
   });
+  const dispatch = useAppDispatch();
+  const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
+  const projectState = useAppSelector((state: RootState) => state?.currentProject?.currentProjectState);
 
+  if (!projectState) return null;
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const renderDescription = (description: string) => (
-    <span className="flex items-center p-2 hover:bg-white cursor-pointer rounded-md">{description}</span>
-  );
+  const renderDescription = (description: string) => {
+    return renderEditable(
+      description,
+      async (value) => {
+        const updatedProjectState = { ...projectState, description: value };
+        await dispatch(saveProjectStateToFile(activeProjectPath, updatedProjectState as IProjectState));
+      },
+      'Enter project description'
+    );
+    // return <span>{description}</span>;
+  };
 
   const renderFile = (file: ProjectFile) => (
     <div
@@ -30,7 +78,7 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
       onClick={() => onItemClick(file.path, 'file')}
     >
       <File className="mr-2 text-blue-500" />
-      <span>{file.path}</span>
+      <span>{file?.path}</span>
       <span className="text-xs text-gray-500 ml-auto">{file?.metadata?.status}</span>
     </div>
   );
@@ -72,7 +120,7 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
       </div>
       {expandedSections[title] && (
         <div className="">
-          {Array.isArray(content) && content?.map(renderItem)}
+          {Array.isArray(content) && content.map(renderItem)}
           {typeof content === 'string' && renderItem(content)}
         </div>
       )}
@@ -81,11 +129,11 @@ const ProjectStateView: React.FC<ProjectStateTreeProps> = ({ projectState, onIte
 
   return (
     <div className="h-full overflow-y-auto no-scrollbar">
-      {renderSection('Description', projectState?.description, renderDescription)}
-      {renderSection('Requirements', projectState?.requirements, renderRequirement)}
-      {renderSection('Tasks', projectState?.tasks, renderTasks)}
+      {renderSection('Description', projectState?.description || [], renderDescription)}
+      {renderSection('Requirements', projectState?.requirements || [], renderRequirement)}
+      {renderSection('Tasks', projectState?.tasks || [], renderTasks)}
       {renderSection('Suggested Tasks', projectState?.suggested_tasks || [], (task) => renderTasks(task, true))}
-      {renderSection('Files', projectState?.files, renderFile)}
+      {renderSection('Files', projectState?.files || [], renderFile)}
     </div>
   );
 };

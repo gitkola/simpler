@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../store";
 import { invoke } from "@tauri-apps/api/tauri";
 import { SidebarIcon } from "./Icons";
 import { ThreeDotsButton } from "./ThreeDotsButton";
@@ -11,8 +11,8 @@ export interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
-  const { activeProjectPath } = useSelector((state: RootState) => state.projects);
-  const dispatch = useDispatch();
+  const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
+  const dispatch = useAppDispatch();
   const handleDeleteProject = async (projectPath: string | null) => {
     if (!projectPath) return;
     dispatch(deleteProject(projectPath));

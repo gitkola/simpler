@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../store";
 import { RootState } from '../store';
 import { setProjectStateViewWidth } from '../store/layoutSlice';
 
@@ -17,8 +17,8 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
   minLeftWidth = 300,
   maxLeftWidth = 1600
 }) => {
-  const dispatch = useDispatch();
-  const { projectStateViewWidth } = useSelector((state: RootState) => state.layout);
+  const dispatch = useAppDispatch();
+  const { projectStateViewWidth } = useAppSelector((state: RootState) => state.layout);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 

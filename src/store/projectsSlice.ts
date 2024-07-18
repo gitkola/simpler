@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectPathListItem } from "../types";
 import { LOCAL_STORAGE_KEY_PROJECTS } from "../constants";
+import {
+  setCurrentProjectMessages,
+  setCurrentProjectState,
+} from "./currentProjectSlice";
+import { AppDispatch, RootState } from "../store";
 
 export interface ProjectsState {
   list: ProjectPathListItem[];
@@ -47,3 +52,14 @@ export const { setProjects, addProject, setActiveProject, deleteProject } =
   projectsSlice.actions;
 
 export default projectsSlice.reducer;
+
+export const handleSetActiveProject =
+  (projectPath: string | null) =>
+  (dispatch: AppDispatch, getState: () => RootState) => {
+    if (!projectPath) return;
+    const activeProjectPath = getState().projects?.activeProjectPath;
+    if (activeProjectPath === projectPath) return;
+    dispatch(setCurrentProjectMessages(null));
+    dispatch(setCurrentProjectState(null));
+    dispatch(setActiveProject(projectPath));
+  };
