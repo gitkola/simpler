@@ -225,7 +225,6 @@ export const mergeProjectStates = (
   const mergedState = { ...prevState };
 
   mergedState.updatedAt = Date.now();
-  mergedState.descriptions = nextState.descriptions || prevState.descriptions;
   mergedState.descriptions = mergeDescriptions(
     prevState.descriptions || [],
     nextState.descriptions || []
@@ -249,15 +248,14 @@ export const mergeFiles = (
     mergedFiles.set(file.path, file);
   });
   nextFiles.forEach((file) => {
-    // if (file.update === "delete") {
-    //   mergedFiles.delete(file.path);
-    // } else if (file.update === "add" || file.update === "modify") {
-    //   mergedFiles.set(file.path, file);
-    // }
-    mergedFiles.set(file.path, {
-      ...file,
-      update: undefined,
-    });
+    if (file.update === "delete") {
+      mergedFiles.delete(file.path);
+    } else if (["add", "modify"].includes(file.update as string)) {
+      mergedFiles.set(file.path, {
+        ...file,
+        update: undefined,
+      });
+    }
   });
   return Array.from(mergedFiles.values());
 };
@@ -271,15 +269,14 @@ export const mergeTasks = (
     mergedTasks.set(task.id, task);
   });
   nextTasks.forEach((task) => {
-    // if (task.update === "delete") {
-    //   mergedTasks.delete(task.id);
-    // } else if (task.update === "add" || task.update === "modify") {
-    //   mergedTasks.set(task.id, task);
-    // }
-    mergedTasks.set(task.id, {
-      ...task,
-      update: undefined,
-    });
+    if (task.update === "delete") {
+      mergedTasks.delete(task.id);
+    } else if (["add", "modify"].includes(task.update as string)) {
+      mergedTasks.set(task.id, {
+        ...task,
+        update: undefined,
+      });
+    }
   });
   return Array.from(mergedTasks.values());
 };
@@ -293,18 +290,14 @@ export const mergeRequirements = (
     mergedRequirements.set(requirement.id, requirement);
   });
   nextRequirements.forEach((requirement) => {
-    // if (requirement.update === "delete") {
-    //   mergedRequirements.delete(requirement.id);
-    // } else if (
-    //   requirement.update === "add" ||
-    //   requirement.update === "modify"
-    // ) {
-    //   mergedRequirements.set(requirement.id, requirement);
-    // }
-    mergedRequirements.set(requirement.id, {
-      ...requirement,
-      update: undefined,
-    });
+    if (requirement.update === "delete") {
+      mergedRequirements.delete(requirement.id);
+    } else if (["add", "modify"].includes(requirement.update as string)) {
+      mergedRequirements.set(requirement.id, {
+        ...requirement,
+        update: undefined,
+      });
+    }
   });
   return Array.from(mergedRequirements.values());
 };
@@ -318,18 +311,14 @@ export const mergeDescriptions = (
     mergedDescriptions.set(description.id, description);
   });
   nextDescriptions.forEach((description) => {
-    // if (requirement.update === "delete") {
-    //   mergedRequirements.delete(requirement.id);
-    // } else if (
-    //   requirement.update === "add" ||
-    //   requirement.update === "modify"
-    // ) {
-    //   mergedRequirements.set(requirement.id, requirement);
-    // }
-    mergedDescriptions.set(description.id, {
-      ...description,
-      update: undefined,
-    });
+    if (description.update === "delete") {
+      mergedDescriptions.delete(description.id);
+    } else if (["add", "modify"].includes(description.update as string)) {
+      mergedDescriptions.set(description.id, {
+        ...description,
+        update: undefined,
+      });
+    }
   });
   return Array.from(mergedDescriptions.values());
 };
