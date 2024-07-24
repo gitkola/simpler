@@ -6,6 +6,7 @@ import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { handleNewMessageToAIModel, saveProjectSettings } from "../store/currentProjectSlice";
 import { Select } from "./Select";
+import Spinner from "./Spinner";
 
 export const ChatView: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.currentProject.currentProjectMessages);
@@ -20,7 +21,9 @@ export const ChatView: React.FC = () => {
   };
   const dispatch = useAppDispatch();
 
-  useEffect(scrollToBottom, [messages?.length]);
+  useEffect(() => {
+    setTimeout(scrollToBottom, 10);
+  }, [messages?.length]);
 
   const handleServiceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const service = e.target.value as "openai" | "anthropic";
@@ -38,8 +41,8 @@ export const ChatView: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    await dispatch(handleNewMessageToAIModel(inputMessage, "user"));
     setInputMessage("");
+    await dispatch(handleNewMessageToAIModel(inputMessage, "user"));
   };
 
   return (
@@ -53,10 +56,8 @@ export const ChatView: React.FC = () => {
             />
           ))}
           {aiModelRequestInProgress && (
-            <div className="flex justify-start">
-              <div className="bg-gray-200 text-gray-800 px-2 py-2 rounded-md">
-                Requesting AI model API...
-              </div>
+            <div className="flex justify-center items-center">
+              <Spinner color="white" />
             </div>
           )}
           {aiModelRequestError && (
@@ -81,7 +82,7 @@ export const ChatView: React.FC = () => {
                 handleSendMessage();
               }
             }}
-            className="flex-grow p-1 rounded-md hover:ring-2 hover:ring-gray-300 focus:shadow-md focus:ring-2 focus:ring-gray-300 resize-none overflow-y-scroll no-scrollbar"
+            className="flex-grow p-1 rounded-md focus:outline-none resize-none overflow-y-scroll no-scrollbar"
             placeholder="Type your message... (Shift+Enter for new line)"
             disabled={aiModelRequestInProgress}
             rows={3}
@@ -92,7 +93,9 @@ export const ChatView: React.FC = () => {
             className="w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center justify-center"
             disabled={aiModelRequestInProgress}
           >
-            <ArrowUp size={20} />
+            {
+              aiModelRequestInProgress ? (<Spinner size="sm" color="white" />) : (<ArrowUp size={24} />)
+            }
           </button>
         </div>
         <div className="flex my-2 space-x-2">
