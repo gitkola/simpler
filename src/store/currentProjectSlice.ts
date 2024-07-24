@@ -173,7 +173,7 @@ export const processProjectDescription =
       const projectState = getState().currentProject.currentProjectState;
       const updatedProjectState = {
         ...projectState,
-        description: message.content as string,
+        description: { description: message.content as string, id: Date.now() },
       };
       await dispatch(saveProjectState(updatedProjectState as IProjectState));
     } catch (error) {
