@@ -17,13 +17,13 @@ Here is the TypeScript interface for "Project State":
 \`\`\`typescript
 interface IProjectDescription {
   description: string;
-  update?: "add" | "modify" | "delete"; // what type of changes are made
+  update?: "add" | "modify" | "delete"; // type of changes made
 }
 
 interface IProjectRequirement {
   id: number;
   description: string;
-  update?: "add" | "modify" | "delete"; // what type of changes are made
+  update?: "add" | "modify" | "delete"; // type of changes made
 }
 
 interface IProjectTask {
@@ -31,14 +31,14 @@ interface IProjectTask {
   description: string;
   status: "todo" | "in_progress" | "done";
   suggested_as_next_task: boolean;
-  update?: "add" | "modify" | "delete"; // what type of changes are made
+  update?: "add" | "modify" | "delete"; // type of changes made
 }
 
 interface IProjectFile {
   id: number;
   path: string;
   content: string | null;
-  update?: "add" | "modify" | "delete"; // what type of changes are made
+  update?: "add" | "modify" | "delete"; // type of changes made
 }
 
 interface IProjectState {
@@ -54,8 +54,8 @@ interface IProjectState {
 \`\`\`
 Ensure all changes comply with these interfaces. Updates will be checked and synchronized by the user with the local project state and files. React according to these rules:
 1. Request missing "description" or "requirements".
-2. According to the "description", "requirements" and the user's message update "tasks" with a unique "id", clear "description", "status", "suggested_as_next_task", and "update" type.
-3. According to the "description", "requirements" and the user's message update "files" with a valid relative path and "update" type. Fill file "content" with the generated code according to the task in the user's message.
+2. According to the "description", "requirements" and the user's message, update "tasks" with a unique "id", clear "description", "status", "suggested_as_next_task", and "update" type.
+3. According to the "description", "requirements" and the user's message, update "files" with a valid relative path and "update" type. Fill file "content" with the generated code according to the task in the user's message.
 4. Ask for more details if you don't understand the problem.
 5. Request missing data for a task if needed.
 6. Generate code and update the "Project State" accordingly.
