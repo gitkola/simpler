@@ -35,7 +35,7 @@ const Requirements: React.FC = () => {
       const now = Date.now();
       const newReq: IProjectRequirement = {
         id: now,
-        description: requirement.trim(),
+        requirement: requirement.trim(),
       };
       const updatedRequirements = [...requirements, newReq];
       await onSave(updatedRequirements);
@@ -49,7 +49,7 @@ const Requirements: React.FC = () => {
         <div key={requirement.id} className="flex-1 justify-between space-x-1">
           <Textarea
             key={requirement.id}
-            initialValue={requirement.description}
+            initialValue={requirement?.requirement}
             onSave={(data) => handleChange({ target: { name: 'description', value: data } } as any, requirement.id)}
             onDelete={() => handleDelete(requirement.id)}
             placeholder="Enter a requirement..."

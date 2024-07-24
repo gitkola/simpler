@@ -34,7 +34,8 @@ export type ContentItem =
   | { text: string; id: number }
   | { code: CodeTuple; id: number }
   | { link: LinkTuple; id: number }
-  | { updated_project_state: IProjectState; id: number };
+  | { updated_project_state: IProjectState; id: number }
+  | { error: ErrorTuple; id: number };
 
 export type CodeTuple = [
   string, // code content (required)
@@ -46,6 +47,11 @@ export type CodeTuple = [
 export type LinkTuple = [
   string, // URL (required)
   string | null // description (optional)
+];
+
+export type ErrorTuple = [
+  string, // error message
+  string | null // description
 ];
 
 // Type guard functions
@@ -67,19 +73,20 @@ export const isUpdatedProjectState = (
   "updated_project_state" in item;
 
 export interface IProjectDescription {
+  id: number;
   description: string;
   update?: "add" | "modify" | "delete";
 }
 
 export interface IProjectRequirement {
   id: number;
-  description: string;
+  requirement: string;
   update?: "add" | "modify" | "delete";
 }
 
 export interface IProjectTask {
   id: number;
-  description: string;
+  task: string;
   status: "todo" | "in_progress" | "done";
   suggested_as_next_task: boolean;
   update?: "add" | "modify" | "delete";
@@ -94,12 +101,13 @@ export interface IProjectFile {
 
 export interface IProjectState {
   name: string;
-  description?: IProjectDescription;
+  descriptions?: IProjectDescription[];
   requirements?: IProjectRequirement[];
   files?: IProjectFile[];
   tasks?: IProjectTask[];
   createdAt: number;
   updatedAt: number;
+  context?: Record<string, any>;
 }
 
 export interface IProjectSettings {

@@ -9,10 +9,10 @@ import {
   IProjectFile,
   IProjectTask,
   IProjectRequirement,
+  IProjectDescription,
 } from "../types";
 import {
   MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
-  MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST,
   PROJECT_MESSAGES_FILE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
@@ -27,6 +27,7 @@ import {
   setAIModelRequestInProgress,
 } from "../store/currentProjectSlice";
 import { getAIResponseWithProjectState } from "../services/aiService";
+import { applyFileFilter } from "./filterFiles";
 
 export const generateInitialProjectState = (
   projectPath: string
@@ -34,7 +35,7 @@ export const generateInitialProjectState = (
   const { createdAt, updatedAt } = createTimestamps();
   return {
     name: getFolderNameFromPath(projectPath),
-    description: null,
+    descriptions: [],
     requirements: [],
     files: [],
     tasks: [],
@@ -224,7 +225,11 @@ export const mergeProjectStates = (
   const mergedState = { ...prevState };
 
   mergedState.updatedAt = Date.now();
-  mergedState.description = nextState.description || prevState.description;
+  mergedState.descriptions = nextState.descriptions || prevState.descriptions;
+  mergedState.descriptions = mergeDescriptions(
+    prevState.descriptions || [],
+    nextState.descriptions || []
+  );
   mergedState.requirements = mergeRequirements(
     prevState.requirements || [],
     nextState.requirements || []
@@ -243,7 +248,6 @@ export const mergeFiles = (
   prevFiles.forEach((file) => {
     mergedFiles.set(file.path, file);
   });
-  const now = Date.now();
   nextFiles.forEach((file) => {
     // if (file.update === "delete") {
     //   mergedFiles.delete(file.path);
@@ -252,8 +256,7 @@ export const mergeFiles = (
     // }
     mergedFiles.set(file.path, {
       ...file,
-      updatedAt: now,
-      update: "synced",
+      update: undefined,
     });
   });
   return Array.from(mergedFiles.values());
@@ -267,7 +270,6 @@ export const mergeTasks = (
   prevTasks.forEach((task) => {
     mergedTasks.set(task.id, task);
   });
-  const now = Date.now();
   nextTasks.forEach((task) => {
     // if (task.update === "delete") {
     //   mergedTasks.delete(task.id);
@@ -276,8 +278,7 @@ export const mergeTasks = (
     // }
     mergedTasks.set(task.id, {
       ...task,
-      updatedAt: now,
-      update: "synced",
+      update: undefined,
     });
   });
   return Array.from(mergedTasks.values());
@@ -291,7 +292,6 @@ export const mergeRequirements = (
   prevRequirements.forEach((requirement) => {
     mergedRequirements.set(requirement.id, requirement);
   });
-  const now = Date.now();
   nextRequirements.forEach((requirement) => {
     // if (requirement.update === "delete") {
     //   mergedRequirements.delete(requirement.id);
@@ -303,11 +303,35 @@ export const mergeRequirements = (
     // }
     mergedRequirements.set(requirement.id, {
       ...requirement,
-      updatedAt: now,
-      update: "synced",
+      update: undefined,
     });
   });
   return Array.from(mergedRequirements.values());
+};
+
+export const mergeDescriptions = (
+  prevDescriptions: IProjectDescription[],
+  nextDescriptions: IProjectDescription[]
+) => {
+  const mergedDescriptions = new Map<number, IProjectDescription>();
+  prevDescriptions.forEach((description) => {
+    mergedDescriptions.set(description.id, description);
+  });
+  nextDescriptions.forEach((description) => {
+    // if (requirement.update === "delete") {
+    //   mergedRequirements.delete(requirement.id);
+    // } else if (
+    //   requirement.update === "add" ||
+    //   requirement.update === "modify"
+    // ) {
+    //   mergedRequirements.set(requirement.id, requirement);
+    // }
+    mergedDescriptions.set(description.id, {
+      ...description,
+      update: undefined,
+    });
+  });
+  return Array.from(mergedDescriptions.values());
 };
 
 export const handleGenerateTasksAndFiles = async () => {
@@ -362,5 +386,47 @@ export const handleGenerateTasksAndFiles = async () => {
     );
   } finally {
     store.dispatch(setAIModelRequestInProgress(false));
+  }
+};
+
+export const readFilesFromFS = async (projectPath: string) => {
+  try {
+    if (typeof projectPath !== "string" || !projectPath) return null;
+    const filePaths = await invoke<string[]>("read_files_in_directory", {
+      path: projectPath,
+    });
+    if (filePaths === null || !Array.isArray(filePaths)) {
+      throw new Error("Failed to read files from the selected folder");
+    }
+    const filteredFilePaths = applyFileFilter(filePaths);
+    console.log("Filtered Files:", filteredFilePaths);
+
+    const projectFiles: IProjectFile[] = [];
+    for await (const filePath of filteredFilePaths) {
+      try {
+        const fileContent = await invoke<string>("read_file", {
+          filePath,
+        });
+        const file: IProjectFile = {
+          id: Date.now(),
+          path: filePath.replace(`${projectPath}/`, ""),
+          content: fileContent as string,
+        };
+        projectFiles.push(file);
+      } catch (fileError) {
+        console.warn(
+          `Skipping file ${filePath}: ${(fileError as Error).message}`
+        );
+        // Optionally, you can still add the file to projectFiles with empty content
+        // projectFiles.push({ id: Date.now() + Math.random(), path: filePath, content: '' });
+      }
+    }
+    return projectFiles;
+  } catch (error) {
+    const errorMessage = `Failed to read files from the selected folder: ${
+      (error as Error).message
+    }`;
+    console.error(errorMessage, error);
+    throw new Error(errorMessage);
   }
 };

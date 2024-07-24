@@ -33,7 +33,7 @@ const Tasks: React.FC = () => {
       const now = Date.now();
       const newTask: IProjectTask = {
         id: now,
-        description: task.trim(),
+        task: task.trim(),
         status: 'todo',
         suggested_as_next_task: false,
       };
@@ -44,7 +44,7 @@ const Tasks: React.FC = () => {
 
   const handleSuggestedNextTask = async (task: IProjectTask) => {
     await handleChange({ target: { name: 'status', value: 'in_progress' } } as any, task.id);
-    await dispatch(handleNewMessageToAIModel(task.description, "user"));
+    await dispatch(handleNewMessageToAIModel(task?.task, "user"));
   };
 
   return (
@@ -53,8 +53,8 @@ const Tasks: React.FC = () => {
         <div key={task.id} className="flex justify-between space-x-1">
           <div className="flex-1">
             <Textarea
-              key={task.id}
-              initialValue={task.description}
+              key={task?.id}
+              initialValue={task?.task}
               onSave={(data) => handleChange({ target: { name: 'description', value: data } } as any, task.id)}
               onDelete={() => handleDelete(task.id)}
               placeholder="Enter a task..."

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { fetch } from "@tauri-apps/api/http";
+import { fetch, HttpVerb } from "@tauri-apps/api/http";
 import { Body, Response } from "@tauri-apps/api/http";
 import { parseAIResponse } from "../utils/responseParser";
 import { MessageContent, IProjectState } from "../types";
@@ -140,10 +140,8 @@ ${JSON.stringify(projectState, null, 2)}
         model,
         system: `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
       });
-      const response: Response<{
-        content: Array<{ type: "text"; text: string }>;
-      }> = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
+      const options = {
+        method: "POST" as HttpVerb,
         timeout: 60,
         headers: {
           "x-api-key": apiKey,
@@ -151,8 +149,11 @@ ${JSON.stringify(projectState, null, 2)}
           "anthropic-version": "2023-06-01",
         },
         body,
-      });
-      console.log(response);
+      };
+      const response: Response<{
+        content: Array<{ type: "text"; text: string }>;
+      }> = await fetch("https://api.anthropic.com/v1/messages", options);
+      console.log(JSON.stringify({ options, response }, null, 2));
 
       aiResponse = parseAIResponse(response.data.content[0].text);
     } catch (error) {

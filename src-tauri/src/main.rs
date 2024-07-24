@@ -62,6 +62,33 @@ fn run_script(script: String) -> Result<String, String> {
     }
 }
 
+#[tauri::command]
+fn read_files_in_directory(path: String) -> Result<Vec<String>, String> {
+    let mut files = Vec::new();
+
+    fn visit_dirs(dir: &Path, files: &mut Vec<String>) -> std::io::Result<()> {
+        if dir.is_dir() {
+            for entry in fs::read_dir(dir)? {
+                let entry = entry?;
+                let path = entry.path();
+                if path.is_dir() {
+                    visit_dirs(&path, files)?;
+                } else {
+                    if let Some(file_name) = path.to_str() {
+                        files.push(file_name.to_string());
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    match visit_dirs(Path::new(&path), &mut files) {
+        Ok(_) => Ok(files),
+        Err(e) => Err(format!("Error reading directory: {}", e)),
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -71,7 +98,8 @@ fn main() {
             write_file,
             read_file,
             file_exists,
-            run_script
+            run_script,
+            read_files_in_directory
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

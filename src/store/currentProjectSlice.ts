@@ -14,6 +14,7 @@ import {
   saveProjectMessagesToFile,
   saveProjectSettingsToFile,
   mergeProjectStates,
+  readFilesFromFS,
 } from "../utils/projectStateUtils";
 import { AppDispatch, RootState } from "./index";
 import { getAIResponseWithProjectState } from "../services/aiService";
@@ -173,7 +174,9 @@ export const processProjectDescription =
       const projectState = getState().currentProject.currentProjectState;
       const updatedProjectState = {
         ...projectState,
-        description: { description: message.content as string, id: Date.now() },
+        description: [
+          { description: message.content as string, id: Date.now() },
+        ],
       };
       await dispatch(saveProjectState(updatedProjectState as IProjectState));
     } catch (error) {
@@ -280,11 +283,11 @@ export const processProjectState =
       if (!projectState) {
         throw new Error("Project State is not loaded");
       }
-      const { description, requirements, files, tasks } = projectState;
+      const { descriptions, requirements, files, tasks } = projectState;
 
       const lastMessage = messages[messages.length - 1];
 
-      if (description === null) {
+      if (descriptions === null || descriptions?.length === 0) {
         if (
           lastMessage?.content === MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST
         ) {
@@ -526,4 +529,25 @@ export const handleNewMessageToAIModel =
   async (dispatch: AppDispatch) => {
     await dispatch(addMessageToThread(content, role, action));
     await dispatch(requestAIModelWithProjectState(content));
+  };
+
+export const handleSyncFilesFromFS =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const currentProjectState = getState().currentProject.currentProjectState;
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) {
+        throw new Error("activeProjectPath is not defined");
+      }
+      const files = (await readFilesFromFS(activeProjectPath)) || [];
+      console.log("Files from FS:", files);
+      const updatedProjectState = { ...currentProjectState!, files };
+      await dispatch(saveProjectState(updatedProjectState));
+    } catch (error) {
+      const errorMessage = `Error while syncing files from FS: ${
+        (error as Error).message
+      }`;
+      console.error(errorMessage);
+      dispatch(setCurrentProjectStateError(errorMessage));
+    }
   };

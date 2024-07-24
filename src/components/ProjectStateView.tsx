@@ -5,7 +5,7 @@ import Accordion from './Accordion';
 import Tasks from './Tasks';
 import { Files } from './Files';
 import { ProjectState } from './ProjectState';
-import Description from './Description';
+import Descriptions from './Descriptions';
 import { ProjectMessages } from './ProjectMessages';
 
 
@@ -19,9 +19,9 @@ const ProjectStateView: React.FC = () => {
     <div className="h-full p-2 pr-0 pt-0 space-y-1 overflow-y-auto no-scrollbar bg-gray-800">
       <div className="h-full p-2 space-y-2 rounded-md overflow-y-auto no-scrollbar bg-white">
         <Accordion
-          title="Description"
+          title="Descriptions"
           content={
-            <Description />
+            <Descriptions />
           }
         />
         <Accordion

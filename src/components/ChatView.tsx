@@ -7,6 +7,7 @@ import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { handleNewMessageToAIModel, saveProjectSettings } from "../store/currentProjectSlice";
 import { Select } from "./Select";
 import Spinner from "./Spinner";
+import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../constants";
 
 export const ChatView: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.currentProject.currentProjectMessages);
@@ -71,6 +72,25 @@ export const ChatView: React.FC = () => {
         </div>
       </div>
       <div className="px-2 bg-gray-800">
+        <div className="flex pb-2 space-x-2 items-center text-white">
+          <div>Suggestions:</div>
+          <button
+            onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user"))}
+            className="flex bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50 space-x-2"
+            disabled={aiModelRequestInProgress}
+          >
+            <div>Generate Tasks</div>
+            <ArrowUp size={20} />
+          </button>
+          <button
+            onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user"))}
+            className="flex bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50"
+            disabled={aiModelRequestInProgress}
+          >
+            <div>Generate File Structure</div>
+            <ArrowUp size={20} />
+          </button>
+        </div>
         <div className="flex items-end space-x-2">
           <textarea
             ref={inputRef}
@@ -90,7 +110,7 @@ export const ChatView: React.FC = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center justify-center"
+            className="flex w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
             disabled={aiModelRequestInProgress}
           >
             {

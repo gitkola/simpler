@@ -15,34 +15,35 @@ export const AI_INSTRUCTIONS_PROJECT_STATE = `#Project State
 Here is the TypeScript interface for "Project State":
 \`\`\`typescript
 interface IProjectDescription {
+  id: number;
   description: string;
-  update?: "add" | "modify" | "delete"; // type of changes made
+  update?: "add" | "modify" | "delete";
 }
 
 interface IProjectRequirement {
   id: number;
-  description: string;
-  update?: "add" | "modify" | "delete"; // type of changes made
+  requirement: string;
+  update?: "add" | "modify" | "delete";
 }
 
 interface IProjectTask {
   id: number;
-  description: string;
+  task: string;
   status: "todo" | "in_progress" | "done";
   suggested_as_next_task: boolean;
-  update?: "add" | "modify" | "delete"; // type of changes made
+  update?: "add" | "modify" | "delete";
 }
 
 interface IProjectFile {
   id: number;
   path: string;
   content: string | null;
-  update?: "add" | "modify" | "delete"; // type of changes made
+  update?: "add" | "modify" | "delete";
 }
 
 interface IProjectState {
   name: string;
-  description?: IProjectDescription;
+  descriptions?: IProjectDescription[];
   requirements?: IProjectRequirement[];
   files?: IProjectFile[];
   tasks?: IProjectTask[];
@@ -65,24 +66,25 @@ Ensure all changes comply with these interfaces. Updates will be checked and syn
 `;
 
 export const AI_INSTRUCTIONS_RESPONSE_GUIDELINES = `#Response Guidelines
-Provide clear, concise, and accurate answers in a specific format. Don't add any comments outside the response format.
-Response must be in JSON array format! Each element must be an object with one of the following structures:
+PROVIDE YOUR ENTIRE RESPONSE AS A SINGLE, VALID JSON ARRAY. Do not include any text outside this array.
+
+Each element in the array must be an object with one of the following structures:
 1. {"title": "string", "id": "number"} - For main titles or new topics.
 2. {"text": "string", "id": "number"} - For comments, explanations, descriptions, or non-code related text.
 3. {"code": ["code_string", "file_ext", "file_path", "description"], "id": "number"}
- - code_string: Actual code.
- - file_ext: File extension (e.g., "js", "py", "tsx"). Use null if unknown.
- - file_path: Suggested relative path. Use null if not applicable.
- - description: Brief description of the code. Use null if not required.
+   - code_string: Actual code.
+   - file_ext: File extension (e.g., "js", "py", "tsx"). Use null if unknown.
+   - file_path: Suggested relative path. Use null if not applicable.
+   - description: Brief description of the code. Use null if not required.
 4. {"link": ["url", "description"], "id": "number"}
- - url: URL of the link.
- - description: Brief description. Use null if not specified.
+   - url: URL of the link.
+   - description: Brief description. Use null if not specified.
 5. {"updated_project_state": JSON object, "id": "number"}
- - updated_project_state: Provide only an updated project state. Must comply with the "IProjectState" interface. Include only changes.
+   - updated_project_state: Provide only an updated project state. Must comply with the "IProjectState" interface. Include only added, edited or deleted fields with appropriate "update" values.
 6. {"error": ["error_message", "description"], "id": "number"}
- - error_message: Description of the error.
- - description: Suggested solution or request for more details.
- 
+   - error_message: Description of the error.
+   - description: Suggested solution or request for more details.
+
 Here is the TypeScript type for response format:
 \`\`\`typescript
 type MessageContent = ContentItem[];
@@ -112,6 +114,19 @@ type ErrorTuple = [
   string | null // description
 ];
 \`\`\`
+
+Example of a correct response:
+\`\`\`json
+[
+  {"title": "Response to Query", "id": 1},
+  {"text": "Here's the information you requested.", "id": 2},
+  {"code": ["console.log('Hello, world!');", "js", "src/utils/greeting.js", "A simple greeting"], "id": 3},
+  {"updated_project_state": {"files": [{"id": 1, "path":"src/utils/greeting.js", "content": "console.log('Hello, world!');", "update": "add"}]}, id: 4 }
+]
+\`\`\`
+
+WARNING: Do not add any explanatory text outside the JSON array. All natural language responses must be contained within appropriate JSON objects in the array.
+
 Ensure your response is well-structured and easy to understand. Always include the updated state if you change the project status.
 `;
 
@@ -124,4 +139,4 @@ export const MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST =
 export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST =
   "Generate or update tasks based on the project description and requirements.";
 export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST =
-  "Generate or update file structure based on the project description and requirements.";
+  "Generate or update planned file structure based on the project description and requirements. Don't add files content.";
