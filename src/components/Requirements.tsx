@@ -36,8 +36,6 @@ const Requirements: React.FC = () => {
       const newReq: IProjectRequirement = {
         id: now,
         description: requirement.trim(),
-        createdAt: now,
-        updatedAt: now,
       };
       const updatedRequirements = [...requirements, newReq];
       await onSave(updatedRequirements);

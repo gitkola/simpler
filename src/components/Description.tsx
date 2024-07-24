@@ -7,9 +7,9 @@ import { IProjectState } from '../types';
 const Description = () => {
   const dispatch = useAppDispatch();
   const projectState = useAppSelector((state: RootState) => state?.currentProject?.currentProjectState);
-  const description = projectState?.description || "";
+  const description = projectState?.description?.description || "";
 
-  const onSave = async (text: string) => { await dispatch(saveProjectState({ ...projectState as IProjectState, description: text })); }
+  const onSave = async (text: string) => { await dispatch(saveProjectState({ ...projectState as IProjectState, description: { description: text } })); }
 
   return (
     <div className="p-1">

@@ -31,15 +31,13 @@ const Tasks: React.FC = () => {
   const handleAddNew = async (task: string) => {
     if (task.trim()) {
       const now = Date.now();
-      const newReq: IProjectTask = {
+      const newTask: IProjectTask = {
         id: now,
         description: task.trim(),
         status: 'todo',
         suggested_as_next_task: false,
-        createdAt: now,
-        updatedAt: now,
       };
-      const updatedTasks = [...tasks, newReq];
+      const updatedTasks = [...tasks, newTask];
       await onSave(updatedTasks);
     }
   };

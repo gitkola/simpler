@@ -66,22 +66,15 @@ export const isUpdatedProjectState = (
 ): item is { updated_project_state: IProjectState; id: number } =>
   "updated_project_state" in item;
 
-export interface IProjectFile {
-  id: number;
-  path: string;
-  content: string | null;
-  status: "planned" | "created" | "modified" | "deleted";
-  createdAt: number;
-  updatedAt: number;
-  update?: "add" | "modify" | "delete" | "synced";
+export interface IProjectDescription {
+  description: string;
+  update?: "add" | "modify" | "delete";
 }
 
 export interface IProjectRequirement {
   id: number;
   description: string;
-  createdAt: number;
-  updatedAt: number;
-  update?: "add" | "modify" | "delete" | "synced";
+  update?: "add" | "modify" | "delete";
 }
 
 export interface IProjectTask {
@@ -89,14 +82,19 @@ export interface IProjectTask {
   description: string;
   status: "todo" | "in_progress" | "done";
   suggested_as_next_task: boolean;
-  createdAt: number;
-  updatedAt: number;
-  update?: "add" | "modify" | "delete" | "synced";
+  update?: "add" | "modify" | "delete";
+}
+
+export interface IProjectFile {
+  id: number;
+  path: string;
+  content: string | null;
+  update?: "add" | "modify" | "delete";
 }
 
 export interface IProjectState {
   name: string;
-  description?: string | null;
+  description?: IProjectDescription;
   requirements?: IProjectRequirement[];
   files?: IProjectFile[];
   tasks?: IProjectTask[];

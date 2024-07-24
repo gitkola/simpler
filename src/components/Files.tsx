@@ -17,23 +17,6 @@ const renderFile = (file: IProjectFile) => (
     onClick={() => console.log(file.path, 'file')}
   >
     <File className="mr-2 text-blue-500" />
-    <span className={`text${getColorByStatus(file.status)}`}>{file?.path}</span>
-    {file?.status && <span className={`bg${getColorByStatus(file.status)} px-2 py-1 rounded-md ml-auto`}>{file?.status || "none"}</span>}
     {file?.update && <span className={`px-2 py-1 text-sm`}>{file.update}</span>}
   </div>
 );
-
-const getColorByStatus = (status: string) => {
-  switch (status) {
-    case 'modified':
-      return '-yellow-300';
-    case 'created':
-      return '-green-300';
-    case 'deleted':
-      return '-red-300';
-    case 'planned':
-      return '-gray-200';
-    default:
-      return '-gray-100';
-  }
-}
