@@ -2,8 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectPathListItem } from "../types";
 import { LOCAL_STORAGE_KEY_PROJECTS } from "../constants";
 import {
-  setCurrentProjectMessages,
-  setCurrentProjectState,
+  resetCurrentProject,
+  // setCurrentProjectMessages,
+  // setCurrentProjectSettings,
+  // setCurrentProjectState,
 } from "./currentProjectSlice";
 import { AppDispatch, RootState } from "../store";
 
@@ -36,11 +38,10 @@ const projectsSlice = createSlice({
       state.list.push(action.payload);
     },
     deleteProject: (state, action: PayloadAction<string>) => {
+      if (state.activeProjectPath === action.payload) {
+        state.activeProjectPath = null;
+      }
       state.list = state.list.filter((p) => p !== action.payload);
-      state.activeProjectPath =
-        state.activeProjectPath === action.payload
-          ? null
-          : state.activeProjectPath;
     },
     setActiveProject: (state, action: PayloadAction<string>) => {
       state.activeProjectPath = action.payload;
@@ -59,7 +60,9 @@ export const handleSetActiveProject =
     if (!projectPath) return;
     const activeProjectPath = getState().projects?.activeProjectPath;
     if (activeProjectPath === projectPath) return;
-    dispatch(setCurrentProjectMessages(null));
-    dispatch(setCurrentProjectState(null));
+    // dispatch(setCurrentProjectMessages([]));
+    // dispatch(setCurrentProjectState(null));
+    // dispatch(setCurrentProjectSettings(null));
+    dispatch(resetCurrentProject());
     dispatch(setActiveProject(projectPath));
   };

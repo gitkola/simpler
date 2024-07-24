@@ -1,6 +1,7 @@
 import { useAppSelector, useAppDispatch } from "../store";
 import { invoke } from "@tauri-apps/api/tauri";
-import { SidebarIcon } from "./Icons";
+import { NavLink, useLocation } from "react-router-dom";
+import { Settings, SidebarIcon } from "./Icons";
 import { ThreeDotsButton } from "./ThreeDotsButton";
 import { RootState } from "../store";
 import { deleteProject } from "../store/projectsSlice";
@@ -13,6 +14,8 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
   const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
   const dispatch = useAppDispatch();
+  const location = useLocation();
+
   const handleDeleteProject = async (projectPath: string | null) => {
     if (!projectPath) return;
     dispatch(deleteProject(projectPath));
@@ -27,20 +30,37 @@ export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
     }
   };
   return (
-    <div className="flex items-center justify-between h-[40px] bg-gray-800">
+    <div className="flex items-center justify-between bg-gray-800">
       <button
-        className="text-gray-100 p-2 focus:outline-none hover:bg-gray-400"
+        className="text-white p-2 m-2 rounded-md focus:outline-none hover:bg-gray-400"
         onClick={onMenuClick}
       >
         <SidebarIcon size={24} />
       </button>
-      <h1 className="ml-2 text-lg text-gray-100 font-semibold">{title}</h1>
-      <ThreeDotsButton
-        projectPath={activeProjectPath}
-        onDeleteProject={handleDeleteProject}
-        onOpenProjectFolder={handleOpenProjectFolder}
-        className="text-gray-100 p-2 focus:outline-none hover:bg-gray-400"
-      />
+      <div className="flex items-center space-x-2">
+        <h1 className="text-lg text-white font-semibold">{title}</h1>
+        {
+          location.pathname === "/project" && <ThreeDotsButton
+            projectPath={activeProjectPath}
+            onDeleteProject={handleDeleteProject}
+            onOpenProjectFolder={handleOpenProjectFolder}
+            className="text-gray-100 p-2 m-2 rounded-md focus:outline-none hover:bg-gray-400"
+          />
+        }
+      </div>
+      <NavLink
+        to={"/"}
+        className={({ isActive }) =>
+          `flex items-center p-2 m-2 rounded-md text-sm ${isActive
+            ? "bg-gray-700 text-white hover:bg-gray-400"
+            : "text-gray-300 hover:bg-gray-400 hover:text-white"
+          }`
+        }
+      >
+        <div className="flex items-center">
+          <Settings size={24} />
+        </div>
+      </NavLink>
     </div>
   );
 };

@@ -32,7 +32,6 @@ export const ThreeDotsButton: React.FC<{
     return (
       <div className="relative">
         <button onClick={(e) => {
-          console.log("clicked", e);
           e.nativeEvent.preventDefault();
           setIsPopoverOpen(!isPopoverOpen)
         }

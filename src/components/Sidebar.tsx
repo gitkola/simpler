@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath 
   return (
     <aside className={`bg-gray-800 flex flex-col overflow-x-hidden transition-all duration-100 ${isMinimized ? 'w-0' : 'w-64'}`}>
       <button
-        onClick={handleOpenProject}
+        onClick={async () => { await handleOpenProject(); }}
         className="flex items-center w-full px-2 py-2 text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
       >
         <div className="flex items-center">

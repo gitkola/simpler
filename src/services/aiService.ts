@@ -2,7 +2,7 @@ import axios from "axios";
 import { fetch } from "@tauri-apps/api/http";
 import { Body, Response } from "@tauri-apps/api/http";
 import { parseAIResponse } from "../utils/responseParser";
-import { IMessageContent, IProjectState } from "../types";
+import { MessageContent, IProjectState } from "../types";
 import {
   AI_INSTRUCTIONS_PROJECT_STATE,
   AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
@@ -16,7 +16,7 @@ export const getAIResponse = async (
   apiKey: string,
   temperature: number,
   max_tokens: number
-): Promise<IMessageContent> => {
+): Promise<MessageContent> => {
   if (service === "openai") {
     try {
       const response = await axios.post(
@@ -88,7 +88,7 @@ export const getAIResponseWithProjectState = async (
   max_tokens: number
 ): Promise<{
   updatedProjectState: IProjectState;
-  aiResponse: IMessageContent;
+  aiResponse: MessageContent;
 }> => {
   const CURRENT_PROJECT_STATE = `#Current Project State
 \`\`\`
@@ -96,7 +96,7 @@ ${JSON.stringify(projectState, null, 2)}
 \`\`\`
 `;
 
-  let aiResponse: IMessageContent;
+  let aiResponse: MessageContent;
   let updatedProjectState: IProjectState = projectState;
 
   if (service === "openai") {
@@ -144,7 +144,7 @@ ${JSON.stringify(projectState, null, 2)}
         content: Array<{ type: "text"; text: string }>;
       }> = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        timeout: 30,
+        timeout: 60,
         headers: {
           "x-api-key": apiKey,
           "Content-Type": "application/json",
@@ -152,6 +152,8 @@ ${JSON.stringify(projectState, null, 2)}
         },
         body,
       });
+      console.log(response);
+
       aiResponse = parseAIResponse(response.data.content[0].text);
     } catch (error) {
       console.error("Error calling Anthropic API:", error);
@@ -161,7 +163,7 @@ ${JSON.stringify(projectState, null, 2)}
     throw new Error("Invalid AI service selected");
   }
 
-  const updatedStateItem = (aiResponse as IMessageContent).find(
+  const updatedStateItem = (aiResponse as MessageContent).find(
     (item) => "updated_project_state" in item
   );
   if (updatedStateItem && "updated_project_state" in updatedStateItem) {
@@ -169,5 +171,5 @@ ${JSON.stringify(projectState, null, 2)}
       updatedStateItem.updated_project_state as IProjectState;
   }
 
-  return { updatedProjectState, aiResponse: aiResponse as IMessageContent };
+  return { updatedProjectState, aiResponse: aiResponse as MessageContent };
 };

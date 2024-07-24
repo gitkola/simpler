@@ -60,6 +60,9 @@ const settingsSlice = createSlice({
     setProjectStateInstructions: (state, action: PayloadAction<string>) => {
       state.instructions.projectStateInstructions = action.payload;
     },
+    resetToDefaultInstructions: (state) => {
+      state.instructions = { ...defaultInitialState.instructions };
+    },
   },
 });
 
@@ -68,6 +71,7 @@ export const {
   setResponsibilitiesInstructions,
   setResponseGuidelinesInstructions,
   setProjectStateInstructions,
+  resetToDefaultInstructions,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

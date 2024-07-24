@@ -7,7 +7,7 @@ import { RootState } from "../store";
 import { getFolderNameFromPath } from "../utils/getFolderNameFromPath";
 
 const Layout: React.FC = () => {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
   const location = useLocation();
   const path = location.state?.title || location.pathname;
   const { list, activeProjectPath } = useSelector(
