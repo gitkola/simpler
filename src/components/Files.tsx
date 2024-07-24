@@ -5,9 +5,9 @@ import { File } from './Icons';
 export const Files = () => {
   const files: IProjectFile[] | undefined = useAppSelector((state) => state?.currentProject?.currentProjectState?.files);
   return (
-    <div className="space-y-1">
-      {Array.isArray(files) && files.map(renderFile)}
-    </div>
+    <>
+      {Array.isArray(files) && files.length > 0 && (<div className="space-y-1 p-1">{files.map(renderFile)}</div>)}
+    </>
   );
 }
 const renderFile = (file: IProjectFile) => (

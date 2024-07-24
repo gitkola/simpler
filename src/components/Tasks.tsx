@@ -81,7 +81,7 @@ const Tasks: React.FC = () => {
           >
             Execute
           </button>
-          {task?.update && <span className={`px-2 py-1 text-sm`}>{task.update}</span>}
+          {/* {task?.update && <span className={`px-2 py-1 text-sm`}>{task.update}</span>} */}
         </div>
       ))}
       <Textarea

@@ -31,12 +31,13 @@ export const ThreeDotsButton: React.FC<{
 
     return (
       <div className="relative">
-        <button onClick={(e) => {
-          e.nativeEvent.preventDefault();
-          setIsPopoverOpen(!isPopoverOpen)
-        }
-        }
-          className={className ? className : "flex items-center justify-center w-14 h-[40px] px-4 py-2 hover:bg-gray-300"}>
+        <button
+          onClick={(e) => {
+            e.nativeEvent.preventDefault();
+            setIsPopoverOpen(!isPopoverOpen)
+          }}
+          className={className ? className : "flex items-center justify-center rounded-md p-2 hover:bg-gray-300"}
+        >
           <ThreeDotsIcon size={24} />
         </button>
         {isPopoverOpen && (

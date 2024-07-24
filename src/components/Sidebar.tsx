@@ -2,7 +2,7 @@ import React from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  Plus,
+  OpenFolder,
   Settings,
 } from "./Icons";
 import ProjectItem from "./ProjectItem";
@@ -44,23 +44,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath 
   };
 
   return (
-    <aside className={`bg-gray-800 flex flex-col overflow-x-hidden transition-all duration-100 ${isMinimized ? 'w-0' : 'w-64'}`}>
+    <aside className={`bg-gray-800 flex flex-col pb-2 space-y-2 overflow-x-hidden transition-all duration-100 ${isMinimized ? 'w-0' : 'w-64'}`}>
       <button
         onClick={async () => { await handleOpenProject(); }}
-        className="flex items-center w-full px-2 py-2 text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
+        className="flex items-center ml-2 p-2 rounded-md text-sm text-gray-300 hover:bg-gray-400 hover:text-white"
       >
         <div className="flex items-center">
-          <Plus className="flex mr-2" size={24} />
+          <OpenFolder className="flex mr-2" size={24} />
           Open Project
         </div>
       </button>
-      <ul className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar pb-8">
+      <ul className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden no-scrollbar pb-8">
         {list.map((projectPath) => (
           <li key={projectPath}>
             <NavLink
               to={"/project"}
               className={({ isActive }) =>
-                `flex items-center text-sm ${(isActive && projectPath === activeProjectPath)
+                `flex items-center ml-2 rounded-md text-sm ${(isActive && projectPath === activeProjectPath)
                   ? "bg-gray-700 text-white hover:bg-gray-400"
                   : "text-gray-300 hover:bg-gray-400 hover:text-white"
                 }`
@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath 
       <NavLink
         to={"/"}
         className={({ isActive }) =>
-          `flex items-center px-2 py-2 text-sm ${isActive
+          `flex ml-2 rounded-md items-center px-2 py-2 text-sm ${isActive
             ? "bg-gray-700 text-white hover:bg-gray-400"
             : "text-gray-300 hover:bg-gray-400 hover:text-white"
           }`

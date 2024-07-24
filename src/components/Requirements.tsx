@@ -57,7 +57,7 @@ const Requirements: React.FC = () => {
             placeholder="Enter a requirement..."
             rows={1}
           />
-          {requirement?.update && <span className={`px-2 py-1 text-sm`}>{requirement.update}</span>}
+          {/* {requirement?.update && <span className={`px-2 py-1 text-sm`}>{requirement.update}</span>} */}
         </div>
       ))}
       <Textarea

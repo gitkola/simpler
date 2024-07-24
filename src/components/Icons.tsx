@@ -405,3 +405,72 @@ export const SidebarIcon: React.FC<IconProps> = ({
     <line x1="9" y1="3" x2="9" y2="21"></line>
   </svg>
 );
+
+export const OpenProject: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M3 3h6v6H3z"></path>
+    <path d="M14 3h7v7h-7z"></path>
+    <path d="M14 14h7v7h-7z"></path>
+    <path d="M3 14h6v6H3z"></path>
+    <path d="M10 10l4 4"></path>
+  </svg>
+);
+
+export const Open: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+    <polyline points="15 3 21 3 21 9"></polyline>
+    <line x1="10" y1="14" x2="21" y2="3"></line>
+  </svg>
+);
+
+export const OpenFolder: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v1M5 19h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2z"></path>
+  </svg>
+);

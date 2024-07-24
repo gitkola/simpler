@@ -1,7 +1,7 @@
 import { useAppSelector, useAppDispatch } from "../store";
 import { invoke } from "@tauri-apps/api/tauri";
 import { NavLink, useLocation } from "react-router-dom";
-import { Settings, SidebarIcon } from "./Icons";
+import { Projects, Settings, SidebarIcon } from "./Icons";
 import { ThreeDotsButton } from "./ThreeDotsButton";
 import { RootState } from "../store";
 import { deleteProject } from "../store/projectsSlice";
@@ -48,19 +48,37 @@ export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
           />
         }
       </div>
-      <NavLink
-        to={"/"}
-        className={({ isActive }) =>
-          `flex items-center p-2 m-2 rounded-md text-sm ${isActive
-            ? "bg-gray-700 text-white hover:bg-gray-400"
-            : "text-gray-300 hover:bg-gray-400 hover:text-white"
-          }`
-        }
-      >
-        <div className="flex items-center">
-          <Settings size={24} />
-        </div>
-      </NavLink>
+      {
+        location.pathname === "/project" ? (
+          <NavLink
+            to={"/"}
+            className={({ isActive }) =>
+              `flex items-center p-2 m-2 rounded-md text-sm ${isActive
+                ? "bg-gray-700 text-white hover:bg-gray-400"
+                : "text-gray-300 hover:bg-gray-400 hover:text-white"
+              }`
+            }
+          >
+            <div className="flex items-center">
+              <Settings size={24} />
+            </div>
+          </NavLink>
+        ) : (
+          <NavLink
+            to={"/project"}
+            className={({ isActive }) =>
+              `flex items-center p-2 m-2 rounded-md text-sm ${isActive
+                ? "bg-gray-700 text-white hover:bg-gray-400"
+                : "text-gray-300 hover:bg-gray-400 hover:text-white"
+              }`
+            }
+          >
+            <div className="flex items-center">
+              <Projects size={24} />
+            </div>
+          </NavLink>
+        )
+      }
     </div>
   );
 };
