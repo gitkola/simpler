@@ -112,7 +112,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
       <div className={`max-w-3xl px-2 py-2 rounded-md ${message.role === 'user' ? 'bg-blue-500 text-white' :
         message.role === 'app' ? 'bg-green-500 text-white' :
           message.role === 'system' ? 'bg-yellow-500 text-black' :
-            'bg-gray-200 text-gray-800'} hover:shadow-md`}>
+            'bg-gray-300 text-gray-800'} hover:shadow-md`}>
         {Array.isArray(parsedContent) ? (
           parsedContent.map((item, index) => (
             <div key={index} className="mb-4">

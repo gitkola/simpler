@@ -84,7 +84,7 @@ export const ChatView: React.FC = () => {
           </button>
           <button
             onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user"))}
-            className="flex bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50"
+            className="flex bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50 space-x-2"
             disabled={aiModelRequestInProgress}
           >
             <div>Generate File Structure</div>
