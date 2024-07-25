@@ -60,7 +60,7 @@ export const getAIResponse = async (
         content: Array<{ type: "text"; text: string }>;
       }> = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        timeout: 30,
+        timeout: 120,
         headers: {
           "x-api-key": apiKey,
           "Content-Type": "application/json",
@@ -142,7 +142,7 @@ ${JSON.stringify(projectState, null, 2)}
       });
       const options = {
         method: "POST" as HttpVerb,
-        timeout: 60,
+        timeout: 120,
         headers: {
           "x-api-key": apiKey,
           "Content-Type": "application/json",
