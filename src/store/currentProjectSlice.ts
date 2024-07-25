@@ -541,7 +541,10 @@ export const handleSyncFilesFromFS =
         throw new Error("activeProjectPath is not defined");
       }
       const files = (await readFilesFromFS(activeProjectPath)) || [];
-      const mergedFiles = mergeFiles(currentProjectState!.files || [], files);
+      const mergedFiles = mergeFiles(
+        currentProjectState!.files || [],
+        files
+      ).sort((a, b) => a.path.localeCompare(b.path));
       const updatedProjectState = {
         ...currentProjectState!,
         files: mergedFiles,
