@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
         <SidebarIcon size={24} />
       </button>
       <div className="flex items-center space-x-2">
-        <h1 className="text-lg text-white font-semibold">{title}</h1>
+        <h1 className="text-lg text-white font-semibold">{location.pathname === "/project" ? activeProjectPath : title}</h1>
         {
           location.pathname === "/project" && <ThreeDotsButton
             projectPath={activeProjectPath}
