@@ -19,21 +19,21 @@ const ProjectStateView: React.FC = () => {
     <div className="h-full p-2 pr-0 pt-0 space-y-1 overflow-y-auto no-scrollbar bg-gray-800">
       <div className="h-full p-2 space-y-2 rounded-md overflow-y-auto no-scrollbar bg-white">
         <Accordion
-          title="Descriptions"
+          title={`Descriptions (${projectState?.descriptions?.length || 0})`}
           content={
             <Descriptions />
           }
         />
         <Accordion
-          title="Requirements"
+          title={`Requirements (${projectState?.requirements?.length || 0})`}
           content={<Requirements />}
         />
         <Accordion
-          title="Tasks"
+          title={`Tasks (${projectState?.tasks?.length || 0})`}
           content={<Tasks />}
         />
         <Accordion
-          title="Files"
+          title={`Files (${projectState?.files?.length || 0})`}
           content={<Files />}
         />
         <Accordion
