@@ -15,6 +15,7 @@ import {
   saveProjectSettingsToFile,
   mergeProjectStates,
   readFilesFromFS,
+  mergeFiles,
 } from "../utils/projectStateUtils";
 import { AppDispatch, RootState } from "./index";
 import { getAIResponseWithProjectState } from "../services/aiService";
@@ -540,8 +541,11 @@ export const handleSyncFilesFromFS =
         throw new Error("activeProjectPath is not defined");
       }
       const files = (await readFilesFromFS(activeProjectPath)) || [];
-      console.log("Files from FS:", files);
-      const updatedProjectState = { ...currentProjectState!, files };
+      const mergedFiles = mergeFiles(currentProjectState!.files || [], files);
+      const updatedProjectState = {
+        ...currentProjectState!,
+        files: mergedFiles,
+      };
       await dispatch(saveProjectState(updatedProjectState));
     } catch (error) {
       const errorMessage = `Error while syncing files from FS: ${

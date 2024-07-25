@@ -27,7 +27,7 @@ import {
   setAIModelRequestInProgress,
 } from "../store/currentProjectSlice";
 import { getAIResponseWithProjectState } from "../services/aiService";
-import { applyFileFilter } from "./filterFiles";
+import { getFilteredProjectFiles } from "./getFilteredProjectFiles";
 
 export const generateInitialProjectState = (
   projectPath: string
@@ -381,15 +381,7 @@ export const handleGenerateTasksAndFiles = async () => {
 export const readFilesFromFS = async (projectPath: string) => {
   try {
     if (typeof projectPath !== "string" || !projectPath) return null;
-    const filePaths = await invoke<string[]>("read_files_in_directory", {
-      path: projectPath,
-    });
-    if (filePaths === null || !Array.isArray(filePaths)) {
-      throw new Error("Failed to read files from the selected folder");
-    }
-    const filteredFilePaths = applyFileFilter(filePaths);
-    console.log("Filtered Files:", filteredFilePaths);
-
+    const filteredFilePaths = await getFilteredProjectFiles(projectPath);
     const projectFiles: IProjectFile[] = [];
     for await (const filePath of filteredFilePaths) {
       try {
@@ -400,11 +392,16 @@ export const readFilesFromFS = async (projectPath: string) => {
           id: Date.now(),
           path: filePath.replace(`${projectPath}/`, ""),
           content: fileContent as string,
+          update: "add",
         };
         projectFiles.push(file);
       } catch (fileError) {
         console.warn(
-          `Skipping file ${filePath}: ${(fileError as Error).message}`
+          `Skipping file ${filePath}: ${JSON.stringify(
+            fileError as Error,
+            null,
+            2
+          )}`
         );
         // Optionally, you can still add the file to projectFiles with empty content
         // projectFiles.push({ id: Date.now() + Math.random(), path: filePath, content: '' });
