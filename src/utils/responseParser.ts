@@ -23,7 +23,7 @@ function parseStringResponse(response: string): MessageContent {
 
   function addTextContent() {
     if (currentContent.length > 0) {
-      result.push({ text: currentContent.join("\n") });
+      result.push({ text: currentContent.join("\n"), id: Date.now() });
       currentContent = [];
     }
   }
@@ -34,6 +34,7 @@ function parseStringResponse(response: string): MessageContent {
         // End of code block
         result.push({
           code: [currentContent.join("\n"), codeLanguage || null, null, null],
+          id: Date.now(),
         });
         currentContent = [];
         codeLanguage = "";
@@ -47,10 +48,10 @@ function parseStringResponse(response: string): MessageContent {
       currentContent.push(line);
     } else if (line.startsWith("# ")) {
       addTextContent();
-      result.push({ title: line.slice(2).trim() });
+      result.push({ title: line.slice(2).trim(), id: Date.now() });
     } else if (line.startsWith("http://") || line.startsWith("https://")) {
       addTextContent();
-      result.push({ link: [line.trim(), null] });
+      result.push({ link: [line.trim(), null], id: Date.now() });
     } else {
       currentContent.push(line);
     }
@@ -60,6 +61,7 @@ function parseStringResponse(response: string): MessageContent {
   if (isInCodeBlock) {
     result.push({
       code: [currentContent.join("\n"), codeLanguage || null, null, null],
+      id: Date.now(),
     });
   } else {
     addTextContent();
