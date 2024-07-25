@@ -14,7 +14,7 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
   return (
-    <div className="flex flex-col bg-gray-400 justify-between rounded-md">
+    <div className="flex flex-col bg-gray-400 justify-between rounded-md mt-4">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex flex-row px-2 py-1 w-full items-center justify-between rounded-md hover:bg-gray-400 hover:shadow-md"
