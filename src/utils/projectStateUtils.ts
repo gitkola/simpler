@@ -255,6 +255,12 @@ export const mergeFiles = (
         ...file,
         update: undefined,
       });
+    } else {
+      //TODO: Handle case when update is undefined
+      mergedFiles.set(file.path, {
+        ...file,
+        update: undefined,
+      });
     }
   });
   return Array.from(mergedFiles.values());
@@ -272,6 +278,12 @@ export const mergeTasks = (
     if (task.update === "delete") {
       mergedTasks.delete(task.id);
     } else if (["add", "modify"].includes(task.update as string)) {
+      mergedTasks.set(task.id, {
+        ...task,
+        update: undefined,
+      });
+    } else {
+      //TODO: Handle case when update is undefined
       mergedTasks.set(task.id, {
         ...task,
         update: undefined,
@@ -297,6 +309,12 @@ export const mergeRequirements = (
         ...requirement,
         update: undefined,
       });
+    } else {
+      //TODO: Handle case when update is undefined
+      mergedRequirements.set(requirement.id, {
+        ...requirement,
+        update: undefined,
+      });
     }
   });
   return Array.from(mergedRequirements.values());
@@ -314,6 +332,12 @@ export const mergeDescriptions = (
     if (description.update === "delete") {
       mergedDescriptions.delete(description.id);
     } else if (["add", "modify"].includes(description.update as string)) {
+      mergedDescriptions.set(description.id, {
+        ...description,
+        update: undefined,
+      });
+    } else {
+      //TODO: Handle case when update is undefined
       mergedDescriptions.set(description.id, {
         ...description,
         update: undefined,
