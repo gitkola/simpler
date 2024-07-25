@@ -15,7 +15,18 @@ const Message: React.FC<MessageProps> = ({ message }) => {
     if (isTitle(item)) {
       return <h3 key={item.id} className="text-lg font-bold">{item.title}</h3>;
     } else if (isText(item)) {
-      return <p key={item.id} className="">{item.text}</p>;
+      try {
+        const parsedText = JSON.parse(item.text);
+        if (Array.isArray(parsedText)) {
+          return (
+            <div className="" key={item.id}>{parsedText.map((item) => renderContent(item))}</div>
+          );
+        } else {
+          return <p key={item.id} className="">{item.text}</p>;
+        }
+      } catch (error) {
+        return <p key={item.id} className="">{item.text}</p>;
+      }
     } else if (isUpdatedProjectState(item)) {
       return (
         <MessageProjectStateUpdates key={item.id} projectStateUpdates={item?.updated_project_state} />
@@ -31,7 +42,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
             );
           }
         } catch (error) {
-          console.error('Failed to parse JSON code', error);
+          return <p key={item.id} className="">{item.code}</p>;
         }
       }
       return (
