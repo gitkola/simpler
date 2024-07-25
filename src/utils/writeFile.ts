@@ -24,9 +24,7 @@ export const writeFile = async (code: string | null, path: string | null) => {
       activeProjectPath,
       path || `/${generateDefaultFileName()}`
     );
-    console.log("Writing file to:", fullPath);
-
-    await invoke("write_file", { filePath: fullPath, content: code || "" });
+    await invoke("write_file", { path: fullPath, content: code || "" });
   } catch (error) {
     console.error("Error saving file:", error);
   }

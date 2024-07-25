@@ -29,22 +29,22 @@ fn open_folder(path: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn write_file(filePath: &str, content: &str) -> Result<(), String> {
+fn write_file(path: &str, content: &str) -> Result<(), String> {
     // Ensure the directory exists
-    if let Some(parent) = Path::new(filePath).parent() {
+    if let Some(parent) = Path::new(path).parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
-    fs::write(filePath, content).map_err(|e| e.to_string())
+    fs::write(path, content).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-fn read_file(filePath: &str) -> Result<String, String> {
-    fs::read_to_string(filePath).map_err(|e| e.to_string())
+fn read_file(path: &str) -> Result<String, String> {
+    fs::read_to_string(path).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-fn file_exists(filePath: &str) -> bool {
-    Path::new(filePath).exists()
+fn file_exists(path: &str) -> bool {
+    Path::new(path).exists()
 }
 
 #[tauri::command]

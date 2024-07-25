@@ -62,7 +62,7 @@ export const saveProjectStateToFile = async (
   try {
     const updatedProjectState = updateTimestamp(projectState);
     const result = await invoke("write_file", {
-      filePath: projectStateFilePath,
+      path: projectStateFilePath,
       content: JSON.stringify(updatedProjectState, null, 2),
     });
     if (result !== null) {
@@ -80,7 +80,7 @@ export const loadProjectStateFromFile = async (
   const projectStateFilePath = `${projectPath}/${PROJECT_STATE_FILE_NAME}`;
   try {
     const fileExists = await invoke("file_exists", {
-      filePath: projectStateFilePath,
+      path: projectStateFilePath,
     });
     if (!fileExists) {
       // If the file doesn't exist, create a new empty Project State
@@ -90,7 +90,7 @@ export const loadProjectStateFromFile = async (
     }
 
     const result = await invoke("read_file", {
-      filePath: projectStateFilePath,
+      path: projectStateFilePath,
     });
     if (typeof result !== "string") {
       throw new Error("Invalid Project State file content");
@@ -113,7 +113,7 @@ export const saveProjectMessagesToFile = async (
   const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
   try {
     const result = await invoke("write_file", {
-      filePath: messagesFilePath,
+      path: messagesFilePath,
       content: JSON.stringify(messages || [], null, 2),
     });
     if (result !== null) {
@@ -131,13 +131,13 @@ export const loadProjectMessagesFromFile = async (
   const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
   try {
     const fileExists = await invoke("file_exists", {
-      filePath: messagesFilePath,
+      path: messagesFilePath,
     });
     if (!fileExists) {
       return [];
     }
     const result = await invoke("read_file", {
-      filePath: messagesFilePath,
+      path: messagesFilePath,
     });
     if (typeof result !== "string") {
       throw new Error("Invalid Project State file content");
@@ -157,7 +157,7 @@ export const saveProjectSettingsToFile = async (
   const settingsFilePath = `${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`;
   try {
     const result = await invoke("write_file", {
-      filePath: settingsFilePath,
+      path: settingsFilePath,
       content: JSON.stringify(projectSettings || [], null, 2),
     });
     if (result !== null) {
@@ -175,7 +175,7 @@ export const loadProjectSettingsFromFile = async (
   const settingsFilePath = `${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`;
   try {
     const fileExists = await invoke("file_exists", {
-      filePath: settingsFilePath,
+      path: settingsFilePath,
     });
     if (!fileExists) {
       // If the file doesn't exist, create a new empty Project State
@@ -184,7 +184,7 @@ export const loadProjectSettingsFromFile = async (
       return newProjectSettings;
     }
     const result = await invoke("read_file", {
-      filePath: settingsFilePath,
+      path: settingsFilePath,
     });
     if (typeof result !== "string") {
       throw new Error("Invalid Project Settings file content");
@@ -386,7 +386,7 @@ export const readFilesFromFS = async (projectPath: string) => {
     for await (const filePath of filteredFilePaths) {
       try {
         const fileContent = await invoke<string>("read_file", {
-          filePath,
+          path: filePath,
         });
         const file: IProjectFile = {
           id: Date.now(),
