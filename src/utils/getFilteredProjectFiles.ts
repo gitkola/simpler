@@ -13,6 +13,11 @@ const initialPatterns: FilterPattern[] = [
   { pattern: "**/.DS_Store", exclude: true },
   { pattern: "**/package-lock.json", exclude: true },
   { pattern: "**/**.lock", exclude: true },
+  { pattern: "**/dist/**", exclude: true },
+  { pattern: "**/target/**", exclude: true },
+  { pattern: "src-tauri/target/**", exclude: true },
+  { pattern: "src-tauri/icons/**", exclude: true },
+  { pattern: "**/icons/**", exclude: true },
 ];
 
 function createAdditionalFilter(patterns: FilterPattern[]) {
