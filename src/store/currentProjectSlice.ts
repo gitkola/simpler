@@ -558,3 +558,32 @@ export const handleSyncFilesFromFS =
       dispatch(setCurrentProjectStateError(errorMessage));
     }
   };
+
+export const updateFileContent =
+  (fileId: number, newContent: string) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const state = getState();
+      const currentProjectState = state.currentProject.currentProjectState;
+      if (!currentProjectState) throw new Error("No active project state");
+
+      const updatedFiles = currentProjectState.files?.map((file) =>
+        file.id === fileId
+          ? { ...file, content: newContent, update: "modify" }
+          : file
+      );
+
+      const updatedProjectState = {
+        ...currentProjectState,
+        files: updatedFiles,
+      };
+
+      await dispatch(saveProjectState(updatedProjectState as IProjectState));
+    } catch (error) {
+      const errorMessage = `Error while syncing files from FS: ${
+        (error as Error).message
+      }`;
+      console.error(errorMessage);
+      dispatch(setCurrentProjectStateError(errorMessage));
+    }
+  };
