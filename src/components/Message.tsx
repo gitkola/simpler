@@ -40,6 +40,8 @@ const Message: React.FC<MessageProps> = ({ message }) => {
             return (
               <div className="" key={item.id}>{parsedCode.map((item) => renderContent(item))}</div>
             );
+          } else if (parsedCode?.updated_project_state) {
+            return <MessageProjectStateUpdates key={item.id} projectStateUpdates={parsedCode?.updated_project_state} />;
           }
         } catch (error) {
           return <p key={item.id} className="">{item.code}</p>;

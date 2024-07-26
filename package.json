@@ -12,6 +12,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.6",
     "@tauri-apps/api": "^1",
+    "@uiw/react-textarea-code-editor": "^3.0.2",
     "axios": "^1.7.2",
     "lodash": "^4.17.21",
     "path": "^0.12.7",

@@ -119,6 +119,7 @@ ${JSON.stringify(projectState, null, 2)}
             Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
+          timeout: 120000,
         }
       );
       aiResponse = parseAIResponse(response.data.choices[0].message.content);

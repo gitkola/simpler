@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Spinner from './Spinner';
@@ -31,8 +32,8 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
-    onSave(editedContent);
+  const handleSave = async () => {
+    await onSave(editedContent);
     setEditMode(false);
   };
 
@@ -45,7 +46,7 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
             {!editMode && (
               <button
                 onClick={() => setEditMode(true)}
-                className="mr-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="text-blue-500 hover:text-blue-700 mr-4"
               >
                 Edit
               </button>
@@ -64,19 +65,27 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
               <Spinner size="lg" color="blue" />
             </div>
           ) : editMode ? (
-            <textarea
-              value={editedContent}
-              onChange={(e) => setEditedContent(e.target.value)}
-              className="w-full h-full p-2 border rounded"
-              style={{ minHeight: '300px' }}
-            />
+            <div className="h-full">
+              <CodeEditor
+                value={editedContent}
+                language={language}
+                placeholder=""
+                onChange={(evn) => setEditedContent(evn.target.value)}
+                padding={15}
+                style={{
+                  backgroundColor: "#000",
+                  fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                }}
+                data-color-mode={'dark'}
+              />
+            </div>
           ) : (
             <SyntaxHighlighter
               language={language}
               style={vscDarkPlus}
               customStyle={{ margin: 0 }}
             >
-              {content}
+              {editedContent}
             </SyntaxHighlighter>
           )}
         </div>
@@ -84,13 +93,13 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
           <div className="flex justify-end p-4 border-t">
             <button
               onClick={() => setEditMode(false)}
-              className="mr-2 px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+              className="text-gray-500 hover:text-gray-700 mr-4"
             >
               Cancel
             </button>
             <button
-              onClick={handleSave}
-              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+              onClick={async () => await handleSave()}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               Save
             </button>

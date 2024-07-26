@@ -8,8 +8,8 @@ import FileContentModal from './FileContentModal';
 
 export const Files = () => {
   const dispatch = useAppDispatch();
-  const currentProjectState: IProjectState | null = useAppSelector((state) => state?.currentProject?.currentProjectState);
-  const files: IProjectFile[] | undefined = currentProjectState?.files;
+  const currentProjectState = useAppSelector((state) => state?.currentProject?.currentProjectState);
+  const files: IProjectFile[] | undefined = Array.isArray(currentProjectState?.files) ? [...currentProjectState?.files] : [];
   const [selectedFile, setSelectedFile] = useState<IProjectFile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,7 +17,7 @@ export const Files = () => {
     setIsLoading(true);
     setSelectedFile(file);
     // Simulate file content fetching delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 100));
     setIsLoading(false);
   };
 
@@ -41,14 +41,16 @@ export const Files = () => {
 
   const handleSaveFile = async (content: string) => {
     if (selectedFile) {
-      const updatedFile = { ...selectedFile, content, update: 'modify' };
-      const updatedFiles = files?.map(file =>
-        file.path === selectedFile.path ? updatedFile : file
-      );
-      if (!currentProjectState) throw new Error('Error save file - Project State is not defined');
-      await dispatch(saveProjectState({ ...currentProjectState, files: updatedFiles as IProjectFile[] }));
+      const updatedFile = { ...selectedFile, content };
+      const updatedFiles = files?.map(f => f.path === updatedFile.path ? updatedFile : f) || [];
+      if (currentProjectState) {
+        const updatedProjectState: IProjectState = {
+          ...currentProjectState,
+          files: updatedFiles,
+        };
+        await dispatch(saveProjectState(updatedProjectState));
+      }
       await writeFile(content, selectedFile.path);
-      setSelectedFile(updatedFile as IProjectFile);
     }
   };
 
