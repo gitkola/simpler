@@ -580,7 +580,7 @@ export const updateFileContent =
 
       await dispatch(saveProjectState(updatedProjectState as IProjectState));
     } catch (error) {
-      const errorMessage = `Error while syncing files from FS: ${
+      const errorMessage = `Error updating file content:: ${
         (error as Error).message
       }`;
       console.error(errorMessage);

@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../store";
-import { handleSyncFilesFromFS } from "../store/currentProjectSlice";
-import { IProjectFile } from "../types";
+import { handleSyncFilesFromFS, saveProjectState } from "../store/currentProjectSlice";
+import { IProjectFile, IProjectState } from "../types";
 import { writeFile } from "../utils/writeFile";
 import { File } from './Icons';
 import FileContentModal from './FileContentModal';
 
 export const Files = () => {
   const dispatch = useAppDispatch();
-  const files: IProjectFile[] | undefined = useAppSelector((state) => state?.currentProject?.currentProjectState?.files);
+  const currentProjectState: IProjectState | null = useAppSelector((state) => state?.currentProject?.currentProjectState);
+  const files: IProjectFile[] | undefined = currentProjectState?.files;
   const [selectedFile, setSelectedFile] = useState<IProjectFile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,6 +36,19 @@ export const Files = () => {
       case 'css': return 'css';
       case 'json': return 'json';
       default: return 'text';
+    }
+  };
+
+  const handleSaveFile = async (content: string) => {
+    if (selectedFile) {
+      const updatedFile = { ...selectedFile, content, update: 'modify' };
+      const updatedFiles = files?.map(file =>
+        file.path === selectedFile.path ? updatedFile : file
+      );
+      if (!currentProjectState) throw new Error('Error save file - Project State is not defined');
+      await dispatch(saveProjectState({ ...currentProjectState, files: updatedFiles as IProjectFile[] }));
+      await writeFile(content, selectedFile.path);
+      setSelectedFile(updatedFile as IProjectFile);
     }
   };
 
@@ -81,6 +95,7 @@ export const Files = () => {
           content={selectedFile.content || ''}
           language={getFileLanguage(selectedFile.path)}
           isLoading={isLoading}
+          onSave={handleSaveFile}
         />
       )}
     </div>
