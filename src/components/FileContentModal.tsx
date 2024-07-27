@@ -27,6 +27,18 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
     setEditedContent(content);
   }, [content]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   const handleSave = async () => {
