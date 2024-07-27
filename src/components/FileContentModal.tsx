@@ -35,18 +35,16 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex-1 items-center justify-center z-10 p-64"
+      className="fixed inset-0 bg-black bg-opacity-50 flex-1 items-center justify-center z-10"
       onClick={(e) => {
-        console.log("click on background");
-        e.preventDefault();
+        e.stopPropagation();
         onClose();
       }}
     >
       <div
         className="flex flex-col bg-white rounded-lg"
         onClick={(e) => {
-          console.log("click on forground");
-          e.preventDefault();
+          e.stopPropagation();
         }}
       >
         <div className="flex justify-between items-center px-4 py-2">
