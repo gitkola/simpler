@@ -47,14 +47,14 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex-1 items-center justify-center z-10"
+      className="fixed inset-0 bg-black bg-opacity-50 flex-1 h-full w-full items-center justify-center z-10"
       onClick={(e) => {
         e.stopPropagation();
         onClose();
       }}
     >
       <div
-        className="flex flex-col bg-white rounded-lg"
+        className="flex flex-col bg-white rounded-lg m-32 max-h-[80%] overflow-y-auto"
         onClick={(e) => {
           e.stopPropagation();
         }}
