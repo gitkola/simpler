@@ -72,7 +72,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         </a>
       );
     };
-    return <p className="my-4">Unexpected content type</p>;
+    return <p key={item?.id} className="my-4">{JSON.stringify(item, null, 2)}</p>;
   };
 
   const parseMessageContent = (content: MessageContent | string): MessageContent | JSX.Element[] => {
