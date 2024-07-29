@@ -377,10 +377,22 @@ export const Projects: React.FC<IconProps> = ({
     strokeLinejoin="round"
     className={className}
   >
-    <rect x="2" y="2" width="8" height="8" rx="2" ry="2"></rect>
+    {/* <rect x="2" y="2" width="8" height="8" rx="2" ry="2"></rect>
     <rect x="14" y="2" width="8" height="8" rx="2" ry="2"></rect>
     <rect x="2" y="14" width="8" height="8" rx="2" ry="2"></rect>
-    <rect x="14" y="14" width="8" height="8" rx="2" ry="2"></rect>
+    <rect x="14" y="14" width="8" height="8" rx="2" ry="2"></rect> */}
+    <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z" />
+    <path d="m7 16.5-4.74-2.85" />
+    <path d="m7 16.5 5-3" />
+    <path d="M7 16.5v5.17" />
+    <path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z" />
+    <path d="m17 16.5-5-3" />
+    <path d="m17 16.5 4.74-2.85" />
+    <path d="M17 16.5v5.17" />
+    <path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z" />
+    <path d="M12 8 7.26 5.15" />
+    <path d="m12 8 4.74-2.85" />
+    <path d="M12 13.5V8" />
   </svg>
 );
 
@@ -471,6 +483,87 @@ export const OpenFolder: React.FC<IconProps> = ({
     strokeLinejoin="round"
     className={className}
   >
-    <path d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v1M5 19h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2z"></path>
+    <path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" />
   </svg>
 );
+
+export const FolderTree: React.FC<IconProps> = ({
+  size = 24,
+  color = "currentColor",
+  className = "",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z" />
+    <path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z" />
+    <path d="M3 5a2 2 0 0 0 2 2h3" />
+    <path d="M3 3v13a2 2 0 0 0 2 2h3" />
+  </svg>
+);
+
+export type AppIcons = "chevron-down" | "chevron-right" | "chevron-left" | "chevron-double-right" | "chevron-double-left" | "plus" | "dashboard" | "code-editor" | "file-explorer" | "settings" | "arrow-up" | "three-dots" | "edit" | "trash" | "folder" | "file" | "projects" | "sidebar" | "open-project" | "open" | "open-folder" | "folder-tree";
+
+interface IAppIconProps extends IconProps {
+  icon: AppIcons;
+}
+
+export default function AppIcon({ icon, size, color, className }: IAppIconProps) {
+  switch (icon) {
+    case "chevron-down":
+      return <ChevronDown size={size} color={color} className={className} />;
+    case "chevron-right":
+      return <ChevronRight size={size} color={color} className={className} />;
+    case "chevron-left":
+      return <ChevronLeft size={size} color={color} className={className} />;
+    case "chevron-double-right":
+      return <ChevronDoubleRight size={size} color={color} className={className} />;
+    case "chevron-double-left":
+      return <ChevronDoubleLeft size={size} color={color} className={className} />;
+    case "plus":
+      return <Plus size={size} color={color} className={className} />;
+    case "dashboard":
+      return <Dashboard size={size} color={color} className={className} />;
+    case "code-editor":
+      return <CodeEditor size={size} color={color} className={className} />;
+    case "file-explorer":
+      return <FileExplorer size={size} color={color} className={className} />;
+    case "settings":
+      return <Settings size={size} color={color} className={className} />;
+    case "arrow-up":
+      return <ArrowUp size={size} color={color} className={className} />;
+    case "three-dots":
+      return <ThreeDotsIcon size={size} color={color} className={className} />;
+    case "edit":
+      return <Edit size={size} color={color} className={className} />;
+    case "trash":
+      return <Trash size={size} color={color} className={className} />;
+    case "folder":
+      return <Folder size={size} color={color} className={className} />;
+    case "file":
+      return <File size={size} color={color} className={className} />;
+    case "projects":
+      return <Projects size={size} color={color} className={className} />;
+    case "sidebar":
+      return <SidebarIcon size={size} color={color} className={className} />;
+    case "open-project":
+      return <OpenProject size={size} color={color} className={className} />;
+    case "open":
+      return <Open size={size} color={color} className={className} />;
+    case "open-folder":
+      return <OpenFolder size={size} color={color} className={className} />;
+    case "folder-tree":
+      return <FolderTree size={size} color={color} className={className} />;
+    default:
+      return <div>?</div>;
+  }
+}

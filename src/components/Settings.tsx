@@ -24,12 +24,12 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full p-2 pt-0 bg-gray-800  no-scrollbar">
-      <div className="flex flex-col h-full rounded-md overflow-auto bg-white  no-scrollbar">
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-col h-full overflow-auto">
         <div className="p-2">
           <dl className="space-y-6">
             <div>
-              <dt className="text-sm font-medium text-gray-500">OpenAI API Key</dt>
+              <dt className="text-sm font-medium text-white">OpenAI API Key</dt>
               <dd className="mt-1">
                 <input
                   type="password"
@@ -41,7 +41,7 @@ const Settings: React.FC = () => {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Anthropic API Key</dt>
+              <dt className="text-sm font-medium text-white">Anthropic API Key</dt>
               <dd className="mt-1">
                 <input
                   type="password"
@@ -53,7 +53,7 @@ const Settings: React.FC = () => {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">AI Responsibilities Instructions</dt>
+              <dt className="text-sm font-medium text-white">AI Responsibilities Instructions</dt>
               <dd className="mt-1">
                 <textarea
                   value={settings?.instructions?.responsibilitiesInstructions}
@@ -65,7 +65,7 @@ const Settings: React.FC = () => {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">AI Project State Instructions</dt>
+              <dt className="text-sm font-medium text-white">AI Project State Instructions</dt>
               <dd className="mt-1">
                 <textarea
                   value={settings?.instructions?.projectStateInstructions}
@@ -77,7 +77,7 @@ const Settings: React.FC = () => {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">AI Response Guidelines Instructions</dt>
+              <dt className="text-sm font-medium text-white">AI Response Guidelines Instructions</dt>
               <dd className="mt-1">
                 <textarea
                   value={settings?.instructions?.responseGuidelinesInstructions}

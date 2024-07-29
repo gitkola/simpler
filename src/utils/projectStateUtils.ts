@@ -17,7 +17,7 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
 } from "../constants";
-import { getFolderNameFromPath } from "./getFolderNameFromPath";
+import { getFolderNameFromPath } from "./pathUtils";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
@@ -34,7 +34,7 @@ export const generateInitialProjectState = (
 ): IProjectState => {
   const { createdAt, updatedAt } = createTimestamps();
   return {
-    name: getFolderNameFromPath(projectPath),
+    name: getFolderNameFromPath(projectPath) || "",
     descriptions: [],
     requirements: [],
     files: [],

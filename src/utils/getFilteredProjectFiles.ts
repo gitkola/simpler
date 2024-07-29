@@ -43,11 +43,19 @@ export async function getFilteredProjectFiles(
   projectPath: string
 ): Promise<string[]> {
   try {
+    // TODO: work under optimisation.
+    // const start = Date.now();
+    // console.log("Scanning directory:", projectPath);
     const files = await invoke<string[]>("scan_directory_with_gitignore", {
       root: projectPath,
     });
-    const additionalFilter = createAdditionalFilter(initialPatterns);
-    return additionalFilter(files).sort((a, b) => {
+    // console.log("Scanning directory took:", Date.now() - start, "ms", files);
+    // TODO: Additional filter needed for Project State
+    // const additionalFilter = createAdditionalFilter(initialPatterns);
+    // return additionalFilter(files).sort((a, b) => {
+    //   return a.localeCompare(b);
+    // });
+    return files.sort((a, b) => {
       return a.localeCompare(b);
     });
   } catch (error) {

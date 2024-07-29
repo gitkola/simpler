@@ -4,7 +4,7 @@ import { ProjectPathListItem } from "../types";
 
 export const ThreeDotsButton: React.FC<{
   projectPath: ProjectPathListItem | null,
-  onDeleteProject: (projectPath: string | null) => void,
+  onDeleteProject?: (projectPath: string | null) => void,
   onOpenProjectFolder: (projectPath: string | null) => void;
   className?: string;
 }> = ({
@@ -36,7 +36,7 @@ export const ThreeDotsButton: React.FC<{
             e.nativeEvent.preventDefault();
             setIsPopoverOpen(!isPopoverOpen)
           }}
-          className={className ? className : "flex items-center justify-center rounded-md p-2 hover:bg-gray-300"}
+          className={className ? className : "flex h-full items-center justify-center px-2 text-white hover:bg-gray-300"}
         >
           <ThreeDotsIcon size={24} />
         </button>
@@ -54,7 +54,7 @@ export const ThreeDotsButton: React.FC<{
             </button>
             <button
               onClick={() => {
-                onDeleteProject(projectPath);
+                onDeleteProject && (projectPath);
                 setIsPopoverOpen(!isPopoverOpen);
               }}
               className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-gray-200"

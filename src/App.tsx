@@ -1,3 +1,38 @@
+import React, { useRef } from "react";
+import { ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import SidePanel from "./components/SidePanel";
+import SourceBrowser from "./components/SourceBrowser";
+
+const App: React.FC = () => {
+  const [activeSideMenuItem, setActiveSideMenuItem] = React.useState<string>("projects");
+  const ref = useRef<ImperativePanelHandle>(null);
+  const togglePanel = () => {
+    const panel = ref.current;
+    if (panel?.isCollapsed()) {
+      panel.expand();
+    } else {
+      panel?.collapse();
+    }
+  };
+  return (
+    <PanelGroup direction="horizontal" className="bg-gray-800">
+      <SidePanel onSideMenuItemClick={(value) => setActiveSideMenuItem(value)} activeSideMenuItem={activeSideMenuItem} onSetIsMinimized={() => togglePanel()} />
+      <Panel collapsible minSize={24} ref={ref}>
+        <SourceBrowser activeSource={activeSideMenuItem} />
+      </Panel>
+      <PanelResizeHandle className="w-0.5 bg-gray-800 hover:bg-gray-400" />
+      <Panel>
+        {/* <SourceViewer /> */}
+        <div className="h-full bg-blue-300">SourceViewer</div>
+      </Panel>
+    </PanelGroup>
+  );
+};
+
+export default App;
+
+
+/*
 import React from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
@@ -18,3 +53,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+*/

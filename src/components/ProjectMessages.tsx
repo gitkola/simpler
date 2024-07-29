@@ -7,7 +7,7 @@ export const ProjectMessages = () => {
   const currentProjectMessages = useAppSelector((state) => state.currentProject.currentProjectMessages);
   if (!currentProjectMessages) return null;
   return (
-    <SyntaxHighlighter className="no-scrollbar rounded-md" language={'json'} style={vscDarkPlus} wrapLongLines>
+    <SyntaxHighlighter className="no-scrollbar" language={'json'} style={vscDarkPlus} wrapLongLines>
       {(currentProjectMessages && JSON.stringify(currentProjectMessages, null, 2)) || ''}
     </SyntaxHighlighter>
   )

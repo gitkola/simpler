@@ -16,8 +16,8 @@ const ProjectStateView: React.FC = () => {
   if (!projectState) return null;
 
   return (
-    <div className="h-full p-2 pr-0 pt-0 space-y-1 overflow-y-auto no-scrollbar bg-gray-800">
-      <div className="h-full p-2 space-y-2 rounded-md overflow-y-auto no-scrollbar bg-white">
+    <div className="h-full space-y-1 overflow-y-auto no-scrollbar bg-gray-800">
+      <div className="h-full p-2 space-y-2 overflow-y-auto no-scrollbar bg-white">
         <Accordion
           title={`Descriptions (${projectState?.descriptions?.length || 0})`}
           content={
