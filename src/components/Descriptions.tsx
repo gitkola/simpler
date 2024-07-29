@@ -55,7 +55,6 @@ const Descriptions: React.FC = () => {
             placeholder="Enter a description..."
             rows={1}
           />
-          {/* {description?.update && <span className={`px-2 py-1 text-sm`}>{description.update}</span>} */}
         </div>
       ))}
       <Textarea

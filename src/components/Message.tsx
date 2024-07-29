@@ -122,10 +122,10 @@ const Message: React.FC<MessageProps> = ({ message }) => {
 
   return (
     <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-3xl px-2 py-2 rounded-md ${message.role === 'user' ? 'bg-blue-500 text-white' :
-        message.role === 'app' ? 'bg-green-500 text-white' :
-          message.role === 'system' ? 'bg-yellow-500 text-black' :
-            'bg-gray-300 text-gray-800'} hover:shadow-md`}>
+      <div className={`max-w-3xl px-2 py-2 rounded-md ${message.role === 'user' ? 'bg-blue-500' :
+        message.role === 'app' ? 'bg-green-500' :
+          message.role === 'system' ? 'bg-yellow-500' :
+            'bg-gray-300'} hover:shadow-md`}>
         {Array.isArray(parsedContent) ? (
           parsedContent.map((item, index) => (
             <div key={index} className="mb-4">

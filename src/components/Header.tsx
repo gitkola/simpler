@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
     }
   };
   return (
-    <div className="flex items-center justify-between bg-gray-800">
+    <div className="flex items-center justify-between">
       <button
         className="text-white p-2 m-2 rounded-md focus:outline-none hover:bg-gray-400"
         onClick={onMenuClick}
@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
         <SidebarIcon size={24} />
       </button>
       <div className="flex items-center space-x-2">
-        <h1 className="text-lg text-white font-semibold">{location.pathname === "/project" ? activeProjectPath : title}</h1>
+        <h1 className="text-lg font-semibold">{location.pathname === "/project" ? activeProjectPath : title}</h1>
         {
           location.pathname === "/project" && <ThreeDotsButton
             projectPath={activeProjectPath}

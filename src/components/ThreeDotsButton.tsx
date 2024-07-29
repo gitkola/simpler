@@ -36,7 +36,7 @@ export const ThreeDotsButton: React.FC<{
             e.nativeEvent.preventDefault();
             setIsPopoverOpen(!isPopoverOpen)
           }}
-          className={className ? className : "flex h-full items-center justify-center px-2 text-white hover:bg-gray-300"}
+          className={className ? className : "flex h-full items-center justify-center px-2 hover:bg-gray-300"}
         >
           <ThreeDotsIcon size={24} />
         </button>

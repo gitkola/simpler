@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { ImperativePanelHandle, Panel, PanelGroup } from "react-resizable-panels";
+import { ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SidePanel from "./components/SidePanel";
 import SourceBrowser from "./components/SourceBrowser";
 import SourceViewer from "./components/SourceViewer";
@@ -7,7 +7,6 @@ import ProjectStateView from "./components/ProjectStateView";
 import { ChatView } from "./components/ChatView";
 import { RootState, useAppDispatch, useAppSelector } from "./store";
 import { loadProject } from "./store/currentProjectSlice";
-import PanelResizeHandler from "./components/PanelResizeHandler";
 
 const App: React.FC = () => {
   const sourceBrowserRef = useRef<ImperativePanelHandle>(null);
@@ -32,21 +31,21 @@ const App: React.FC = () => {
   }, [activeProjectPath]);
 
   return (
-    <PanelGroup autoSaveId="persistence" direction="horizontal" className="bg-gray-800">
+    <PanelGroup autoSaveId="persistence" direction="horizontal" className="">
       <SidePanel togglePanel={() => togglePanel()} />
       <Panel collapsible minSize={8} ref={sourceBrowserRef} className="border-r border-gray-700 border-0.5">
         <SourceBrowser />
       </Panel>
-      <PanelResizeHandler />
+      <PanelResizeHandle />
       <Panel collapsible minSize={24} maxSize={32} className="border-r border-gray-700 border-0.5">
         <SourceViewer />
       </Panel>
-      <PanelResizeHandler />
-      <Panel collapsible minSize={24} maxSize={32} className="flex flex-col h-screen overflow-auto border-r border-gray-700 border-0.5">
+      <PanelResizeHandle />
+      <Panel collapsible minSize={24} maxSize={32} className="border-r border-gray-700 border-0.5">
         <ProjectStateView />
       </Panel>
-      <PanelResizeHandler />
-      <Panel collapsible minSize={24} maxSize={32} className="flex flex-col h-screen overflow-auto">
+      <PanelResizeHandle />
+      <Panel collapsible minSize={24} maxSize={32} className="">
         <ChatView />
       </Panel>
     </PanelGroup>

@@ -18,7 +18,7 @@ const ProjectItem: React.FC<{
 }) => {
     return (
       <div
-        className={`flex justify-between items-center pl-1 pr-2 space-x-4 text-white hover:bg-blue-500 ${isActive && "bg-blue-600"
+        className={`flex justify-between items-center pl-1 pr-2 space-x-4 hover:bg-blue-500 ${isActive && "bg-blue-600"
           }`}
       >
         <button

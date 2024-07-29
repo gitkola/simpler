@@ -10,9 +10,9 @@ const Accordion = ({ title, content }: AccordionTextareaProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="rounded-sm shadow-sm transition-all duration-100 bg-gray-700">
+    <div className="rounded-sm shadow-sm transition-all duration-100 bg-gray-300">
       <button
-        className="w-full px-2 py-1 flex justify-between items-center rounded-sm transition-colors hover:shadow-md text-gray-200"
+        className="w-full px-2 py-1 flex justify-between items-center rounded-sm transition-colors hover:shadow-md"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="font-bold">{title}</span>

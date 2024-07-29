@@ -47,9 +47,9 @@ export const ChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex-1 overflow-y-auto space-y-2 bg-gray-800">
-        <div className="flex-grow h-full overflow-auto p-2 space-y-2 bg-white">
+    <div className="flex flex-col h-screen overflow-auto">
+      <div className="flex-1 overflow-y-auto space-y-2">
+        <div className="flex-grow h-full overflow-auto p-2 space-y-2">
           {messages?.map((message) => (
             <Message
               key={message.createdAt}
@@ -71,8 +71,8 @@ export const ChatView: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="px-2 bg-gray-800">
-        <div className="flex py-2 space-x-2 items-center text-white">
+      <div className="px-2 border-t border-gray-700">
+        <div className="flex py-2 space-x-2 items-center">
           <div>Suggestions:</div>
           <button
             onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user"))}

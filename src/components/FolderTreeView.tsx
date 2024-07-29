@@ -11,7 +11,7 @@ import SquareButton from "./SquareButton";
 import { openFolder } from "../utils/openFolder";
 import { IFile, saveProjectOpenedFiles } from "../store/currentProjectSlice";
 
-interface ITreeData {
+export interface ITreeData {
   name: string;
   path: string;
   checked: number;
@@ -97,7 +97,7 @@ export default function FolderTreeView() {
     <TreeView.Item
       key={tree.path}
       id={tree.path}
-      className={`bg-gray-800 hover:bg-blue-500 select-none ${tree.selected === true && "bg-purple-800 hover:bg-purple-500"}`}
+      className={`bg-white hover:bg-blue-500 select-none ${tree.selected === true && "bg-purple-800 hover:bg-purple-500"}`}
       expanded={tree.isOpen}
       onExpandedChange={(isExpanded) => {
         if (typeof tree.isOpen === "boolean") {
@@ -139,8 +139,8 @@ export default function FolderTreeView() {
               }`
             );
           }}
-          className="w-5 h-5 bg-transparent hover:text-white hover:bg-transparent"
-          iconSize={60}
+          className="w-5 h-5"
+          iconSize={20}
           iconClassName=""
         />
       </div>
@@ -153,7 +153,7 @@ export default function FolderTreeView() {
   );
 
   return (
-    <div className="flex-1 h-screen overflow-auto text-gray-200">
+    <div className="flex-1 h-screen overflow-auto">
       <nav aria-label="Files">
         <TreeView aria-label="Files" className="p-0">
           {treeData && renderTreeItem(treeData)}
