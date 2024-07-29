@@ -9,3 +9,8 @@ export const getFolderNameFromFilePath = (filePath: string | null): string => {
   arr.pop();
   return arr.join("/");
 };
+
+export const getFileNameFromPath = (filePath: string | null): string => {
+  if (!filePath) return "";
+  return filePath.split("/").pop() || "";
+};

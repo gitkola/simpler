@@ -3,10 +3,12 @@ import { LOCAL_STORAGE_KEY_LAYOUT } from "../constants";
 
 export interface ILayoutState {
   projectStateViewWidth: number;
+  activeSideMenuItem: string;
 }
 
 const defaultInitialState: ILayoutState = {
   projectStateViewWidth: 300,
+  activeSideMenuItem: "projects",
 };
 
 const loadInitialState = (): ILayoutState => {
@@ -24,9 +26,13 @@ const layoutSlice = createSlice({
     setProjectStateViewWidth: (state, action: PayloadAction<number>) => {
       state.projectStateViewWidth = action.payload;
     },
+    setActiveSideMenuItem: (state, action: PayloadAction<string>) => {
+      state.activeSideMenuItem = action.payload;
+    },
   },
 });
 
-export const { setProjectStateViewWidth } = layoutSlice.actions;
+export const { setProjectStateViewWidth, setActiveSideMenuItem } =
+  layoutSlice.actions;
 
 export default layoutSlice.reducer;

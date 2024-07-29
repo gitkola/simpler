@@ -12,12 +12,11 @@ import { ProjectMessages } from './ProjectMessages';
 
 const ProjectStateView: React.FC = () => {
   const projectState = useAppSelector((state: RootState) => state?.currentProject?.currentProjectState);
-
   if (!projectState) return null;
 
   return (
-    <div className="h-full space-y-1 overflow-y-auto no-scrollbar bg-gray-800">
-      <div className="h-full p-2 space-y-2 overflow-y-auto no-scrollbar bg-white">
+    <div className="h-full overflow-y-auto bg-gray-800">
+      <div className="h-full p-1 space-y-1 overflow-y-auto">
         <Accordion
           title={`Descriptions (${projectState?.descriptions?.length || 0})`}
           content={

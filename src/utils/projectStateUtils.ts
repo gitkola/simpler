@@ -14,6 +14,7 @@ import {
 import {
   MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
   PROJECT_MESSAGES_FILE_NAME,
+  PROJECT_OPENED_FILES_FILE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
 } from "../constants";
@@ -22,6 +23,7 @@ import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
 import {
+  IFile,
   saveProjectMessages,
   setAIModelRequestError,
   setAIModelRequestInProgress,
@@ -169,6 +171,25 @@ export const saveProjectSettingsToFile = async (
   }
 };
 
+export const saveProjectOpenedFilesToFile = async (
+  projectPath: string,
+  projectOpenedFiles: IFile[]
+) => {
+  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
+  try {
+    const result = await invoke("write_file", {
+      path: openedFilesFilePath,
+      content: JSON.stringify(projectOpenedFiles || [], null, 2),
+    });
+    if (result !== null) {
+      throw new Error(result as string);
+    }
+  } catch (error) {
+    console.error("Failed to save Project Opened Files:", error);
+    throw new Error("Failed to save Project Opened Files");
+  }
+};
+
 export const loadProjectSettingsFromFile = async (
   projectPath: string
 ): Promise<IProjectSettings | null> => {
@@ -196,6 +217,31 @@ export const loadProjectSettingsFromFile = async (
     const newProjectSettings = generateInitialProjectSettings();
     await saveProjectSettingsToFile(projectPath, newProjectSettings);
     return newProjectSettings;
+  }
+};
+
+export const loadProjectOpenedFilesFromFile = async (
+  projectPath: string
+): Promise<IFile[]> => {
+  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
+  try {
+    const fileExists = await invoke("file_exists", {
+      path: openedFilesFilePath,
+    });
+    if (!fileExists) {
+      return [];
+    }
+    const result = await invoke("read_file", {
+      path: openedFilesFilePath,
+    });
+    if (typeof result !== "string") {
+      throw new Error("Invalid Project Opened Files file content");
+    }
+    const openedFiles: IFile[] = JSON.parse(result);
+    return openedFiles;
+  } catch (error) {
+    console.error("Error reading Project Opened Files file:", error);
+    return [];
   }
 };
 

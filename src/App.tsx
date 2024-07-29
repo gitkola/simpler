@@ -1,29 +1,53 @@
-import React, { useRef } from "react";
-import { ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import React, { useEffect, useRef } from "react";
+import { ImperativePanelHandle, Panel, PanelGroup } from "react-resizable-panels";
 import SidePanel from "./components/SidePanel";
 import SourceBrowser from "./components/SourceBrowser";
+import SourceViewer from "./components/SourceViewer";
+import ProjectStateView from "./components/ProjectStateView";
+import { ChatView } from "./components/ChatView";
+import { RootState, useAppDispatch, useAppSelector } from "./store";
+import { loadProject } from "./store/currentProjectSlice";
+import PanelResizeHandler from "./components/PanelResizeHandler";
 
 const App: React.FC = () => {
-  const [activeSideMenuItem, setActiveSideMenuItem] = React.useState<string>("projects");
-  const ref = useRef<ImperativePanelHandle>(null);
+  const sourceBrowserRef = useRef<ImperativePanelHandle>(null);
+  const activeProjectPath = useAppSelector((state: RootState) => state.projects.activeProjectPath);
+  const dispatch = useAppDispatch();
   const togglePanel = () => {
-    const panel = ref.current;
+    const panel = sourceBrowserRef.current;
     if (panel?.isCollapsed()) {
       panel.expand();
     } else {
       panel?.collapse();
     }
   };
+
+  const loadProjectData = async () => {
+    await dispatch(loadProject());
+  };
+
+  useEffect(() => {
+    if (!activeProjectPath) return;
+    loadProjectData();
+  }, [activeProjectPath]);
+
   return (
-    <PanelGroup direction="horizontal" className="bg-gray-800">
-      <SidePanel onSideMenuItemClick={(value) => setActiveSideMenuItem(value)} activeSideMenuItem={activeSideMenuItem} onSetIsMinimized={() => togglePanel()} />
-      <Panel collapsible minSize={24} ref={ref}>
-        <SourceBrowser activeSource={activeSideMenuItem} />
+    <PanelGroup autoSaveId="persistence" direction="horizontal" className="bg-gray-800">
+      <SidePanel togglePanel={() => togglePanel()} />
+      <Panel collapsible minSize={8} ref={sourceBrowserRef} className="border-r border-gray-700 border-0.5">
+        <SourceBrowser />
       </Panel>
-      <PanelResizeHandle className="w-0.5 bg-gray-800 hover:bg-gray-400" />
-      <Panel>
-        {/* <SourceViewer /> */}
-        <div className="h-full bg-blue-300">SourceViewer</div>
+      <PanelResizeHandler />
+      <Panel collapsible minSize={24} maxSize={32} className="border-r border-gray-700 border-0.5">
+        <SourceViewer />
+      </Panel>
+      <PanelResizeHandler />
+      <Panel collapsible minSize={24} maxSize={32} className="flex flex-col h-screen overflow-auto border-r border-gray-700 border-0.5">
+        <ProjectStateView />
+      </Panel>
+      <PanelResizeHandler />
+      <Panel collapsible minSize={24} maxSize={32} className="flex flex-col h-screen overflow-auto">
+        <ChatView />
       </Panel>
     </PanelGroup>
   );

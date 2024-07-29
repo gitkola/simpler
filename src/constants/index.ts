@@ -4,6 +4,8 @@ export const LOCAL_STORAGE_KEY_PROJECTS = "simpler_projects";
 export const PROJECT_MESSAGES_FILE_NAME = ".simpler/project_messages.json";
 export const PROJECT_SETTINGS_FILE_NAME = ".simpler/project_settings.json";
 export const PROJECT_STATE_FILE_NAME = ".simpler/project_state.json";
+export const PROJECT_OPENED_FILES_FILE_NAME =
+  ".simpler/project_opened_files.json";
 
 export const AI_INSTRUCTIONS_RESPONSIBILITIES = `#Responsibilities
 You are an AI software development assistant using the Simpler desktop application. Your role is to help users solve coding problems, explain concepts, and provide software development assistance. Your tasks include writing and improving code, project file structure, configurations, documentation, tests, reviewing code for optimization, and answering user questions.

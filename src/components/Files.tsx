@@ -69,7 +69,7 @@ export const Files = () => {
           {files.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center p-1 bg-white border hover:border-gray-300 hover:shadow-md rounded-md cursor-pointer ${!file?.content && 'opacity-50'}`}
+              className={`flex items-center px-1 bg-white border hover:border-gray-300 hover:shadow-md rounded-sm cursor-pointer ${!file?.content && 'opacity-50'}`}
               onClick={() => handleFileClick(file)}
             >
               <File className="text-blue-500" />
@@ -80,7 +80,7 @@ export const Files = () => {
                     e.stopPropagation();
                     writeFile(file.content, file.path);
                   }}
-                  className="ml-auto px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 hover:shadow-md text-white rounded-full"
+                  className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 hover:shadow-md text-white rounded-full"
                 >
                   Write
                 </button>

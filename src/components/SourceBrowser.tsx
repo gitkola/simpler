@@ -1,14 +1,11 @@
+import { useAppSelector } from "../store";
 import FolderTreeView from "./FolderTreeView";
 import ProjectList from "./ProjectList";
 import Settings from "./Settings";
 
-interface SourceBrowserProps {
-  activeSource: string | null;
-}
-
-export default function SourceBrowser({ activeSource }: SourceBrowserProps) {
-
-  switch (activeSource) {
+export default function SourceBrowser() {
+  const activeSideMenuItem = useAppSelector((state) => state.layout.activeSideMenuItem);
+  switch (activeSideMenuItem) {
     case "projects":
       return (
         <ProjectList />

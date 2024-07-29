@@ -50,7 +50,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
       <div className={`no-select ${className}`}>
         <textarea
           ref={textareaRef}
-          className={`flex p-1 h-full w-full rounded-md bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md focus:outline-none overflow-auto resize-none no-scrollbar no-select`}
+          className={`flex p-1 h-full w-full rounded-sm bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md focus:outline-none overflow-auto resize-none no-scrollbar no-select`}
           value={text}
           onChange={e => setText(e.target.value)}
           rows={rows}
@@ -104,7 +104,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
         (editing || isEditMode) ? (
           <textarea
             ref={textareaRef}
-            className={`flex p-1 h-full w-full rounded-md bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md focus:outline-none overflow-auto resize-none no-scrollbar`}
+            className={`flex p-1 h-full w-full rounded-sm bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md focus:outline-none overflow-auto resize-none no-scrollbar`}
             value={text}
             onChange={e => setText(e.target.value)}
             rows={rows}
@@ -112,7 +112,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
           />
         ) : (
           <div
-            className="p-1 rounded-md bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md no-scrollbar"
+            className="p-1 rounded-sm bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md no-scrollbar"
             onDoubleClick={() => setIsEditMode(true)}
           >
             {text || placeholder}

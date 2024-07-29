@@ -16,22 +16,25 @@ import {
   mergeProjectStates,
   readFilesFromFS,
   mergeFiles,
+  loadProjectOpenedFilesFromFile,
+  saveProjectOpenedFilesToFile,
 } from "../utils/projectStateUtils";
 import { AppDispatch, RootState } from "./index";
 import { getAIResponseWithProjectState } from "../services/aiService";
-import {
-  MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST,
-  MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST,
-  MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST,
-} from "../constants";
+
+export interface IFile {
+  path: string;
+}
 
 export interface ICurrentProject {
   currentProjectState: IProjectState | null;
   currentProjectMessages: IMessage[];
   currentProjectSettings: IProjectSettings | null;
+  currentProjectOpenedFiles: IFile[];
   currentProjectStateError?: string | null;
   currentProjectMessagesError?: string | null;
   currentProjectSettingsError?: string | null;
+  currentProjectOpenedFilesError?: string | null;
   aiModelRequestInProgress: boolean;
   aiModelRequestError: string | null;
 }
@@ -45,6 +48,7 @@ const defaultInitialState: ICurrentProject = {
   currentProjectSettingsError: null,
   aiModelRequestInProgress: false,
   aiModelRequestError: null,
+  currentProjectOpenedFiles: [],
 };
 
 const currentProjectSlice = createSlice({
@@ -93,6 +97,12 @@ const currentProjectSlice = createSlice({
     setAIModelRequestError: (state, action: PayloadAction<any>) => {
       state.aiModelRequestError = action.payload;
     },
+    setCurrentProjectOpenedFiles: (state, action: PayloadAction<IFile[]>) => {
+      state.currentProjectOpenedFiles = action.payload;
+    },
+    setCurrentProjectOpenedFilesError: (state, action: PayloadAction<any>) => {
+      state.currentProjectOpenedFilesError = action.payload;
+    },
   },
 });
 
@@ -101,47 +111,49 @@ export const {
   setCurrentProjectState,
   setCurrentProjectMessages,
   setCurrentProjectSettings,
+  setCurrentProjectOpenedFiles,
   setCurrentProjectStateError,
   setCurrentProjectMessagesError,
   setCurrentProjectSettingsError,
+  setCurrentProjectOpenedFilesError,
   setAIModelRequestInProgress,
   setAIModelRequestError,
 } = currentProjectSlice.actions;
 
 export default currentProjectSlice.reducer;
 
-export const processProjectMessages =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const activeProjectPath = getState().projects.activeProjectPath;
-      if (!activeProjectPath) return;
-      const {
-        currentProjectState: projectState,
-        currentProjectMessages: messages,
-      } = getState().currentProject;
-      if (!projectState) {
-        throw new Error("Project State is not loaded");
-      }
-      // const { description, requirements, files, tasks } = projectState;
+// export const processProjectMessages =
+//   () => async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const activeProjectPath = getState().projects.activeProjectPath;
+//       if (!activeProjectPath) return;
+//       const {
+//         currentProjectState: projectState,
+//         currentProjectMessages: messages,
+//       } = getState().currentProject;
+//       if (!projectState) {
+//         throw new Error("Project State is not loaded");
+//       }
+//       // const { description, requirements, files, tasks } = projectState;
 
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.role === "app") {
-        // Expecting user action
-        return;
-      }
+//       const lastMessage = messages[messages.length - 1];
+//       if (lastMessage?.role === "app") {
+//         // Expecting user action
+//         return;
+//       }
 
-      if (lastMessage?.role === "user") {
-        // await dispatch(processUserMessage(lastMessage));
-        return;
-      }
-    } catch (error) {
-      const errorMessage = `Error processing project messages: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setCurrentProjectStateError(errorMessage));
-    }
-  };
+//       if (lastMessage?.role === "user") {
+//         // await dispatch(processUserMessage(lastMessage));
+//         return;
+//       }
+//     } catch (error) {
+//       const errorMessage = `Error processing project messages: ${
+//         (error as Error).message
+//       }`;
+//       console.error(errorMessage);
+//       dispatch(setCurrentProjectStateError(errorMessage));
+//     }
+//   };
 
 // export const processUserMessage =
 //   (message: IMessage) =>
@@ -168,26 +180,26 @@ export const processProjectMessages =
 //     }
 //   };
 
-export const processProjectDescription =
-  (message: IMessage) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const projectState = getState().currentProject.currentProjectState;
-      const updatedProjectState = {
-        ...projectState,
-        description: [
-          { description: message.content as string, id: Date.now() },
-        ],
-      };
-      await dispatch(saveProjectState(updatedProjectState as IProjectState));
-    } catch (error) {
-      const errorMessage = `Error processing project description: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setCurrentProjectStateError(errorMessage));
-    }
-  };
+// export const processProjectDescription =
+//   (message: IMessage) =>
+//   async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const projectState = getState().currentProject.currentProjectState;
+//       const updatedProjectState = {
+//         ...projectState,
+//         description: [
+//           { description: message.content as string, id: Date.now() },
+//         ],
+//       };
+//       await dispatch(saveProjectState(updatedProjectState as IProjectState));
+//     } catch (error) {
+//       const errorMessage = `Error processing project description: ${
+//         (error as Error).message
+//       }`;
+//       console.error(errorMessage);
+//       dispatch(setCurrentProjectStateError(errorMessage));
+//     }
+//   };
 
 // export const processProjectRequirements =
 //   (message: IMessage) =>
@@ -218,126 +230,126 @@ export const processProjectDescription =
 //     }
 //   };
 
-export const handleRequestAIModelAPI =
-  (prompt: string) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      dispatch(setAIModelRequestError(null));
-      dispatch(setAIModelRequestInProgress(true));
-      const projectState = getState().currentProject.currentProjectState;
-      const currentProjectSettings =
-        getState().currentProject.currentProjectSettings;
-      const settings = getState().settings;
-      if (!projectState || !currentProjectSettings) {
-        throw new Error("Project State or Settings are not loaded");
-      }
-      const { service, model, temperature, max_tokens } =
-        currentProjectSettings;
-      const { aiResponse, updatedProjectState } =
-        await getAIResponseWithProjectState(
-          prompt,
-          projectState,
-          service,
-          model,
-          settings.apiKeys[service],
-          temperature,
-          max_tokens
-        );
+// export const handleRequestAIModelAPI =
+//   (prompt: string) =>
+//   async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       dispatch(setAIModelRequestError(null));
+//       dispatch(setAIModelRequestInProgress(true));
+//       const projectState = getState().currentProject.currentProjectState;
+//       const currentProjectSettings =
+//         getState().currentProject.currentProjectSettings;
+//       const settings = getState().settings;
+//       if (!projectState || !currentProjectSettings) {
+//         throw new Error("Project State or Settings are not loaded");
+//       }
+//       const { service, model, temperature, max_tokens } =
+//         currentProjectSettings;
+//       const { aiResponse, updatedProjectState } =
+//         await getAIResponseWithProjectState(
+//           prompt,
+//           projectState,
+//           service,
+//           model,
+//           settings.apiKeys[service],
+//           temperature,
+//           max_tokens
+//         );
 
-      const messages = getState().currentProject.currentProjectMessages;
-      const prevMessages = messages || [];
-      const now = Date.now();
-      const assistantMessage: IMessage = {
-        id: now,
-        content: aiResponse,
-        role: "assistant",
-        createdAt: now,
-        updatedAt: now,
-      };
+//       const messages = getState().currentProject.currentProjectMessages;
+//       const prevMessages = messages || [];
+//       const now = Date.now();
+//       const assistantMessage: IMessage = {
+//         id: now,
+//         content: aiResponse,
+//         role: "assistant",
+//         createdAt: now,
+//         updatedAt: now,
+//       };
 
-      const nextProjectState = mergeProjectStates(
-        projectState,
-        updatedProjectState
-      );
-      await dispatch(saveProjectState(nextProjectState));
-      await dispatch(saveProjectMessages([...prevMessages, assistantMessage]));
-    } catch (error) {
-      const errorMessage = `Error while requesting AI Model API: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setAIModelRequestError(errorMessage));
-    } finally {
-      dispatch(setAIModelRequestInProgress(false));
-    }
-  };
+//       const nextProjectState = mergeProjectStates(
+//         projectState,
+//         updatedProjectState
+//       );
+//       await dispatch(saveProjectState(nextProjectState));
+//       await dispatch(saveProjectMessages([...prevMessages, assistantMessage]));
+//     } catch (error) {
+//       const errorMessage = `Error while requesting AI Model API: ${
+//         (error as Error).message
+//       }`;
+//       console.error(errorMessage);
+//       dispatch(setAIModelRequestError(errorMessage));
+//     } finally {
+//       dispatch(setAIModelRequestInProgress(false));
+//     }
+//   };
 
-export const processProjectState =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const activeProjectPath = getState().projects.activeProjectPath;
-      if (!activeProjectPath) return;
-      const {
-        currentProjectState: projectState,
-        currentProjectMessages: messages,
-      } = getState().currentProject;
-      if (!projectState) {
-        throw new Error("Project State is not loaded");
-      }
-      const { descriptions, requirements, files, tasks } = projectState;
+// export const processProjectState =
+//   () => async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const activeProjectPath = getState().projects.activeProjectPath;
+//       if (!activeProjectPath) return;
+//       const {
+//         currentProjectState: projectState,
+//         currentProjectMessages: messages,
+//       } = getState().currentProject;
+//       if (!projectState) {
+//         throw new Error("Project State is not loaded");
+//       }
+//       const { descriptions, requirements, files, tasks } = projectState;
 
-      const lastMessage = messages[messages.length - 1];
+//       const lastMessage = messages[messages.length - 1];
 
-      if (descriptions === null || descriptions?.length === 0) {
-        if (
-          lastMessage?.content === MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST
-        ) {
-          // Expecting user to provide description
-          return;
-        } else {
-          dispatch(
-            addMessageToThread(
-              MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST,
-              "app"
-            )
-          );
-        }
-        return;
-      }
+//       if (descriptions === null || descriptions?.length === 0) {
+//         if (
+//           lastMessage?.content === MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST
+//         ) {
+//           // Expecting user to provide description
+//           return;
+//         } else {
+//           dispatch(
+//             addMessageToThread(
+//               MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST,
+//               "app"
+//             )
+//           );
+//         }
+//         return;
+//       }
 
-      if (requirements?.length === 0) {
-        if (
-          lastMessage?.content !== MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST
-        ) {
-          dispatch(
-            addMessageToThread(
-              MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST,
-              "app"
-            )
-          );
-        }
-        return;
-      }
+//       if (requirements?.length === 0) {
+//         if (
+//           lastMessage?.content !== MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST
+//         ) {
+//           dispatch(
+//             addMessageToThread(
+//               MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST,
+//               "app"
+//             )
+//           );
+//         }
+//         return;
+//       }
 
-      if (files?.length === 0 || tasks?.length === 0) {
-        dispatch(
-          addMessageToThread(
-            MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST,
-            "app",
-            "generate_tasks_and_files"
-          )
-        );
-        return;
-      }
-    } catch (error) {
-      console.error("Error while processing Project State:", error);
-      dispatch(
-        setCurrentProjectStateError(
-          `Error while processing Project State: ${(error as Error).message}`
-        )
-      );
-    }
-  };
+//       if (files?.length === 0 || tasks?.length === 0) {
+//         dispatch(
+//           addMessageToThread(
+//             MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST,
+//             "app",
+//             "generate_tasks_and_files"
+//           )
+//         );
+//         return;
+//       }
+//     } catch (error) {
+//       console.error("Error while processing Project State:", error);
+//       dispatch(
+//         setCurrentProjectStateError(
+//           `Error while processing Project State: ${(error as Error).message}`
+//         )
+//       );
+//     }
+//   };
 
 export const loadProject =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -347,7 +359,7 @@ export const loadProject =
       await dispatch(loadProjectState());
       await dispatch(loadProjectMessages());
       await dispatch(loadProjectSettings());
-      // await dispatch(processProjectState());
+      await dispatch(loadProjectOpenedFiles());
     } catch (error) {
       const errorMessage = `Failed to load project: ${
         (error as Error).message
@@ -396,6 +408,21 @@ export const loadProjectSettings =
     }
   };
 
+export const loadProjectOpenedFiles =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const activeProjectPath = getState().projects.activeProjectPath;
+    if (!activeProjectPath) return;
+    try {
+      const openedFiles = await loadProjectOpenedFilesFromFile(
+        activeProjectPath
+      );
+      dispatch(setCurrentProjectOpenedFiles(openedFiles));
+    } catch (error) {
+      console.error("Failed to load project opened files:", error);
+      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+    }
+  };
+
 export const saveProjectState =
   (newProjectState: IProjectState) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -435,6 +462,23 @@ export const saveProjectSettings =
     } catch (error) {
       console.error("Failed to save project settings:", error);
       dispatch(setCurrentProjectSettingsError((error as Error).message));
+    }
+  };
+
+export const saveProjectOpenedFiles =
+  (newProjectOpenedFiles: IFile[]) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      await saveProjectOpenedFilesToFile(
+        activeProjectPath,
+        newProjectOpenedFiles
+      );
+      dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
+    } catch (error) {
+      console.error("Failed to save project opened files:", error);
+      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
     }
   };
 

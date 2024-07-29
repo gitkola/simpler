@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TreeView } from "@primer/react";
-import { useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { getFilteredProjectFiles } from "../utils/getFilteredProjectFiles";
 import {
   getFolderNameFromFilePath,
@@ -9,6 +9,7 @@ import {
 import { File } from "./Icons";
 import SquareButton from "./SquareButton";
 import { openFolder } from "../utils/openFolder";
+import { IFile, saveProjectOpenedFiles } from "../store/currentProjectSlice";
 
 interface ITreeData {
   name: string;
@@ -79,6 +80,8 @@ export default function FolderTreeView() {
     (state) => state.projects.activeProjectPath
   );
   const [treeData, setTreeData] = useState<any>(null);
+  const files: IFile[] = useAppSelector((state) => state.currentProject.currentProjectOpenedFiles) || [];
+  const dispatch = useAppDispatch();
 
   const loadTreeData = async () => {
     const data = await fetchTreeData(activeProjectPath!);
@@ -90,7 +93,7 @@ export default function FolderTreeView() {
     loadTreeData();
   }, [activeProjectPath]);
 
-  const renderTree = (tree: ITreeData) => (
+  const renderTreeItem = (tree: ITreeData) => (
     <TreeView.Item
       key={tree.path}
       id={tree.path}
@@ -103,13 +106,15 @@ export default function FolderTreeView() {
         }
       }}
       onSelect={() => {
-        console.log("Selected", tree);
         if (Array.isArray(tree.children) && typeof tree.isOpen === "boolean") {
           tree.isOpen = !tree.isOpen;
           setTreeData({ ...treeData });
         } else {
-          tree.selected = !tree.selected;
-          setTreeData({ ...treeData });
+          // tree.selected = !tree.selected;
+          if (files.some((file) => file.path === `${activeProjectPath}${tree.path}`)) return;
+          const newFiles: IFile[] = [...files, { path: `${activeProjectPath}${tree.path}` }];
+          dispatch(saveProjectOpenedFiles(newFiles));
+          // setTreeData({ ...treeData });
         }
       }}
       containIntrinsicSize="content-visiblity: auto"
@@ -134,14 +139,14 @@ export default function FolderTreeView() {
               }`
             );
           }}
-          className="w-5 h-5 bg-transparent hover:text-white hover:transparent"
+          className="w-5 h-5 bg-transparent hover:text-white hover:bg-transparent"
           iconSize={60}
           iconClassName=""
         />
       </div>
       {Array.isArray(tree.children) && (
         <TreeView.SubTree>
-          {tree.children.map((child) => renderTree(child))}
+          {tree.children.map((child) => renderTreeItem(child))}
         </TreeView.SubTree>
       )}
     </TreeView.Item>
@@ -151,7 +156,7 @@ export default function FolderTreeView() {
     <div className="flex-1 h-screen overflow-auto text-gray-200">
       <nav aria-label="Files">
         <TreeView aria-label="Files" className="p-0">
-          {treeData && renderTree(treeData)}
+          {treeData && renderTreeItem(treeData)}
         </TreeView>
       </nav>
       {/* <pre>{JSON.stringify(treeData, null, 2)}</pre> */}

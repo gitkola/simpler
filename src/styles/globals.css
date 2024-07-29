@@ -25,4 +25,32 @@
         -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* Internet Explorer/Edge */
     }
+
+    /* Webkit Browsers */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: transparent;
+        position: relative;
+        left: -12px;
+        /* border-radius: 0px; */
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.2);
+        /* border-radius: 0px; */
+        /* border: 0px solid #f1f1f1; */
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(59, 130, 246, 0.5);
+    }
+    
+    /* Firefox */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+    }
 }

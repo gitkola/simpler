@@ -21,11 +21,10 @@ export default function SquareButton({
   iconColor,
   iconClassName,
 }: ISquareButtonProps) {
-  console.log(icon, isActive);
   return (
     <button
       onClick={onClick}
-      className={`w-12 h-12 flex items-center justify-center bg-gray-800 text-gray-300 hover:text-white select-none ${className} ${isActive && "bg-blue-600"}`}
+      className={`w-12 h-12 flex items-center justify-center bg-gray-800 text-gray-300 hover:text-white hover:bg-blue-400 select-none ${className} ${isActive && "bg-blue-600"}`}
       disabled={disabled}
     >
       <AppIcon
