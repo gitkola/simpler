@@ -8,6 +8,7 @@ import { handleNewMessageToAIModel, saveProjectSettings } from "../store/current
 import { Select } from "./Select";
 import Spinner from "./Spinner";
 import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../constants";
+import { outlineButton, textInput } from "../styles/styles";
 
 export const ChatView: React.FC = () => {
   const messages = useAppSelector((state: RootState) => state.currentProject.currentProjectMessages);
@@ -76,7 +77,7 @@ export const ChatView: React.FC = () => {
           <div>Suggestions:</div>
           <button
             onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user"))}
-            className="flex bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50 space-x-2"
+            className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
             <div>Generate Tasks</div>
@@ -84,7 +85,7 @@ export const ChatView: React.FC = () => {
           </button>
           <button
             onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user"))}
-            className="flex bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50 space-x-2"
+            className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
             <div>Generate File Structure</div>
@@ -102,7 +103,7 @@ export const ChatView: React.FC = () => {
                 handleSendMessage();
               }
             }}
-            className="flex-grow p-1 rounded-md focus:outline-none resize-none overflow-y-scroll no-scrollbar"
+            className={`${textInput}`}
             placeholder="Type your message... (Shift+Enter for new line)"
             disabled={aiModelRequestInProgress}
             rows={3}

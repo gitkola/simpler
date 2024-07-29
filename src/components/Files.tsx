@@ -55,7 +55,7 @@ export const Files = () => {
   };
 
   return (
-    <div className="space-y-1 p-1">
+    <div className="space-y-1 py-1">
       <div className="flex flex-col p-1 space-y-1 items-end justify-end">
         <button
           className="px-3 py-1 text-sm bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md rounded-full justify-end"
@@ -69,7 +69,7 @@ export const Files = () => {
           {files.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center px-1 bg-white border hover:border-gray-300 hover:shadow-md rounded-sm cursor-pointer ${!file?.content && 'opacity-50'}`}
+              className={`flex items-center p-1 bg-white border hover:border-gray-300 hover:shadow-md rounded-sm cursor-pointer ${!file?.content && 'opacity-50'}`}
               onClick={() => handleFileClick(file)}
             >
               <File className="text-blue-500" />

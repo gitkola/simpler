@@ -44,7 +44,7 @@ const Descriptions: React.FC = () => {
   };
 
   return (
-    <div className="space-y-1 p-1">
+    <div className="space-y-1 py-1">
       {descriptions.map(description => (
         <div key={description.id} className="flex-1 justify-between space-x-1">
           <Textarea

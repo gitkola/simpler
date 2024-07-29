@@ -7,7 +7,7 @@ export const ProjectState = () => {
   const currentProjectState = useAppSelector((state) => state.currentProject.currentProjectState);
   if (!currentProjectState) return null;
   return (
-    <SyntaxHighlighter language={'json'} style={vscDarkPlus} wrapLongLines>
+    <SyntaxHighlighter language={'json'} style={vscDarkPlus} wrapLongLines className="select-text">
       {(currentProjectState && JSON.stringify(currentProjectState, null, 2)) || ''}
     </SyntaxHighlighter>
   );

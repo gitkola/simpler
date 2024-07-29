@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { textInput } from '../styles/styles';
 
 export interface AccordionTextareaProps {
   initialValue: string;
@@ -47,10 +48,10 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
 
   if (editing) {
     return (
-      <div className={`no-select ${className}`}>
+      <div className={`${className}`}>
         <textarea
           ref={textareaRef}
-          className={`flex p-1 h-full w-full rounded-sm bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md focus:outline-none overflow-auto resize-none no-scrollbar no-select`}
+          className={`${textInput} py-1`}
           value={text}
           onChange={e => setText(e.target.value)}
           rows={rows}
@@ -104,7 +105,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
         (editing || isEditMode) ? (
           <textarea
             ref={textareaRef}
-            className={`flex p-1 h-full w-full rounded-sm bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md focus:outline-none overflow-auto resize-none no-scrollbar`}
+            className={`${textInput} py-1`}
             value={text}
             onChange={e => setText(e.target.value)}
             rows={rows}
@@ -112,7 +113,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
           />
         ) : (
           <div
-            className="p-1 rounded-sm bg-white hover:ring-1 hover:ring-gray-300 hover:shadow-md no-scrollbar"
+            className={`${textInput} py-1`}
             onDoubleClick={() => setIsEditMode(true)}
           >
             {text || placeholder}
@@ -121,7 +122,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
       }
 
       {(isEditMode || isEdited) && (
-        <div className="mt-1 flex justify-end space-x-1 no-select">
+        <div className="mt-1 flex justify-end space-x-1">
           <button
             className="px-2 py-1 border border-gray-300 bg-white rounded-md hover:shadow-md hover:bg-gray-100 transition-colors"
             onClick={onCancel}

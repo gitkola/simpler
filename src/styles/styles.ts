@@ -1,0 +1,2 @@
+export const textInput = `flex p-2 h-full w-full rounded-sm ring-1 ring-gray-300 overflow-auto resize-none hover:ring-1 hover:ring-gray-300 hover:shadow-inner hover:shadow-gray-300 focus:outline-none focus:ring-blue-300 focus:shadow-blue-300 focus:shadow-inner focus:ring-1`;
+export const outlineButton = `flex bg-transparent border-blue-500 border text-blue-600 rounded-full hover:bg-blue-50 hover:bottom-0.5 hover:relative hover:shadow-md focus:outline-none px-2 items-center justify-center disabled:opacity-50 space-x-2`;

@@ -37,9 +37,9 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
       return (
         <button
           key={index}
-          className={`flex items-center justify-between pl-4 pr-2 h-10 focus:outline-none border-b-4 ${index === activeTab
-            ? 'border-blue-500 bg-gray-200 hover:bg-white'
-            : 'border-gray-500 bg-gray-300 text-gray-500 hover:text-gray-700 hover:bg-gray-400'
+          className={`flex items-center justify-between pl-4 pr-2 py-1 h-fit w-fit focus:outline-none ${index === activeTab
+            ? 'border-blue-500 bg-blue-500 bg-opacity-50 hover:bg-opacity-70'
+            : 'border-blue-300 bg-blue-300 bg-opacity-50 hover:bg-opacity-70'
             }`}
           onClick={() => handleTabClick(index)}
         >
@@ -62,7 +62,7 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex h-10 border-b border-0.5 border-gray-700 overflow-y-auto no-scrollbar">{tabs}</div>
+      <div className="flex h-fit border-b border-0.5 border-gray-700 overflow-x-auto">{tabs}</div>
       <div className="flex-1 overflow-auto">{tabContents[activeTab]}</div>
     </div>
   );
