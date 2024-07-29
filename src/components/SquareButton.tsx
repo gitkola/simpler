@@ -11,14 +11,29 @@ interface ISquareButtonProps {
   iconClassName?: string;
 }
 
-export default function SquareButton({ onClick, icon, className, disabled, isActive, iconSize, iconColor, iconClassName }: ISquareButtonProps) {
+export default function SquareButton({
+  onClick,
+  icon,
+  className,
+  disabled,
+  isActive,
+  iconSize = 32,
+  iconColor,
+  iconClassName,
+}: ISquareButtonProps) {
+  console.log(icon, isActive);
   return (
     <button
       onClick={onClick}
-      className={`w-10 h-10 flex items-center justify-center bg-gray-800 text-gray-300 hover:bg-gray-400 hover:text-white select-none ${className} ${isActive && 'bg-gray-700'}`}
+      className={`w-12 h-12 flex items-center justify-center bg-gray-800 text-gray-300 hover:text-white select-none ${className} ${isActive && "bg-blue-600"}`}
       disabled={disabled}
     >
-      <AppIcon icon={icon} size={iconSize} color={iconColor} className={iconClassName} />
+      <AppIcon
+        icon={icon}
+        size={iconSize}
+        color={iconColor}
+        className={iconClassName}
+      />
     </button>
   );
 }

@@ -7,9 +7,15 @@ export interface SidePanelProps {
   onSetIsMinimized: () => void;
 }
 
-const SidePanel: React.FC<SidePanelProps> = ({ onSideMenuItemClick, activeSideMenuItem, onSetIsMinimized }: SidePanelProps) => {
+const SidePanel: React.FC<SidePanelProps> = ({
+  onSideMenuItemClick,
+  activeSideMenuItem,
+  onSetIsMinimized,
+}: SidePanelProps) => {
   return (
-    <div className={`h-screen flex flex-col bg-gray-800 w-10 pb-2 overflow-x-hidden border-r border-gray-700 border-0.5`}>
+    <div
+      className={`h-screen flex flex-col bg-gray-800 pb-2 overflow-x-hidden border-r border-gray-700 border-0.5`}
+    >
       <SquareButton
         onClick={onSetIsMinimized}
         icon="sidebar"

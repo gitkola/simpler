@@ -1,15 +1,19 @@
 import React from "react";
 
+const STROKE_WIDTH = 1;
+
 interface IconProps {
   size?: number;
   color?: string;
   className?: string;
+  strokeWidth?: number;
 }
 
 export const ChevronDown: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -18,7 +22,7 @@ export const ChevronDown: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -31,6 +35,7 @@ export const ChevronRight: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +44,7 @@ export const ChevronRight: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -52,6 +57,7 @@ export const ChevronLeft: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +66,7 @@ export const ChevronLeft: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -73,6 +79,7 @@ export const ChevronDoubleRight: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +88,7 @@ export const ChevronDoubleRight: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -95,6 +102,7 @@ export const ChevronDoubleLeft: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -103,7 +111,7 @@ export const ChevronDoubleLeft: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -117,6 +125,7 @@ export const Plus: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +134,7 @@ export const Plus: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -139,6 +148,7 @@ export const Dashboard: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +157,7 @@ export const Dashboard: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -163,6 +173,7 @@ export const CodeEditor: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +182,7 @@ export const CodeEditor: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -185,6 +196,7 @@ export const FileExplorer: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +205,7 @@ export const FileExplorer: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -206,6 +218,7 @@ export const Settings: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -214,7 +227,7 @@ export const Settings: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -228,6 +241,7 @@ export const ArrowUp: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -236,7 +250,7 @@ export const ArrowUp: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -250,6 +264,7 @@ export const ThreeDotsIcon: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -270,6 +285,7 @@ export const Edit: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -278,7 +294,7 @@ export const Edit: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -292,6 +308,7 @@ export const Trash: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -300,7 +317,7 @@ export const Trash: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -316,6 +333,7 @@ export const Folder: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -324,7 +342,7 @@ export const Folder: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -342,6 +360,7 @@ export const File: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -350,7 +369,7 @@ export const File: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -364,6 +383,7 @@ export const Projects: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -372,7 +392,7 @@ export const Projects: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -400,6 +420,7 @@ export const SidebarIcon: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -408,7 +429,7 @@ export const SidebarIcon: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -422,6 +443,7 @@ export const OpenProject: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -430,7 +452,7 @@ export const OpenProject: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -447,6 +469,7 @@ export const Open: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -455,7 +478,7 @@ export const Open: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -470,6 +493,7 @@ export const OpenFolder: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -478,7 +502,7 @@ export const OpenFolder: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -491,6 +515,7 @@ export const FolderTree: React.FC<IconProps> = ({
   size = 24,
   color = "currentColor",
   className = "",
+  strokeWidth = STROKE_WIDTH,
 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -499,7 +524,7 @@ export const FolderTree: React.FC<IconProps> = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke={color}
-    strokeWidth="2"
+    strokeWidth={strokeWidth}
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
@@ -511,13 +536,40 @@ export const FolderTree: React.FC<IconProps> = ({
   </svg>
 );
 
-export type AppIcons = "chevron-down" | "chevron-right" | "chevron-left" | "chevron-double-right" | "chevron-double-left" | "plus" | "dashboard" | "code-editor" | "file-explorer" | "settings" | "arrow-up" | "three-dots" | "edit" | "trash" | "folder" | "file" | "projects" | "sidebar" | "open-project" | "open" | "open-folder" | "folder-tree";
+export type AppIcons =
+  | "chevron-down"
+  | "chevron-right"
+  | "chevron-left"
+  | "chevron-double-right"
+  | "chevron-double-left"
+  | "plus"
+  | "dashboard"
+  | "code-editor"
+  | "file-explorer"
+  | "settings"
+  | "arrow-up"
+  | "three-dots"
+  | "edit"
+  | "trash"
+  | "folder"
+  | "file"
+  | "projects"
+  | "sidebar"
+  | "open-project"
+  | "open"
+  | "open-folder"
+  | "folder-tree";
 
 interface IAppIconProps extends IconProps {
   icon: AppIcons;
 }
 
-export default function AppIcon({ icon, size, color, className }: IAppIconProps) {
+export default function AppIcon({
+  icon,
+  size,
+  color,
+  className,
+}: IAppIconProps) {
   switch (icon) {
     case "chevron-down":
       return <ChevronDown size={size} color={color} className={className} />;
@@ -526,9 +578,13 @@ export default function AppIcon({ icon, size, color, className }: IAppIconProps)
     case "chevron-left":
       return <ChevronLeft size={size} color={color} className={className} />;
     case "chevron-double-right":
-      return <ChevronDoubleRight size={size} color={color} className={className} />;
+      return (
+        <ChevronDoubleRight size={size} color={color} className={className} />
+      );
     case "chevron-double-left":
-      return <ChevronDoubleLeft size={size} color={color} className={className} />;
+      return (
+        <ChevronDoubleLeft size={size} color={color} className={className} />
+      );
     case "plus":
       return <Plus size={size} color={color} className={className} />;
     case "dashboard":
