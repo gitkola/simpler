@@ -9,7 +9,7 @@ import {
 import { File } from "./Icons";
 import SquareButton from "./SquareButton";
 import { openFolder } from "../utils/openFolder";
-import { IFile, saveProjectOpenedFiles } from "../store/currentProjectSlice";
+import { handleClickOnFile } from "../store/currentProjectSlice";
 
 export interface ITreeData {
   name: string;
@@ -80,7 +80,6 @@ export default function FolderTreeView() {
     (state) => state.projects.activeProjectPath
   );
   const [treeData, setTreeData] = useState<any>(null);
-  const files: IFile[] = useAppSelector((state) => state.currentProject.currentProjectOpenedFiles) || [];
   const dispatch = useAppDispatch();
 
   const loadTreeData = async () => {
@@ -97,27 +96,9 @@ export default function FolderTreeView() {
     <TreeView.Item
       key={tree.path}
       id={tree.path}
-      className=""
-    // className={`hover:first-line::bg-blue-200 ${tree.selected === true && "bg-purple-800 hover:bg-purple-500"}`}
-    // expanded={tree.isOpen}
-    // onExpandedChange={(isExpanded) => {
-    //   if (typeof tree.isOpen === "boolean") {
-    //     tree.isOpen = isExpanded;
-    //     setTreeData({ ...treeData });
-    //   }
-    // }}
-    // onSelect={() => {
-    //   if (Array.isArray(tree.children) && typeof tree.isOpen === "boolean") {
-    //     tree.isOpen = !tree.isOpen;
-    //     setTreeData({ ...treeData });
-    //   } else {
-    //     // tree.selected = !tree.selected;
-    //     if (files.some((file) => file.path === `${activeProjectPath}${tree.path}`)) return;
-    //     const newFiles: IFile[] = [...files, { path: `${activeProjectPath}${tree.path}` }];
-    //     dispatch(saveProjectOpenedFiles(newFiles));
-    //     // setTreeData({ ...treeData });
-    //   }
-    // }}
+      onSelect={async () => {
+        await dispatch(handleClickOnFile(`${activeProjectPath}${tree.path}`));
+      }}
     >
       <TreeView.LeadingVisual label={tree.name}>
         {tree.children === undefined ? (
@@ -158,7 +139,6 @@ export default function FolderTreeView() {
           {treeData && renderTreeItem(treeData)}
         </TreeView>
       </nav>
-      {/* <pre>{JSON.stringify(treeData, null, 2)}</pre> */}
     </div>
   );
 }

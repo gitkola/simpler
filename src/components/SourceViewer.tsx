@@ -10,7 +10,13 @@ export default function SourceViewer() {
 
   return (
     <TabsView>
-      {files.map((file) => (<TabContent title={file.path} key={file.path}><FileViewer path={file.path} /></TabContent>))}
+      {files.map((file) => (
+        <TabContent path={file.path} key={file.path} isActive={!!file.isActive}>
+          {
+            !!file.isActive && <FileViewer path={file.path} />
+          }
+        </TabContent>
+      ))}
     </TabsView>
   );
 }

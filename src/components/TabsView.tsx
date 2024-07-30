@@ -1,53 +1,57 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { getFileNameFromPath } from '../utils/pathUtils';
 import { Close } from './Icons';
 import { useAppDispatch, useAppSelector } from '../store';
 import { saveProjectOpenedFiles } from '../store/currentProjectSlice';
 
 type TabContentProps = {
-  title: string;
+  path: string;
+  isActive: boolean;
   children: React.ReactNode;
 };
 
-export const TabContent: React.FC<TabContentProps> = ({ title, children }) => {
-  return <div key={title}>{children}</div>;
+export const TabContent: React.FC<TabContentProps> = ({ children }) => {
+  return <>{children}</>;
 };
-
 
 type TabsViewProps = {
   children: React.ReactNode;
 };
 
 const TabsView: React.FC<TabsViewProps> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const files = useAppSelector((state) => state.currentProject.currentProjectOpenedFiles) || [];
+  const { currentProjectOpenedFiles } = useAppSelector((state) => state.currentProject);
   const dispatch = useAppDispatch();
-  const handleTabClick = (index: number) => {
-    setActiveTab(index);
+  const handleTabClick = async (path: string) => {
+    await dispatch(saveProjectOpenedFiles(currentProjectOpenedFiles.map((file) => {
+      if (file.path === path) return { ...file, isActive: true };
+      return { ...file, isActive: false };
+    })));
   };
 
-  const handleCloseTab = async (title: string) => {
-    const newFiles = files.filter((file) => file.path !== title);
+  const handleCloseTab = async (path: string) => {
+    const newFiles = currentProjectOpenedFiles.filter((file) => file.path !== path);
     await dispatch(saveProjectOpenedFiles(newFiles));
-    setActiveTab(0);
   }
 
   const tabs = React.Children.map(children, (child, index) => {
-    if (React.isValidElement(child) && child.props.title) {
+    if (React.isValidElement(child) && child.props.path) {
       return (
         <button
           key={index}
-          className={`flex items-center justify-between pl-4 pr-2 py-1 h-fit w-fit focus:outline-none ${index === activeTab
-            ? 'border-blue-500 bg-blue-500 bg-opacity-50 hover:bg-opacity-70'
-            : 'border-blue-300 bg-blue-300 bg-opacity-50 hover:bg-opacity-70'
+          className={`flex items-center justify-between pl-4 pr-2 py-1 h-fit w-fit focus:outline-none
+            ${child.props.isActive
+              ? 'border-blue-500 bg-blue-500 bg-opacity-50 hover:bg-opacity-70'
+              : 'border-blue-300 bg-blue-300 bg-opacity-50 hover:bg-opacity-70'
             }`}
-          onClick={() => handleTabClick(index)}
+          onClick={async () => {
+            !child.props.isActive && await handleTabClick(child.props.path);
+          }}
         >
-          {getFileNameFromPath(child.props.title)}
+          {getFileNameFromPath(child.props.path)}
           <div className="flex items-center justify-center w-6 h-6 ml-2 hover:bg-slate-400"
             onClick={async (e) => {
               e.stopPropagation();
-              await handleCloseTab(child.props.title);
+              await handleCloseTab(child.props.path);
             }}
           >
             <Close size={20} />
@@ -58,12 +62,12 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
     return null;
   });
 
-  const tabContents = React.Children.toArray(children);
+  const tabContent = React.Children.toArray(children).find((child) => (child as React.ReactElement).props.isActive);
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="flex h-fit border-b border-0.5 border-gray-700 overflow-x-auto">{tabs}</div>
-      <div className="flex-1 overflow-auto">{tabContents[activeTab]}</div>
+      <div className="flex h-fit overflow-x-auto">{tabs}</div>
+      <div className="flex-1 overflow-auto">{tabContent}</div>
     </div>
   );
 };
