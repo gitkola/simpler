@@ -7,8 +7,6 @@ export interface IView {
 }
 
 export interface ILayoutState {
-  // projectStateViewWidth: number;
-  // activeSideMenuItem: string;
   showProjects: boolean;
   showFolderTree: boolean;
   showSettings: boolean;
@@ -18,9 +16,6 @@ export interface ILayoutState {
 }
 
 const defaultInitialState: ILayoutState = {
-  // projectStateViewWidth: 300,
-  // activeSideMenuItem: "projects",
-
   showProjects: true,
   showFolderTree: true,
   showSettings: false,
@@ -41,12 +36,6 @@ const layoutSlice = createSlice({
   name: "layout",
   initialState: loadInitialState(),
   reducers: {
-    // setProjectStateViewWidth: (state, action: PayloadAction<number>) => {
-    //   state.projectStateViewWidth = action.payload;
-    // },
-    // setActiveSideMenuItem: (state, action: PayloadAction<string>) => {
-    //   state.activeSideMenuItem = action.payload;
-    // },
     setShowProjects: (state, action: PayloadAction<boolean>) => {
       state.showProjects = action.payload;
     },
@@ -69,8 +58,6 @@ const layoutSlice = createSlice({
 });
 
 export const {
-  // setProjectStateViewWidth,
-  // setActiveSideMenuItem,
   setShowProjects,
   setShowFolderTree,
   setShowSettings,

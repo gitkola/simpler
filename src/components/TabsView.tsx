@@ -38,7 +38,7 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
       return (
         <button
           key={index}
-          className={`flex items-center justify-between pl-4 pr-2 py-1 h-fit w-fit focus:outline-none
+          className={`flex items-center justify-between pl-4 pr-2 h-[40px] w-fit focus:outline-none whitespace-nowrap
             ${child.props.isActive
               ? 'border-blue-500 bg-blue-500 bg-opacity-50 hover:bg-opacity-70'
               : 'border-blue-300 bg-blue-300 bg-opacity-50 hover:bg-opacity-70'
@@ -48,7 +48,7 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
           }}
         >
           {getFileNameFromPath(child.props.path)}
-          <div className="flex items-center justify-center w-6 h-6 ml-2 hover:bg-slate-400"
+          <div className="flex items-center justify-center w-6 h-6 ml-2 hover:bg-blue-500 bg-opacity-30 hover:bg-opacity-70"
             onClick={async (e) => {
               e.stopPropagation();
               await handleCloseTab(child.props.path);
@@ -65,8 +65,8 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
   const tabContent = React.Children.toArray(children).find((child) => (child as React.ReactElement).props.isActive);
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="flex h-fit overflow-x-auto">{tabs}</div>
+    <div className="h-screen w-full flex flex-col">
+      <div className="flex w-full h-[40px] overflow-x-auto overflow-y-hidden">{tabs}</div>
       <div className="flex-1 overflow-auto">{tabContent}</div>
     </div>
   );

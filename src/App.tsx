@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SidePanel from "./components/SidePanel";
-import SourceViewer from "./components/SourceViewer";
+import CodeViewer from "./components/CodeViewer";
 import ProjectStateView from "./components/ProjectStateView";
 import { ChatView } from "./components/ChatView";
 import { RootState, useAppDispatch, useAppSelector } from "./store";
 import { loadProject } from "./store/currentProjectSlice";
 import ProjectList from "./components/ProjectList";
-import FolderTreeView from "./components/FolderTreeView";
+import FileTreeView from "./components/FileTreeView";
 import Settings from "./components/Settings";
 import { resizeHandle } from "./styles/styles";
 
@@ -29,15 +29,14 @@ const App: React.FC = () => {
     <div className="flex h-screen w-screen">
       <SidePanel />
       <PanelGroup
-        // autoSaveId="conditional"
-        // autoSaveId="persistence"
+        autoSaveId="conditional"
         direction="horizontal"
         className="h-screen w-screen overflow-auto"
       >
         {
           showProjects && (
             <>
-              <Panel minSize={8} maxSize={100} id="projects" order={1}>
+              <Panel minSize={12} maxSize={16} id="projects" order={1}>
                 <ProjectList />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -47,8 +46,8 @@ const App: React.FC = () => {
         {
           showFolderTree && (
             <>
-              <Panel minSize={8} maxSize={100} id="folder-tree" order={2}>
-                <FolderTreeView />
+              <Panel minSize={12} maxSize={16} id="folder-tree" order={2}>
+                <FileTreeView />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
             </>
@@ -58,7 +57,7 @@ const App: React.FC = () => {
           showCodeEditor && (
             <>
               <Panel minSize={24} maxSize={100} id="code-editor" order={3}>
-                <SourceViewer />
+                <CodeViewer />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
             </>
@@ -67,7 +66,7 @@ const App: React.FC = () => {
         {
           showProjectState && (
             <>
-              <Panel minSize={16} maxSize={100} id="project-state" order={4}>
+              <Panel minSize={16} maxSize={24} id="project-state" order={4}>
                 <ProjectStateView />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -77,7 +76,7 @@ const App: React.FC = () => {
         {
           showChat && (
             <>
-              <Panel minSize={24} maxSize={100} id="chat" order={5}>
+              <Panel minSize={24} maxSize={32} id="chat" order={5}>
                 <ChatView />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -86,7 +85,7 @@ const App: React.FC = () => {
         }
         {
           showSettings && (
-            <Panel minSize={16} maxSize={100} id="settings" order={6}>
+            <Panel minSize={16} maxSize={16} id="settings" order={6}>
               <Settings />
             </Panel>
           )

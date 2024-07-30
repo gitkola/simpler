@@ -21,10 +21,25 @@ import {
 } from "../utils/projectStateUtils";
 import { AppDispatch, RootState } from "./index";
 import { getAIResponseWithProjectState } from "../services/aiService";
+import {
+  getFilteredProjectFiles,
+  getTreeData,
+} from "../utils/getFilteredProjectFiles";
+import { cloneDeep } from "lodash";
+import { setShowCodeEditor } from "./layoutSlice";
 
 export interface IFile {
   path: string;
   isActive?: boolean;
+}
+
+export interface ITreeData {
+  name: string;
+  path: string;
+  checked: number;
+  isOpen?: boolean;
+  children?: ITreeData[];
+  selected?: boolean;
 }
 
 export interface ICurrentProject {
@@ -36,6 +51,7 @@ export interface ICurrentProject {
   currentProjectMessagesError?: string | null;
   currentProjectSettingsError?: string | null;
   currentProjectOpenedFilesError?: string | null;
+  currentProjectFileTree: ITreeData | null;
   aiModelRequestInProgress: boolean;
   aiModelRequestError: string | null;
 }
@@ -49,6 +65,7 @@ const defaultInitialState: ICurrentProject = {
   currentProjectSettingsError: null,
   currentProjectOpenedFiles: [],
   currentProjectOpenedFilesError: null,
+  currentProjectFileTree: null,
   aiModelRequestInProgress: false,
   aiModelRequestError: null,
 };
@@ -105,6 +122,9 @@ const currentProjectSlice = createSlice({
     setCurrentProjectOpenedFilesError: (state, action: PayloadAction<any>) => {
       state.currentProjectOpenedFilesError = action.payload;
     },
+    setCurrentProjectFileTree: (state, action: PayloadAction<any>) => {
+      state.currentProjectFileTree = action.payload;
+    },
   },
 });
 
@@ -118,6 +138,7 @@ export const {
   setCurrentProjectMessagesError,
   setCurrentProjectSettingsError,
   setCurrentProjectOpenedFilesError,
+  setCurrentProjectFileTree,
   setAIModelRequestInProgress,
   setAIModelRequestError,
 } = currentProjectSlice.actions;
@@ -132,6 +153,7 @@ export const loadProject =
       await dispatch(loadProjectState());
       await dispatch(loadProjectMessages());
       await dispatch(loadProjectSettings());
+      await dispatch(loadProjectFileTree());
       await dispatch(loadProjectOpenedFiles());
     } catch (error) {
       const errorMessage = `Failed to load project: ${
@@ -178,6 +200,22 @@ export const loadProjectSettings =
     } catch (error) {
       console.error("Failed to load project settings:", error);
       dispatch(setCurrentProjectSettingsError((error as Error).message));
+    }
+  };
+
+export const loadProjectFileTree =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const activeProjectPath = getState().projects.activeProjectPath;
+    if (!activeProjectPath) return;
+    try {
+      const filteredFilePaths = await getFilteredProjectFiles(
+        activeProjectPath
+      );
+      const treeData = getTreeData(filteredFilePaths, activeProjectPath);
+      dispatch(setCurrentProjectFileTree(treeData));
+    } catch (error) {
+      console.error("Failed to load project file tree: ", error);
+      dispatch(setCurrentProjectStateError((error as Error).message));
     }
   };
 
@@ -251,7 +289,8 @@ export const handleClickOnFile =
       } else {
         newOpenedFiles = [...openedFiles];
       }
-      dispatch(
+      dispatch(setShowCodeEditor(true));
+      await dispatch(
         saveProjectOpenedFiles(
           newOpenedFiles.map((file) => ({
             path: file.path,
@@ -260,7 +299,33 @@ export const handleClickOnFile =
         )
       );
     } catch (error) {
-      console.error("Failed to set current project opened file:", error);
+      console.error("Failed to set current project opened file: ", error);
+      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+    }
+  };
+
+export const handleClickOnFolder =
+  (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const currentProjectFileTree =
+        getState().currentProject.currentProjectFileTree;
+      if (!currentProjectFileTree) return;
+      const toggleTreeFolder = (tree: ITreeData, path: string) => {
+        if (Array.isArray(tree.children)) {
+          if (tree.path === path) {
+            tree.isOpen = !tree.isOpen;
+            return;
+          }
+          for (const child of tree.children) {
+            toggleTreeFolder(child, path);
+          }
+        }
+      };
+      const newFileTree = cloneDeep(currentProjectFileTree);
+      toggleTreeFolder(newFileTree, tree.path);
+      dispatch(setCurrentProjectFileTree(newFileTree));
+    } catch (error) {
+      console.error("Failed to handle toggle open folder: ", error);
       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
     }
   };

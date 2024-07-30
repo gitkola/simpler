@@ -1,4 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import { ITreeData } from "../store/currentProjectSlice";
+import { getFolderNameFromPath } from "./pathUtils";
 
 interface FilterPattern {
   pattern: string;
@@ -40,26 +42,71 @@ function createAdditionalFilter(patterns: FilterPattern[]) {
 }
 
 export async function getFilteredProjectFiles(
-  projectPath: string
+  projectPath: string,
+  useAdditionalFilter: boolean = false
 ): Promise<string[]> {
   try {
     // TODO: work under optimisation.
-    // const start = Date.now();
-    // console.log("Scanning directory:", projectPath);
+    const start = Date.now();
+    console.log("Scanning directory:", projectPath);
     const files = await invoke<string[]>("scan_directory_with_gitignore", {
       root: projectPath,
     });
-    // console.log("Scanning directory took:", Date.now() - start, "ms", files);
-    // TODO: Additional filter needed for Project State
-    // const additionalFilter = createAdditionalFilter(initialPatterns);
-    // return additionalFilter(files).sort((a, b) => {
-    //   return a.localeCompare(b);
-    // });
-    return files.sort((a, b) => {
-      return a.localeCompare(b);
-    });
+    console.log("Scanning directory took:", Date.now() - start, "ms", files);
+    if (!useAdditionalFilter) return files.sort((a, b) => a.localeCompare(b));
+    const additionalFilter = createAdditionalFilter(initialPatterns);
+    return additionalFilter(files).sort((a, b) => a.localeCompare(b));
   } catch (error) {
     console.error("Error scanning directory:", error);
     throw error;
   }
+}
+
+export function getTreeData(
+  absoluteFilePaths: string[],
+  projectPath: string
+): ITreeData {
+  const root: ITreeData = {
+    name: getFolderNameFromPath(projectPath),
+    path: "/",
+    checked: 0,
+    children: [],
+    isOpen: true,
+    selected: false,
+  };
+
+  absoluteFilePaths.forEach((filePath) => {
+    if (filePath.includes(".DS_Store")) return;
+    const parts = filePath
+      .replace(`${projectPath}/`, "")
+      .split("/")
+      .filter(Boolean);
+    let currentNode = root;
+
+    parts.forEach((part, index) => {
+      const isLastPart = index === parts.length - 1;
+      const path = "/" + parts.slice(0, index + 1).join("/");
+      let node = currentNode.children?.find((child) => child.name === part);
+
+      if (!node) {
+        node = {
+          name: part,
+          path: path,
+          checked: 0,
+          isOpen: isLastPart ? undefined : false,
+          children: isLastPart ? undefined : [],
+          selected: isLastPart ? false : undefined,
+        };
+        currentNode.children = currentNode.children || [];
+        currentNode.children.push(node);
+      } else if (isLastPart) {
+        node.checked = 0;
+        node.selected = false;
+      }
+
+      currentNode = node;
+    });
+  });
+
+  return root;
 }

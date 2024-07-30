@@ -451,7 +451,7 @@ export const handleGenerateTasksAndFiles = async () => {
 export const readFilesFromFS = async (projectPath: string) => {
   try {
     if (typeof projectPath !== "string" || !projectPath) return null;
-    const filteredFilePaths = await getFilteredProjectFiles(projectPath);
+    const filteredFilePaths = await getFilteredProjectFiles(projectPath, true);
     const projectFiles: IProjectFile[] = [];
     for await (const filePath of filteredFilePaths) {
       try {

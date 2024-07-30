@@ -39,7 +39,7 @@ export default function FileViewer({ path }: FileViewerProps) {
             style={{
               fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
-            data-color-mode={'dark'}
+            data-color-mode={'light'}
           />
         )
       }
