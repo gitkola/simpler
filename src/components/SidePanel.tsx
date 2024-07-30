@@ -2,49 +2,68 @@ import React from "react";
 import SquareButton from "./SquareButton";
 import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
-import { setActiveSideMenuItem } from "../store/layoutSlice";
+import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjects, setShowProjectState, setShowSettings } from "../store/layoutSlice";
 
-export interface SidePanelProps {
-  togglePanel: () => void;
-}
-
-const SidePanel: React.FC<SidePanelProps> = ({
-  togglePanel,
-}: SidePanelProps) => {
+const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
-  const activeSideMenuItem = useAppSelector((state) => state.layout.activeSideMenuItem);
+  const { showProjects, showFolderTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
 
-  const onSideMenuItemClick = (value: string) => {
-    dispatch(setActiveSideMenuItem(value));
+  const toggleView = (value: string) => {
+    switch (value) {
+      case "projects":
+        return dispatch(setShowProjects(!showProjects));
+      case "folder-tree":
+        return dispatch(setShowFolderTree(!showFolderTree));
+      case "settings":
+        return dispatch(setShowSettings(!showSettings));
+      case "code-editor":
+        return dispatch(setShowCodeEditor(!showCodeEditor));
+      case "chat":
+        return dispatch(setShowChat(!showChat));
+      case "project-state":
+        return dispatch(setShowProjectState(!showProjectState));
+      default:
+        return false;
+    }
   };
 
   return (
-    <div className={`h-screen flex flex-col pb-2 overflow-x-hidden border-r border-gray-700 border-0.5`}>
-      <SquareButton
-        onClick={togglePanel}
-        icon="sidebar"
-        isActive={activeSideMenuItem === "sidebar"}
-      />
+    <div className={`h-screen flex flex-col overflow-x-hidden border-r-2`}>
       <SquareButton
         onClick={async () => await handleOpenProject()}
         icon="open-folder"
-        isActive={activeSideMenuItem === "sidebar"}
+        isActive={false}
       />
       <SquareButton
-        onClick={() => onSideMenuItemClick("projects")}
+        onClick={() => toggleView("projects")}
         icon="projects"
-        isActive={activeSideMenuItem === "projects"}
+        isActive={showProjects}
       />
       <SquareButton
-        onClick={() => onSideMenuItemClick("folder-tree")}
+        onClick={() => toggleView("folder-tree")}
         icon="folder-tree"
-        isActive={activeSideMenuItem === "folder-tree"}
+        isActive={showFolderTree}
       />
       <SquareButton
-        onClick={() => onSideMenuItemClick("settings")}
+        onClick={() => toggleView("code-editor")}
+        icon="code-editor"
+        isActive={showCodeEditor}
+      />
+      <SquareButton
+        onClick={() => toggleView("project-state")}
+        icon="project-state"
+        isActive={showProjectState}
+      />
+      <SquareButton
+        onClick={() => toggleView("chat")}
+        icon="chat"
+        isActive={showChat}
+      />
+      <SquareButton
+        onClick={() => toggleView("settings")}
         icon="settings"
-        isActive={activeSideMenuItem === "settings"}
+        isActive={showSettings}
       />
     </div>
   );

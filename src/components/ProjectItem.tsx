@@ -18,8 +18,7 @@ const ProjectItem: React.FC<{
 }) => {
     return (
       <div
-        className={`flex justify-between items-center pl-1 pr-2 space-x-4 hover:bg-blue-500 ${isActive && "bg-blue-600"
-          }`}
+        className={`flex justify-between items-center pl-1 pr-2 space-x-4 hover:bg-blue-200 ${isActive && "bg-blue-300"}`}
       >
         <button
           onClick={() => onSelectProject(projectPath)}
@@ -31,13 +30,13 @@ const ProjectItem: React.FC<{
           icon="trash"
           iconSize={20}
           onClick={() => onDeleteProject(projectPath)}
-          className="hover:bg-transparent w-6 h-6 bg-transparent hover:text-red-600"
+          className="w-6 h-6 hover:text-red-600"
         />
         <SquareButton
           icon="open-folder"
           iconSize={20}
           onClick={() => onOpenProjectFolder(projectPath)}
-          className="hover:bg-transparent w-6 h-6 bg-transparent hover:text-white"
+          className="w-6 h-6"
         />
       </div>
     );

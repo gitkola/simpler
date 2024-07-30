@@ -24,7 +24,7 @@ export default function SquareButton({
   return (
     <button
       onClick={onClick}
-      className={`w-12 h-12 flex items-center justify-center hover:text-gray-600 hover:bg-blue-400 select-none ${className} ${isActive && "bg-blue-600"}`}
+      className={`w-12 h-12 flex items-center justify-center hover:text-gray-600 hover:bg-blue-200 ${className} ${isActive && "bg-blue-300"}`}
       disabled={disabled}
     >
       <AppIcon

@@ -72,7 +72,7 @@ export const ChatView: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="px-2 border-t border-gray-700">
+      <div className="px-2 border-t-2">
         <div className="flex py-2 space-x-2 items-center">
           <div>Suggestions:</div>
           <button
@@ -111,7 +111,7 @@ export const ChatView: React.FC = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="flex w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
+            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
             disabled={aiModelRequestInProgress}
           >
             {

@@ -44,14 +44,14 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
           onClick={() => handleTabClick(index)}
         >
           {getFileNameFromPath(child.props.title)}
-          <button className="flex items-center justify-center w-6 h-6 ml-2 hover:bg-slate-400"
+          <div className="flex items-center justify-center w-6 h-6 ml-2 hover:bg-slate-400"
             onClick={async (e) => {
               e.stopPropagation();
               await handleCloseTab(child.props.title);
             }}
           >
             <Close size={20} />
-          </button>
+          </div>
         </button>
       );
     }

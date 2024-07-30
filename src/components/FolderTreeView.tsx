@@ -97,27 +97,27 @@ export default function FolderTreeView() {
     <TreeView.Item
       key={tree.path}
       id={tree.path}
-      className={`bg-white hover:bg-blue-500 select-none ${tree.selected === true && "bg-purple-800 hover:bg-purple-500"}`}
-      expanded={tree.isOpen}
-      onExpandedChange={(isExpanded) => {
-        if (typeof tree.isOpen === "boolean") {
-          tree.isOpen = isExpanded;
-          setTreeData({ ...treeData });
-        }
-      }}
-      onSelect={() => {
-        if (Array.isArray(tree.children) && typeof tree.isOpen === "boolean") {
-          tree.isOpen = !tree.isOpen;
-          setTreeData({ ...treeData });
-        } else {
-          // tree.selected = !tree.selected;
-          if (files.some((file) => file.path === `${activeProjectPath}${tree.path}`)) return;
-          const newFiles: IFile[] = [...files, { path: `${activeProjectPath}${tree.path}` }];
-          dispatch(saveProjectOpenedFiles(newFiles));
-          // setTreeData({ ...treeData });
-        }
-      }}
-      containIntrinsicSize="content-visiblity: auto"
+      className=""
+    // className={`hover:first-line::bg-blue-200 ${tree.selected === true && "bg-purple-800 hover:bg-purple-500"}`}
+    // expanded={tree.isOpen}
+    // onExpandedChange={(isExpanded) => {
+    //   if (typeof tree.isOpen === "boolean") {
+    //     tree.isOpen = isExpanded;
+    //     setTreeData({ ...treeData });
+    //   }
+    // }}
+    // onSelect={() => {
+    //   if (Array.isArray(tree.children) && typeof tree.isOpen === "boolean") {
+    //     tree.isOpen = !tree.isOpen;
+    //     setTreeData({ ...treeData });
+    //   } else {
+    //     // tree.selected = !tree.selected;
+    //     if (files.some((file) => file.path === `${activeProjectPath}${tree.path}`)) return;
+    //     const newFiles: IFile[] = [...files, { path: `${activeProjectPath}${tree.path}` }];
+    //     dispatch(saveProjectOpenedFiles(newFiles));
+    //     // setTreeData({ ...treeData });
+    //   }
+    // }}
     >
       <TreeView.LeadingVisual label={tree.name}>
         {tree.children === undefined ? (
@@ -126,7 +126,7 @@ export default function FolderTreeView() {
           <TreeView.DirectoryIcon />
         )}
       </TreeView.LeadingVisual>
-      <div className="flex items-center justify-between">
+      <div className="flex">
         {tree.name}
         <SquareButton
           icon="open-folder"
@@ -139,9 +139,8 @@ export default function FolderTreeView() {
               }`
             );
           }}
-          className="w-5 h-5"
+          className="w-5 h-5 ml-auto bg-transparent hover:bg-transparent"
           iconSize={20}
-          iconClassName=""
         />
       </div>
       {Array.isArray(tree.children) && (
