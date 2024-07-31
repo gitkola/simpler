@@ -49,8 +49,8 @@ export const ChatView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen overflow-auto">
-      <div className="flex-1 overflow-y-auto space-y-2">
-        <div className="flex-grow h-full overflow-auto p-2 space-y-2">
+      <div className="flex flex-col overflow-x-hidden overflow-y-scroll space-y-2">
+        <div className="flex flex-col p-2 pb-32 space-y-2">
           {messages?.map((message) => (
             <Message
               key={message.createdAt}

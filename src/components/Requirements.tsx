@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IProjectState, IProjectRequirement } from '../types';
 import { useAppDispatch, useAppSelector } from '../store';
 import { saveProjectState } from '../store/currentProjectSlice';
@@ -10,6 +10,11 @@ const Requirements: React.FC = () => {
   const currentProjectState: IProjectState | null = useAppSelector((state) => state.currentProject.currentProjectState);
   const initialRequirements = currentProjectState?.requirements || [];
   const [requirements, setRequirements] = useState<IProjectRequirement[]>(initialRequirements);
+
+  useEffect(() => {
+    if (!initialRequirements || initialRequirements.length < 1) return;
+    setRequirements(initialRequirements);
+  }, [initialRequirements]);
 
   const onSave = async (updatedRequirements: IProjectRequirement[]) => {
     await dispatch(saveProjectState({ ...currentProjectState!, requirements: [...updatedRequirements] }));

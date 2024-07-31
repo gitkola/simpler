@@ -7,6 +7,7 @@ import { File } from "./Icons";
 import SquareButton from "./SquareButton";
 import { openFolder } from "../utils/openFolder";
 import { handleClickOnFile, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
+import ProcessIndicator from "./ProcessIndicator";
 
 const treeItemIsFile = (tree: ITreeData) => {
   return Array.isArray(tree.children) === false;
@@ -16,7 +17,7 @@ const treeItemIsFile = (tree: ITreeData) => {
 
 export default function FileTreeView() {
   const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
-  const { currentProjectFileTree } = useAppSelector((state) => state.currentProject);
+  const { currentProjectFileTree, isLoadingCurrentProjectFileTree, currentProjectFileTreeError } = useAppSelector((state) => state.currentProject);
   const dispatch = useAppDispatch();
 
   const handleClickTreeItem = async (tree: ITreeData) => {
@@ -68,6 +69,12 @@ export default function FileTreeView() {
 
   return (
     <div className="flex-1 h-screen overflow-auto">
+      {
+        isLoadingCurrentProjectFileTree && <ProcessIndicator />
+      }
+      {
+        currentProjectFileTreeError && <div>{currentProjectFileTreeError}</div>
+      }
       <nav aria-label="Files">
         <TreeView aria-label="Files" className="p-0">
           {currentProjectFileTree && renderTreeItem(currentProjectFileTree)}

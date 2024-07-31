@@ -16,11 +16,15 @@ const store = configureStore({
     layout: layoutReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([
-      persistSettingsMiddleware,
-      persistProjectsMiddleware,
-      persistLayoutMiddleware,
-    ]),
+    getDefaultMiddleware({
+      thunk: true,
+      serializableCheck: true,
+      immutableCheck: true,
+      actionCreatorCheck: true,
+    })
+      .concat(persistSettingsMiddleware)
+      .concat(persistProjectsMiddleware)
+      .concat(persistLayoutMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

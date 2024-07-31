@@ -36,7 +36,12 @@ const App: React.FC = () => {
         {
           showProjects && (
             <>
-              <Panel minSize={12} maxSize={16} id="projects" order={1}>
+              <Panel
+                id="projects"
+                // minSize={12}
+                // maxSize={16}
+                order={1}
+              >
                 <ProjectList />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -46,7 +51,12 @@ const App: React.FC = () => {
         {
           showFolderTree && (
             <>
-              <Panel minSize={12} maxSize={16} id="folder-tree" order={2}>
+              <Panel
+                id="folder-tree"
+                // minSize={12}
+                // maxSize={32}
+                order={2}
+              >
                 <FileTreeView />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -56,7 +66,12 @@ const App: React.FC = () => {
         {
           showCodeEditor && (
             <>
-              <Panel minSize={24} maxSize={100} id="code-editor" order={3}>
+              <Panel
+                id="code-editor"
+                // minSize={24}
+                // maxSize={32}
+                order={3}
+              >
                 <CodeViewer />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -66,7 +81,12 @@ const App: React.FC = () => {
         {
           showProjectState && (
             <>
-              <Panel minSize={16} maxSize={24} id="project-state" order={4}>
+              <Panel
+                id="project-state"
+                // minSize={16}
+                // maxSize={24}
+                order={4}
+              >
                 <ProjectStateView />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -76,7 +96,12 @@ const App: React.FC = () => {
         {
           showChat && (
             <>
-              <Panel minSize={24} maxSize={32} id="chat" order={5}>
+              <Panel
+                id="chat"
+                // minSize={24}
+                // maxSize={32}
+                order={5}
+              >
                 <ChatView />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
@@ -85,7 +110,12 @@ const App: React.FC = () => {
         }
         {
           showSettings && (
-            <Panel minSize={16} maxSize={16} id="settings" order={6}>
+            <Panel
+              id="settings"
+              // minSize={16}
+              // maxSize={16}
+              order={6}
+            >
               <Settings />
             </Panel>
           )

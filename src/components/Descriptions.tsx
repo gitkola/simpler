@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IProjectState, IProjectDescription } from '../types';
 import { useAppDispatch, useAppSelector } from '../store';
 import { saveProjectState } from '../store/currentProjectSlice';
@@ -10,6 +10,11 @@ const Descriptions: React.FC = () => {
   const currentProjectState: IProjectState | null = useAppSelector((state) => state.currentProject.currentProjectState);
   const initialDescriptions = currentProjectState?.descriptions || [];
   const [descriptions, setDescriptions] = useState<IProjectDescription[]>(initialDescriptions);
+
+  useEffect(() => {
+    if (!initialDescriptions || initialDescriptions.length < 1) return;
+    setDescriptions(initialDescriptions);
+  }, [initialDescriptions]);
 
   const onSave = async (updatedDescriptions: IProjectDescription[]) => {
     await dispatch(saveProjectState({ ...currentProjectState!, descriptions: [...updatedDescriptions] }));
