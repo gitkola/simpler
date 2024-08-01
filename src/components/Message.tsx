@@ -48,8 +48,8 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         }
       }
       return (
-        <div key={item.id} className="flex-1">
-          <SyntaxHighlighter className="rounded-md" language={fileExt || undefined} style={vscDarkPlus}>
+        <div key={item.id} className="">
+          <SyntaxHighlighter className="rounded-md overflow-auto" language={fileExt || undefined} style={vscDarkPlus}>
             {code}
           </SyntaxHighlighter>
           {description && <p className="text-sm text-gray-500 mt-2">{description}</p>}
@@ -98,7 +98,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         const [, language, code] = part.match(/```(\w*)\n([\s\S]*?)```/) || [, '', part.slice(3, -3)];
         return (
           <div key={index}>
-            <SyntaxHighlighter language={language || undefined} style={vscDarkPlus}>
+            <SyntaxHighlighter language={language || undefined} style={vscDarkPlus} className="overflow-auto">
               {code.trim()}
             </SyntaxHighlighter>
             <div className="flex items-center mb-2">
@@ -122,7 +122,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
 
   return (
     <div key={message.id} className={`flex select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`min-w-[500px] max-w-[1000px] px-2 py-2 rounded-md ${message.role === 'user' ? 'bg-blue-500' :
+      <div className={`w-full px-2 py-2 rounded-md ${message.role === 'user' ? 'bg-blue-500' :
         message.role === 'app' ? 'bg-green-500' :
           message.role === 'system' ? 'bg-yellow-500' :
             'bg-gray-300'} hover:shadow-md`}>

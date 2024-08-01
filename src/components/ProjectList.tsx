@@ -3,13 +3,10 @@ import { invoke } from "@tauri-apps/api/tauri";
 import ProjectItem from "./ProjectItem";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { handleSetActiveProject, deleteProject } from "../store/projectsSlice";
+import { Projects } from "./Icons";
 
-export interface ProjectListProps {
-}
-
-const ProjectList: React.FC<ProjectListProps> = ({ }) => {
+const ProjectList: React.FC = () => {
   const dispatch = useAppDispatch();
-  // const navigate = useNavigate();
   const { list, activeProjectPath } = useAppSelector(
     (state: RootState) => state.projects,
   );
@@ -35,6 +32,10 @@ const ProjectList: React.FC<ProjectListProps> = ({ }) => {
 
   return (
     <div className={`flex-1 flex-col h-full`}>
+      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+        <Projects className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">Projects</h2>
+      </div>
       <ul className="flex-1 h-screen overflow-y-auto overflow-x-hidden pb-16">
         {list.map((projectPath) => (
           <li key={projectPath}>

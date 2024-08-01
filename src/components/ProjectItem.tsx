@@ -18,7 +18,7 @@ const ProjectItem: React.FC<{
 }) => {
     return (
       <div
-        className={`flex justify-between items-center pl-1 pr-2 space-x-4 hover:bg-blue-200 ${isActive && "bg-blue-300"}`}
+        className={`group flex justify-between items-center pr-2 space-x-2 hover:bg-blue-200 ${isActive && "bg-blue-300"}`}
       >
         <button
           onClick={() => onSelectProject(projectPath)}
@@ -27,16 +27,16 @@ const ProjectItem: React.FC<{
           {getFolderNameFromPath(projectPath)}
         </button>
         <SquareButton
-          icon="trash"
+          icon="close"
           iconSize={20}
           onClick={() => onDeleteProject(projectPath)}
-          className="w-6 h-6 hover:text-red-600"
+          className="w-6 h-6 opacity-0 group-hover:opacity-100 hover:text-red-600"
         />
         <SquareButton
           icon="open-folder"
           iconSize={20}
           onClick={() => onOpenProjectFolder(projectPath)}
-          className="w-6 h-6"
+          className="w-6 h-6 opacity-0 group-hover:opacity-100 hover:text-blue-800"
         />
       </div>
     );

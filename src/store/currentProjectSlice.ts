@@ -243,9 +243,10 @@ export const loadProject =
 
 export const loadProjectState =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const activeProjectPath = getState().projects.activeProjectPath;
-    if (!activeProjectPath) return;
     try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectState());
       let projectState = await loadProjectStateFromFile(activeProjectPath);
       dispatch(setCurrentProjectState(projectState));
     } catch (error) {
@@ -256,9 +257,10 @@ export const loadProjectState =
 
 export const loadProjectMessages =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const activeProjectPath = getState().projects.activeProjectPath;
-    if (!activeProjectPath) return;
     try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectMessages());
       let messages = await loadProjectMessagesFromFile(activeProjectPath);
       dispatch(setCurrentProjectMessages(messages));
     } catch (error) {
@@ -269,9 +271,10 @@ export const loadProjectMessages =
 
 export const loadProjectSettings =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const activeProjectPath = getState().projects.activeProjectPath;
-    if (!activeProjectPath) return;
     try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectSettings());
       const settings = await loadProjectSettingsFromFile(activeProjectPath);
       dispatch(setCurrentProjectSettings(settings));
     } catch (error) {
@@ -334,6 +337,7 @@ export const saveProjectMessages =
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectMessages());
       await saveProjectMessagesToFile(activeProjectPath, newProjectMessages);
       dispatch(setCurrentProjectMessages(newProjectMessages));
     } catch (error) {
@@ -348,6 +352,7 @@ export const saveProjectSettings =
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectSettings());
       await saveProjectSettingsToFile(activeProjectPath, newProjectSettings);
       dispatch(setCurrentProjectSettings(newProjectSettings));
     } catch (error) {
@@ -387,9 +392,10 @@ export const handleClickOnFile =
 export const handleClickOnFolder =
   (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
     try {
+      dispatch(fetchCurrentProjectFileTree());
       const currentProjectFileTree =
         getState().currentProject.currentProjectFileTree;
-      if (!currentProjectFileTree) return;
+      if (!currentProjectFileTree) throw new Error("No file tree found");
       const toggleTreeFolder = (tree: ITreeData, path: string) => {
         if (Array.isArray(tree.children)) {
           if (tree.path === path) {

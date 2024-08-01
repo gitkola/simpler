@@ -8,14 +8,16 @@ const LineProgressIndicator: React.FC<LineProgressIndicatorProps> = ({
   height = 4 // Default height in pixels
 }) => {
   return (
-    <div className="w-[200%] overflow-hidden">
-      <div
-        className="animate-indeterminate-progress"
-        style={{
-          height: `${height}px`,
-          backgroundColor: color,
-        }}
-      />
+    <div className="w-[100%] overflow-hidden">
+      <div className="w-[200%] overflow-hidden">
+        <div
+          className="animate-indeterminate-progress"
+          style={{
+            height: `${height}px`,
+            backgroundColor: color,
+          }}
+        />
+      </div>
     </div>
   );
 };

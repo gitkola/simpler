@@ -28,7 +28,7 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
       </button>
       {isExpanded && (
         <div className="px-2 pb-2">
-          <SyntaxHighlighter className="no-scrollbar rounded-md" language={'json'} style={vscDarkPlus}>
+          <SyntaxHighlighter className="rounded-md" language={'json'} style={vscDarkPlus}>
             {JSON.stringify(projectStateUpdates, null, 2)}
           </SyntaxHighlighter>
           <button

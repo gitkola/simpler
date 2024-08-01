@@ -1,7 +1,7 @@
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useEffect, useState } from 'react';
-import Spinner from './Spinner';
 import { readFile } from '../utils/readFile';
+import ProcessIndicator from './ProcessIndicator';
 
 interface FileViewerProps {
   path: string;
@@ -21,17 +21,24 @@ export default function FileViewer({ path }: FileViewerProps) {
   };
 
   useEffect(() => {
+    if (!path) return;
     fetchContent(path);
   }, [path]);
 
+  const handleSaveFile = async () => {
+    console.log('Save', path, editedContent);
+  }
+
+  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+      handleSaveFile();
+    }
+  };
+
   return (
-    <div className="flex-1 flex-col h-full">
+    <div className="">
       {
-        isLoading ? (
-          <div className="flex justify-center items-center">
-            <Spinner size="lg" color="blue" />
-          </div>
-        ) : (
+        isLoading ? (<ProcessIndicator />) : (
           editedContent && <CodeEditor
             value={editedContent}
             language={language}
@@ -40,6 +47,7 @@ export default function FileViewer({ path }: FileViewerProps) {
               fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             }}
             data-color-mode={'light'}
+            onKeyDown={handleOnKeyDown}
           />
         )
       }

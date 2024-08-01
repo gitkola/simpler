@@ -3,17 +3,13 @@ import { useAppDispatch, useAppSelector } from "../store";
 import {
   getFolderNameFromFilePath,
 } from "../utils/pathUtils";
-import { File } from "./Icons";
+import { File, Files } from "./Icons";
 import SquareButton from "./SquareButton";
 import { openFolder } from "../utils/openFolder";
 import { handleClickOnFile, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
 
-const treeItemIsFile = (tree: ITreeData) => {
-  return Array.isArray(tree.children) === false;
-};
-
-
+const treeItemIsFile = (tree: ITreeData) => Array.isArray(tree.children) === false;
 
 export default function FileTreeView() {
   const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
@@ -69,6 +65,10 @@ export default function FileTreeView() {
 
   return (
     <div className="flex-1 h-screen overflow-auto">
+      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+        <Files className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">Files</h2>
+      </div>
       {
         isLoadingCurrentProjectFileTree && <ProcessIndicator />
       }

@@ -43,7 +43,7 @@ function createAdditionalFilter(patterns: FilterPattern[]) {
 
 export async function getFilteredProjectFiles(
   projectPath: string,
-  useAdditionalFilter: boolean = false
+  useAdditionalFilter: boolean = true
 ): Promise<string[]> {
   try {
     // TODO: work under optimisation.

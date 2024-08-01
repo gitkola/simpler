@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IProjectSettings } from "../types";
 import Message from "./Message";
-import { ArrowUp } from "./Icons";
+import { ArrowUp, Chat } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { handleNewMessageToAIModel, saveProjectSettings } from "../store/currentProjectSlice";
@@ -9,12 +9,18 @@ import { Select } from "./Select";
 import Spinner from "./Spinner";
 import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../constants";
 import { outlineButton, textInput } from "../styles/styles";
+import ProcessIndicator from "./ProcessIndicator";
 
 export const ChatView: React.FC = () => {
-  const messages = useAppSelector((state: RootState) => state.currentProject.currentProjectMessages);
-  const settings = useAppSelector((state: RootState) => state.currentProject.currentProjectSettings);
-  const aiModelRequestInProgress = useAppSelector((state: RootState) => state.currentProject.aiModelRequestInProgress);
-  const aiModelRequestError = useAppSelector((state: RootState) => state.currentProject.aiModelRequestError);
+  const { currentProjectMessages,
+    isLoadingCurrentProjectMessages,
+    currentProjectMessagesError,
+    currentProjectSettings,
+    isLoadingCurrentProjectSettings,
+    currentProjectSettingsError,
+    aiModelRequestInProgress,
+    aiModelRequestError,
+  } = useAppSelector((state: RootState) => state.currentProject);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [inputMessage, setInputMessage] = useState("");
@@ -25,20 +31,20 @@ export const ChatView: React.FC = () => {
 
   useEffect(() => {
     setTimeout(scrollToBottom, 10);
-  }, [messages?.length]);
+  }, [currentProjectMessages?.length]);
 
   const handleServiceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const service = e.target.value as "openai" | "anthropic";
-    if (service === settings?.service) return;
+    if (service === currentProjectSettings?.service) return;
     const model = service === "openai" ? openaiModels[0] : anthropicModels[0];
-    const newSettings = { ...settings, service, model };
+    const newSettings = { ...currentProjectSettings, service, model };
     await dispatch(saveProjectSettings(newSettings as IProjectSettings));
   };
 
   const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const model = e.target.value;
-    if (model === settings?.model) return;
-    const newSettings = { ...settings, model };
+    if (model === currentProjectSettings?.model) return;
+    const newSettings = { ...currentProjectSettings, model };
     await dispatch(saveProjectSettings(newSettings as IProjectSettings));
   };
 
@@ -49,9 +55,19 @@ export const ChatView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen overflow-auto">
-      <div className="flex flex-col overflow-x-hidden overflow-y-scroll space-y-2">
-        <div className="flex flex-col p-2 pb-32 space-y-2">
-          {messages?.map((message) => (
+      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+        <Chat className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">AI Chat</h2>
+      </div>
+      {
+        isLoadingCurrentProjectMessages && <ProcessIndicator />
+      }
+      {
+        currentProjectMessagesError && <div>{currentProjectMessagesError}</div>
+      }
+      <div className="flex flex-col h-full overflow-scroll">
+        <div className="p-2 h-fit space-y-2">
+          {currentProjectMessages?.map((message) => (
             <Message
               key={message.createdAt}
               message={message}
@@ -107,31 +123,41 @@ export const ChatView: React.FC = () => {
             placeholder="Type your message... (Shift+Enter for new line)"
             disabled={aiModelRequestInProgress}
             rows={3}
-            style={{ minHeight: "2.5rem", maxHeight: "10rem" }}
           />
           <button
             onClick={handleSendMessage}
-            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
-            disabled={aiModelRequestInProgress}
+            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:bottom-0.5 hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
+            disabled={aiModelRequestInProgress || !inputMessage}
           >
             {
               aiModelRequestInProgress ? (<Spinner size="sm" color="white" />) : (<ArrowUp size={24} />)
             }
           </button>
         </div>
-        <div className="flex my-2 space-x-2">
-          <Select
-            name="service"
-            value={settings?.service}
-            options={["openai", "anthropic"]}
-            onChange={(e) => handleServiceChange(e)}
-          />
-          <Select
-            name="model"
-            value={settings?.model}
-            options={settings?.service === 'openai' ? openaiModels : anthropicModels}
-            onChange={(e) => handleModelChange(e)}
-          />
+        <div className="flex flex-col space-y-2">
+          {
+            isLoadingCurrentProjectSettings && <ProcessIndicator />
+          }
+          {
+            currentProjectSettingsError && <div>{currentProjectSettingsError}</div>
+          }
+          {
+            (!isLoadingCurrentProjectSettings && currentProjectSettings?.service) &&
+            <div className="flex my-2 space-x-2">
+              <Select
+                name="service"
+                value={currentProjectSettings?.service}
+                options={["openai", "anthropic"]}
+                onChange={(e) => handleServiceChange(e)}
+              />
+              <Select
+                name="model"
+                value={currentProjectSettings?.model}
+                options={currentProjectSettings?.service === 'openai' ? openaiModels : anthropicModels}
+                onChange={(e) => handleModelChange(e)}
+              />
+            </div>
+          }
         </div>
       </div>
     </div>

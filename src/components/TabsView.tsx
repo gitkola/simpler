@@ -11,7 +11,7 @@ type TabContentProps = {
 };
 
 export const TabContent: React.FC<TabContentProps> = ({ children }) => {
-  return <>{children}</>;
+  return children;
 };
 
 type TabsViewProps = {
@@ -21,6 +21,7 @@ type TabsViewProps = {
 const TabsView: React.FC<TabsViewProps> = ({ children }) => {
   const { currentProjectOpenedFiles } = useAppSelector((state) => state.currentProject);
   const dispatch = useAppDispatch();
+
   const handleTabClick = async (path: string) => {
     await dispatch(saveProjectOpenedFiles(currentProjectOpenedFiles.map((file) => {
       if (file.path === path) return { ...file, isActive: true };
@@ -65,7 +66,7 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
   const tabContent = React.Children.toArray(children).find((child) => (child as React.ReactElement).props.isActive);
 
   return (
-    <div className="h-screen w-full flex flex-col">
+    <div className="w-full flex flex-col overflow-auto">
       <div className="flex w-full h-[40px] overflow-x-auto overflow-y-hidden">{tabs}</div>
       <div className="flex-1 overflow-auto">{tabContent}</div>
     </div>

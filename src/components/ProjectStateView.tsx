@@ -7,32 +7,40 @@ import { Files } from './Files';
 import { ProjectState } from './ProjectState';
 import Descriptions from './Descriptions';
 import { ProjectMessages } from './ProjectMessages';
-
+import { ProjectFolder } from './Icons';
+import ProcessIndicator from './ProcessIndicator';
 
 
 const ProjectStateView: React.FC = () => {
-  const projectState = useAppSelector((state: RootState) => state?.currentProject?.currentProjectState);
-  if (!projectState) return null;
+  const { currentProjectState, isLoadingCurrentProjectState, currentProjectStateError } = useAppSelector((state: RootState) => state?.currentProject);
 
   return (
     <div className="flex flex-col h-screen overflow-auto">
+      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+        <ProjectFolder className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">{currentProjectState?.name}</h2>
+      </div>
+      {
+        isLoadingCurrentProjectState && <ProcessIndicator />
+      }
+      {
+        currentProjectStateError && <div>{currentProjectStateError}</div>
+      }
       <div className="h-full p-1 space-y-1 overflow-y-auto">
         <Accordion
-          title={`Descriptions (${projectState?.descriptions?.length || 0})`}
-          content={
-            <Descriptions />
-          }
+          title={`Descriptions (${currentProjectState?.descriptions?.length || 0})`}
+          content={<Descriptions />}
         />
         <Accordion
-          title={`Requirements (${projectState?.requirements?.length || 0})`}
+          title={`Requirements (${currentProjectState?.requirements?.length || 0})`}
           content={<Requirements />}
         />
         <Accordion
-          title={`Tasks (${projectState?.tasks?.length || 0})`}
+          title={`Tasks (${currentProjectState?.tasks?.length || 0})`}
           content={<Tasks />}
         />
         <Accordion
-          title={`Files (${projectState?.files?.length || 0})`}
+          title={`Files (${currentProjectState?.files?.length || 0})`}
           content={<Files />}
         />
         <Accordion

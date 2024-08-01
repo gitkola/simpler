@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../store";
 import { RootState } from "../store";
 import { resetToDefaultInstructions, setApiKey, setProjectStateInstructions, setResponseGuidelinesInstructions, setResponsibilitiesInstructions } from "../store/settingsSlice";
 import { textInput } from "../styles/styles";
+import { SettingsIcon } from "./Icons";
 
 const Settings: React.FC = () => {
   const settings = useAppSelector((state: RootState) => state.settings);
@@ -26,6 +27,10 @@ const Settings: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen">
+      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+        <SettingsIcon className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">Settings</h2>
+      </div>
       <div className="flex flex-col h-full overflow-auto">
         <div className="p-2">
           <dl className="space-y-6">

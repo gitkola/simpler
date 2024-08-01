@@ -29,9 +29,9 @@ const App: React.FC = () => {
     <div className="flex h-screen w-screen">
       <SidePanel />
       <PanelGroup
-        autoSaveId="conditional"
+        // autoSaveId="conditional"
         direction="horizontal"
-        className="h-screen w-screen overflow-auto"
+      // className="h-screen w-screen overflow-auto"
       >
         {
           showProjects && (
@@ -49,13 +49,28 @@ const App: React.FC = () => {
           )
         }
         {
+          showProjectState && (
+            <>
+              <Panel
+                id="project-state"
+                // minSize={16}
+                // maxSize={24}
+                order={2}
+              >
+                <ProjectStateView />
+              </Panel>
+              <PanelResizeHandle className={`${resizeHandle}`} />
+            </>
+          )
+        }
+        {
           showFolderTree && (
             <>
               <Panel
                 id="folder-tree"
                 // minSize={12}
                 // maxSize={32}
-                order={2}
+                order={3}
               >
                 <FileTreeView />
               </Panel>
@@ -70,24 +85,9 @@ const App: React.FC = () => {
                 id="code-editor"
                 // minSize={24}
                 // maxSize={32}
-                order={3}
-              >
-                <CodeViewer />
-              </Panel>
-              <PanelResizeHandle className={`${resizeHandle}`} />
-            </>
-          )
-        }
-        {
-          showProjectState && (
-            <>
-              <Panel
-                id="project-state"
-                // minSize={16}
-                // maxSize={24}
                 order={4}
               >
-                <ProjectStateView />
+                <CodeViewer />
               </Panel>
               <PanelResizeHandle className={`${resizeHandle}`} />
             </>
