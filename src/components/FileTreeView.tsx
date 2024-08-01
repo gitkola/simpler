@@ -31,29 +31,31 @@ export default function FileTreeView() {
       onSelect={async () => await handleClickTreeItem(tree)}
       expanded={tree.isOpen}
     >
-      <TreeView.LeadingVisual label={tree.name}>
-        {tree.children === undefined ? (
-          <File size={20} />
-        ) : (
-          <TreeView.DirectoryIcon />
-        )}
-      </TreeView.LeadingVisual>
-      <div className="flex">
-        {tree.name}
-        <SquareButton
-          icon="open-folder"
-          onClick={async (e) => {
-            e.stopPropagation();
-            await openFolder(
-              `${activeProjectPath}${Array.isArray(tree.children)
-                ? tree.path
-                : getFolderNameFromFilePath(tree.path)
-              }`
-            );
-          }}
-          className="w-5 h-5 ml-auto bg-transparent hover:bg-transparent"
-          iconSize={20}
-        />
+      <div className="group flex m-0 p-1 hover:bg-opacity-50 hover:bg-blue-300">
+        <TreeView.LeadingVisual label={tree.name}>
+          {tree.children === undefined ? (
+            <File size={20} />
+          ) : (
+            <TreeView.DirectoryIcon />
+          )}
+        </TreeView.LeadingVisual>
+        <div className="flex w-full ml-2 items-center justify-between">
+          <span>{tree.name}</span>
+          <SquareButton
+            icon="open-folder"
+            onClick={async (e) => {
+              e.stopPropagation();
+              await openFolder(
+                `${activeProjectPath}${Array.isArray(tree.children)
+                  ? tree.path
+                  : getFolderNameFromFilePath(tree.path)
+                }`
+              );
+            }}
+            className="w-5 h-5 ml-auto bg-transparent group  opacity-0 group-hover:opacity-100 hover:bg-transparent"
+            iconSize={20}
+          />
+        </div>
       </div>
       {Array.isArray(tree.children) && (
         <TreeView.SubTree>
