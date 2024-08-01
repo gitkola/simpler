@@ -1,12 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use ignore::gitignore::{Gitignore, GitignoreBuilder};
-use std::collections::HashSet;
+use ignore::WalkBuilder;
 use std::fs;
-use std::io::{self, BufRead};
 use std::path::Path;
-use walkdir::WalkDir;
 
 #[tauri::command]
 fn create_folder(dir_path: &str) -> Result<(), String> {
@@ -91,64 +88,32 @@ fn read_files_in_directory(path: String) -> Result<Vec<String>, String> {
     }
 }
 
-fn parse_gitignore(path: &Path) -> io::Result<Gitignore> {
-    let mut builder = GitignoreBuilder::new(path.parent().unwrap_or(Path::new("")));
-    let file = fs::File::open(path)?;
-    for line in io::BufReader::new(file).lines() {
-        builder
-            .add_line(None, &line?)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
-    }
-    builder
-        .build()
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
-}
-
-fn should_ignore(path: &Path, gitignores: &[Gitignore]) -> bool {
-    for gitignore in gitignores.iter().rev() {
-        match gitignore.matched(path, path.is_dir()) {
-            ignore::Match::None => {}
-            ignore::Match::Ignore(_) => return true,
-            ignore::Match::Whitelist(_) => return false,
-        }
-    }
-    false
-}
-
 #[tauri::command]
 fn scan_directory_with_gitignore(root: String) -> Result<Vec<String>, String> {
     let root_path = Path::new(&root);
-    let mut gitignores = Vec::new();
     let mut files = Vec::new();
-    let mut visited_dirs = HashSet::new();
 
-    for entry in WalkDir::new(root_path).follow_links(false).into_iter() {
-        let entry = entry.map_err(|e| e.to_string())?;
-        let path = entry.path();
+    let walker = WalkBuilder::new(root_path)
+        .hidden(false) // Show hidden files
+        .git_ignore(true) // Use .gitignore files
+        .git_global(true) // Use global gitignore file
+        .git_exclude(true) // Use .git/info/exclude file
+        .ignore(true) // Use .ignore files
+        .filter_entry(|entry| {
+            let file_name = entry.file_name().to_str().unwrap_or("");
+            !file_name.eq_ignore_ascii_case(".git") // Ignore .git files and directories
+        })
+        .build();
 
-        if should_ignore(path, &gitignores) {
-            if path.is_dir() {
-                continue;
-            }
-        } else {
-            if path.is_dir() {
-                visited_dirs.insert(path.to_path_buf());
-            }
-
-            if path.file_name() == Some(".gitignore".as_ref()) {
-                match parse_gitignore(path) {
-                    Ok(gitignore) => gitignores.push(gitignore),
-                    Err(e) => eprintln!("Error parsing .gitignore at {:?}: {}", path, e),
+    for entry in walker {
+        match entry {
+            Ok(entry) => {
+                let path = entry.path();
+                if path.is_file() {
+                    files.push(path.to_string_lossy().into_owned());
                 }
-            } else if path.is_file() {
-                files.push(path.to_string_lossy().into_owned());
             }
-        }
-
-        if path.is_dir() {
-            if let Some(parent) = path.parent() {
-                gitignores.retain(|g| g.path().starts_with(parent));
-            }
+            Err(err) => eprintln!("Error: {}", err),
         }
     }
 
