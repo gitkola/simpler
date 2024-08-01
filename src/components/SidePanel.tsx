@@ -29,7 +29,7 @@ const SidePanel: React.FC = () => {
   };
 
   return (
-    <div className={`h-screen flex flex-col overflow-x-hidden space-y-0.5 px-0.5 border-r-2`}>
+    <div className={`flex flex-col h-screen space-y-0.5 px-0.5 border-r-2`}>
       <SquareButton
         onClick={async () => await handleOpenProject()}
         icon="open-folder"

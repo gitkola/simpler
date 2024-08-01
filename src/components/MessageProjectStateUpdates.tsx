@@ -14,10 +14,10 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
   return (
-    <div className="flex flex-col bg-gray-400 justify-between rounded-md mt-4">
+    <div className="flex flex-col bg-gray-400 justify-between rounded-md">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex flex-row px-2 py-1 w-full items-center justify-between rounded-md hover:bg-gray-400 hover:shadow-md"
+        className="flex px-2 py-1 items-center justify-between rounded-md hover:bg-gray-400 hover:shadow-md"
       >
         <div className="font-bold">Project State Updates</div>
         {!isExpanded ? (
@@ -27,13 +27,13 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
         )}
       </button>
       {isExpanded && (
-        <div className="px-2 pb-2">
-          <SyntaxHighlighter className="rounded-md" language={'json'} style={vscDarkPlus}>
+        <div className="flex flex-col px-2 pb-2">
+          <SyntaxHighlighter className="flex rounded-md max-w-[800px]" language={'json'} style={vscDarkPlus}>
             {JSON.stringify(projectStateUpdates, null, 2)}
           </SyntaxHighlighter>
           <button
             onClick={async () => await dispatch(syncProjectStateWithAIUpdates(projectStateUpdates))}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm mr-2 hover:shadow-md"
+            className="flex w-fit bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-blue-600"
           >
             Sync
           </button>

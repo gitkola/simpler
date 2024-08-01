@@ -19,13 +19,18 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         const parsedText = JSON.parse(item.text);
         if (Array.isArray(parsedText)) {
           return (
-            <div className="" key={item.id}>{parsedText.map((item) => renderContent(item))}</div>
+            <div className="space-y-2 bg-indigo-800" key={item.id}>{parsedText.map((item) => renderContent(item))}</div>
           );
         } else {
-          return <p key={item.id} className="">{item.text}</p>;
+          return <div key={item.id} className="bg-orange-500">{item.text}</div>;
         }
       } catch (error) {
-        return <p key={item.id} className="">{item.text}</p>;
+        return (
+          <div key={item.id} className="space-y-2">
+            <p className="bg-cyan-300">{item.text}</p>
+            <p className="text-sm text-red-400 mt-2">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
+          </div>
+        );
       }
     } else if (isUpdatedProjectState(item)) {
       return (
@@ -38,18 +43,23 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           const parsedCode = JSON.parse(code);
           if (Array.isArray(parsedCode)) {
             return (
-              <div className="" key={item.id}>{parsedCode.map((item) => renderContent(item))}</div>
+              <div className="space-y-2" key={item.id}>{parsedCode.map((item) => renderContent(item))}</div>
             );
           } else if (parsedCode?.updated_project_state) {
             return <MessageProjectStateUpdates key={item.id} projectStateUpdates={parsedCode?.updated_project_state} />;
           }
         } catch (error) {
-          return <p key={item.id} className="">{item.code}</p>;
+          return (
+            <div key={item.id} className="space-y-2">
+              <p className="bg-cyan-300">{item.code}</p>
+              <p className="text-sm text-red-400 mt-2">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
+            </div>
+          );
         }
       }
       return (
         <div key={item.id} className="">
-          <SyntaxHighlighter className="rounded-md overflow-auto" language={fileExt || undefined} style={vscDarkPlus}>
+          <SyntaxHighlighter className="rounded-md max-w-[800px]" language={fileExt || undefined} style={vscDarkPlus}>
             {code}
           </SyntaxHighlighter>
           {description && <p className="text-sm text-gray-500 mt-2">{description}</p>}
@@ -98,7 +108,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         const [, language, code] = part.match(/```(\w*)\n([\s\S]*?)```/) || [, '', part.slice(3, -3)];
         return (
           <div key={index}>
-            <SyntaxHighlighter language={language || undefined} style={vscDarkPlus} className="overflow-auto">
+            <SyntaxHighlighter language={language || undefined} style={vscDarkPlus} className="rounded-md max-w-[800px]">
               {code.trim()}
             </SyntaxHighlighter>
             <div className="flex items-center mb-2">
@@ -113,7 +123,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           </div>
         );
       } else {
-        return <p key={index} style={{ whiteSpace: 'pre-wrap' }}>{part}</p>;
+        return <p key={index} style={{ whiteSpace: 'pre-wrap' }} className="bg-red-700">{part}</p>;
       }
     });
   };
@@ -121,19 +131,30 @@ const Message: React.FC<MessageProps> = ({ message }) => {
   const parsedContent = parseMessageContent(message.content);
 
   return (
-    <div key={message.id} className={`flex select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`w-full px-2 py-2 rounded-md ${message.role === 'user' ? 'bg-blue-500' :
+    <div key={message.id} className={`flex min-w-[1200px] max-w-[1600px] select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-500' :
         message.role === 'app' ? 'bg-green-500' :
           message.role === 'system' ? 'bg-yellow-500' :
             'bg-gray-300'} hover:shadow-md`}>
         {Array.isArray(parsedContent) ? (
-          parsedContent.map((item, index) => (
-            <div key={index} className="mb-4">
-              {React.isValidElement(item) ? item : renderContent(item as ContentItem)}
-            </div>
-          ))
+          parsedContent.map((item, index) => {
+            if (React.isValidElement(item)) {
+              return item;
+            }
+            return (
+              <div key={index} className="flex flex-col mb-4 bg-purple-300 rounded-md max-w-[800px] space-y-2">
+                {renderContent(item as ContentItem)}
+              </div>
+            );
+          })
         ) : (
-          <p key={parsedContent} style={{ whiteSpace: 'pre-wrap' }} className="mb-4">{parsedContent}</p>
+          <p
+            key={parsedContent}
+            // style={{ whiteSpace: 'pre-wrap' }} 
+            className="mb-4 bg-red-600"
+          >
+            {parsedContent}
+          </p>
         )}
         <div className="mt-2 text-xs opacity-70">
           {new Date(message.createdAt).toLocaleString()}

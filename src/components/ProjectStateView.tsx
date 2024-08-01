@@ -15,7 +15,7 @@ const ProjectStateView: React.FC = () => {
   const { currentProjectState, isLoadingCurrentProjectState, currentProjectStateError } = useAppSelector((state: RootState) => state?.currentProject);
 
   return (
-    <div className="flex flex-col h-screen overflow-auto">
+    <div className="flex flex-col h-screen">
       <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
         <ProjectFolder className="w-8 h-8" />
         <h2 className="text-lg font-semibold">{currentProjectState?.name}</h2>
