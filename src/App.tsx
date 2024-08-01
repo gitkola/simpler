@@ -26,6 +26,23 @@ const App: React.FC = () => {
   const { showProjects, showFolderTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
 
   return (
+    <div className="flex h-screen w-screen overflow-auto">
+      <SidePanel />
+      {showProjects && <ProjectList />}
+      <div className="h-full w-0.5 border"></div>
+      {showProjectState && <ProjectStateView />}
+      <div className="h-full w-0.5 border"></div>
+      {showFolderTree && <FileTreeView />}
+      <div className="h-full w-0.5 border"></div>
+      {showCodeEditor && <CodeViewer />}
+      <div className="h-full w-0.5 border"></div>
+      {showChat && <ChatView />}
+      <div className="h-full w-0.5 border"></div>
+      {showSettings && <Settings />}
+    </div>
+  );
+
+  return (
     <div className="flex h-screen w-screen">
       <SidePanel />
       <PanelGroup
