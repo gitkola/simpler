@@ -54,7 +54,7 @@ export const ChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen border-r-2 min-w-[600px] overflow-x-scroll">
       <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
         <Chat className="w-8 h-8" />
         <h2 className="text-lg font-semibold">AI Chat</h2>

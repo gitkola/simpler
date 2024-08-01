@@ -2,26 +2,28 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LOCAL_STORAGE_KEY_LAYOUT } from "../constants";
 
 export interface IView {
-  name: "projects" | "folder-tree" | "settings";
+  name: "projects" | "file-tree" | "settings";
   visible: boolean;
 }
 
 export interface ILayoutState {
   showProjects: boolean;
-  showFolderTree: boolean;
+  showFileTree: boolean;
   showSettings: boolean;
   showCodeEditor: boolean;
   showChat: boolean;
   showProjectState: boolean;
+  views: IView[];
 }
 
 const defaultInitialState: ILayoutState = {
   showProjects: true,
-  showFolderTree: true,
+  showFileTree: true,
   showSettings: false,
   showCodeEditor: false,
   showChat: true,
   showProjectState: true,
+  views: [],
 };
 
 const loadInitialState = (): ILayoutState => {
@@ -40,7 +42,7 @@ const layoutSlice = createSlice({
       state.showProjects = action.payload;
     },
     setShowFolderTree: (state, action: PayloadAction<boolean>) => {
-      state.showFolderTree = action.payload;
+      state.showFileTree = action.payload;
     },
     setShowSettings: (state, action: PayloadAction<boolean>) => {
       state.showSettings = action.payload;
@@ -54,6 +56,9 @@ const layoutSlice = createSlice({
     setShowProjectState: (state, action: PayloadAction<boolean>) => {
       state.showProjectState = action.payload;
     },
+    setViews: (state, action: PayloadAction<IView[]>) => {
+      state.views = action.payload;
+    },
   },
 });
 
@@ -64,6 +69,7 @@ export const {
   setShowCodeEditor,
   setShowChat,
   setShowProjectState,
+  setViews,
 } = layoutSlice.actions;
 
 export default layoutSlice.reducer;

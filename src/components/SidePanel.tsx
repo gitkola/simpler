@@ -7,14 +7,14 @@ import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjects, set
 const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
-  const { showProjects, showFolderTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
+  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
 
   const toggleView = (value: string) => {
     switch (value) {
       case "projects":
         return dispatch(setShowProjects(!showProjects));
       case "files":
-        return dispatch(setShowFolderTree(!showFolderTree));
+        return dispatch(setShowFolderTree(!showFileTree));
       case "settings":
         return dispatch(setShowSettings(!showSettings));
       case "code-editor":
@@ -48,7 +48,7 @@ const SidePanel: React.FC = () => {
       <SquareButton
         onClick={() => toggleView("files")}
         icon="files"
-        isActive={showFolderTree}
+        isActive={showFileTree}
       />
       <SquareButton
         onClick={() => toggleView("code-editor")}

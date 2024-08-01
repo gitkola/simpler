@@ -58,7 +58,7 @@ export const Files = () => {
     <div className="space-y-1 py-1">
       <div className="flex flex-col p-1 space-y-1 items-end justify-end">
         <button
-          className="px-3 py-1 text-sm bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md rounded-full justify-end"
+          className="px-3 py-1 text-sm bg-yellow-500 text-white hover:bg-yellow-600 hover:shadow-md rounded-full justify-end"
           onClick={async () => await dispatch(handleSyncFilesFromFS())}
         >
           Sync Files from File System

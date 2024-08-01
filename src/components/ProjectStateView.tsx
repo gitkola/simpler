@@ -15,7 +15,7 @@ const ProjectStateView: React.FC = () => {
   const { currentProjectState, isLoadingCurrentProjectState, currentProjectStateError } = useAppSelector((state: RootState) => state?.currentProject);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen border-r-2 min-w-[400px] overflow-x-scroll">
       <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
         <ProjectFolder className="w-8 h-8" />
         <h2 className="text-lg font-semibold">{currentProjectState?.name}</h2>
@@ -26,7 +26,7 @@ const ProjectStateView: React.FC = () => {
       {
         currentProjectStateError && <div>{currentProjectStateError}</div>
       }
-      <div className="h-full p-1 space-y-1 overflow-y-auto">
+      <div className="h-full p-1 space-y-1 overflow-y-scroll">
         <Accordion
           title={`Descriptions (${currentProjectState?.descriptions?.length || 0})`}
           content={<Descriptions />}

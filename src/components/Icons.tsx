@@ -297,7 +297,7 @@ export type AppIcons =
   | "open"
   | "open-folder"
   | "close"
-  | "folder-tree"
+  | "file-tree"
   | "chat"
   | "project-state"
   | "question-mark";
@@ -363,7 +363,7 @@ export default function AppIcon({
       return <OpenFolder size={size} color={color} className={className} />;
     case "close":
       return <Close size={size} color={color} className={className} />;
-    case "folder-tree":
+    case "file-tree":
       return <FolderTree size={size} color={color} className={className} />;
     case "chat":
       return <Chat size={size} color={color} className={className} />;

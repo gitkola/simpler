@@ -48,8 +48,8 @@
 
     /* Webkit Browsers */
     ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 4px;
+        height: 4px;
     }
     
     ::-webkit-scrollbar-track {
@@ -58,10 +58,12 @@
     
     ::-webkit-scrollbar-thumb {
         background: rgba(59, 130, 246, 0.4);
+        border-radius: 2px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
         background: rgba(59, 130, 246, 0.7);
+        border-radius: 2px;
     }
     
     /* Firefox */

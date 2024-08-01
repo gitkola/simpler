@@ -4,7 +4,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { IMessage, MessageContent, ContentItem, isTitle, isText, isCode, isLink, isUpdatedProjectState } from '../types';
 import { MessageProjectStateUpdates } from './MessageProjectStateUpdates';
 import { writeFile } from '../utils/writeFile';
-
+import Accordion from './Accordion';
 
 interface MessageProps {
   message: IMessage;
@@ -13,22 +13,30 @@ interface MessageProps {
 const Message: React.FC<MessageProps> = ({ message }) => {
   const renderContent = (item: ContentItem): JSX.Element => {
     if (isTitle(item)) {
-      return <h3 key={item.id} className="text-lg font-bold">{item.title}</h3>;
+      return <h3 style={{ whiteSpace: 'pre-wrap' }} key={item.id} className="text-lg font-bold">{item.title}</h3>;
     } else if (isText(item)) {
       try {
-        const parsedText = JSON.parse(item.text);
-        if (Array.isArray(parsedText)) {
-          return (
-            <div className="space-y-2 bg-indigo-800" key={item.id}>{parsedText.map((item) => renderContent(item))}</div>
-          );
+        if (typeof item.text !== 'string') throw new Error('Value is not a string');
+        if (item.text === '') return <p key={item.id}></p>;
+        if (item.text.startsWith('[') && item.text.endsWith(']')) {
+          const parsedText = JSON.parse(item.text);
+          if (Array.isArray(parsedText)) {
+            return (
+              <div className="space-y-2" key={item.id}>{parsedText.map((item) => renderContent(item))}</div>
+            );
+          } else {
+            return <p style={{ whiteSpace: 'pre-wrap' }} key={item.id}>{item.text}</p>;
+          }
+        } else if (item.text.startsWith('{') && item.text.endsWith('}')) {
+          return renderContent(JSON.parse(item.text));
         } else {
-          return <div key={item.id} className="bg-orange-500">{item.text}</div>;
+          return <p style={{ whiteSpace: 'pre-wrap' }} key={item.id}>{item.text}</p>;
         }
       } catch (error) {
         return (
           <div key={item.id} className="space-y-2">
-            <p className="bg-cyan-300">{item.text}</p>
-            <p className="text-sm text-red-400 mt-2">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
+            <p style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(item.text, null, 2)}</p>
+            <p style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-red-500">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
           </div>
         );
       }
@@ -51,38 +59,38 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         } catch (error) {
           return (
             <div key={item.id} className="space-y-2">
-              <p className="bg-cyan-300">{item.code}</p>
-              <p className="text-sm text-red-400 mt-2">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{item.code}</p>
+              <p style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-red-500">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
             </div>
           );
         }
       }
       return (
-        <div key={item.id} className="">
+        <div key={item.id} className="space-y-2">
           <SyntaxHighlighter className="rounded-md max-w-[800px]" language={fileExt || undefined} style={vscDarkPlus}>
             {code}
           </SyntaxHighlighter>
-          {description && <p className="text-sm text-gray-500 mt-2">{description}</p>}
-          <div className="flex items-center mt-2">
+          {description && <p style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-gray-500">{description}</p>}
+          <div className="flex items-center space-x-2">
             <button
               onClick={async () => { await writeFile(code, filePath); }}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm mr-2"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm"
             >
               Save to
             </button>
-            <span className="text-sm text-gray-500">{filePath || '/'}</span>
+            <span style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-gray-500">{filePath || '/'}</span>
           </div>
-        </div >
+        </div>
       );
     } else if (isLink(item)) {
       const [url, description] = item.link;
       return (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 mt-8 hover:underline">
+        <a href={url} style={{ whiteSpace: 'pre-wrap' }} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
           {description || url}
         </a>
       );
     };
-    return <p key={item?.id} className="my-4">{JSON.stringify(item, null, 2)}</p>;
+    return <p key={item?.id} style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(item, null, 2)}</p>;
   };
 
   const parseMessageContent = (content: MessageContent | string): MessageContent | JSX.Element[] => {
@@ -94,65 +102,72 @@ const Message: React.FC<MessageProps> = ({ message }) => {
       if (Array.isArray(parsedContent)) {
         return parsedContent as MessageContent;
       }
-      return parseTextWithCodeBlocks(JSON.stringify(parsedContent, null, 2));
+      return parseTextWithCodeBlocks(JSON.stringify(parsedContent, null, 2)); // TODO: try without JSON.stringify
     } catch (error) {
-      return parseTextWithCodeBlocks(content as string);
+      return parseTextWithCodeBlocks(content as string); // TODO: try with JSON.stringify
     }
   };
 
   const parseTextWithCodeBlocks = (text: string): JSX.Element[] => {
-    if (typeof text !== 'string') return [];
-    const parts = text.split(/(```[\s\S]*?```)/);
-    return parts.map((part, index) => {
-      if (part.startsWith('```') && part.endsWith('```')) {
-        const [, language, code] = part.match(/```(\w*)\n([\s\S]*?)```/) || [, '', part.slice(3, -3)];
-        return (
-          <div key={index}>
-            <SyntaxHighlighter language={language || undefined} style={vscDarkPlus} className="rounded-md max-w-[800px]">
-              {code.trim()}
-            </SyntaxHighlighter>
-            <div className="flex items-center mb-2">
-              <button
-                onClick={async () => writeFile(code.trim(), '')}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm mr-2"
-              >
-                Save to
-              </button>
-              <span className="text-sm text-gray-500">No path suggested</span>
+    try {
+
+      if (typeof text !== 'string') throw new Error('Value is not a string');
+      const parts = text.split(/(```[\s\S]*?```)/);
+      return parts.map((part, index) => {
+        if (part.startsWith('```') && part.endsWith('```')) {
+          const [, language, code] = part.match(/```(\w*)\n([\s\S]*?)```/) || [, '', part.slice(3, -3)];
+          return (
+            <div key={index} className="space-y-2">
+              <SyntaxHighlighter language={language || undefined} style={vscDarkPlus} className="rounded-md max-w-[800px]">
+                {code.trim()}
+              </SyntaxHighlighter>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={async () => writeFile(code.trim(), '')}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm"
+                >
+                  Save to
+                </button>
+                <span className="text-sm text-gray-500">No path suggested</span>
+              </div>
             </div>
-          </div>
-        );
-      } else {
-        return <p key={index} style={{ whiteSpace: 'pre-wrap' }} className="bg-red-700">{part}</p>;
-      }
-    });
+          );
+        } else {
+          return <p key={index} style={{ whiteSpace: 'pre-wrap' }}>{part}</p>;
+        }
+      });
+    } catch (error) {
+      const stringifiedText = JSON.stringify(text, null, 2);
+      return [(
+        <div key={stringifiedText} className="space-y-2">
+          <p style={{ whiteSpace: 'pre-wrap' }}>{stringifiedText}</p>
+          <p style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-red-500">Error: {(error as Error).message ? (error as Error).message : JSON.stringify(error, null, 2)}</p>
+        </div>
+      )];
+    }
   };
 
-  const parsedContent = parseMessageContent(message.content);
+  const parsedContent = parseMessageContent(message?.content);
 
   return (
-    <div key={message.id} className={`flex min-w-[1200px] max-w-[1600px] select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-500' :
+    <div key={message.id} className={`flex flex-col max-w-[800px] select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-200' :
         message.role === 'app' ? 'bg-green-500' :
           message.role === 'system' ? 'bg-yellow-500' :
             'bg-gray-300'} hover:shadow-md`}>
         {Array.isArray(parsedContent) ? (
           parsedContent.map((item, index) => {
             if (React.isValidElement(item)) {
-              return item;
+              return (<div key={index} className="flex flex-col mb-4 rounded-md max-w-[800px] space-y-2">{item}</div>);
             }
             return (
-              <div key={index} className="flex flex-col mb-4 bg-purple-300 rounded-md max-w-[800px] space-y-2">
+              <div key={index} className="flex flex-col mb-4 rounded-md max-w-[800px] space-y-2">
                 {renderContent(item as ContentItem)}
               </div>
             );
           })
         ) : (
-          <p
-            key={parsedContent}
-            // style={{ whiteSpace: 'pre-wrap' }} 
-            className="mb-4 bg-red-600"
-          >
+          <p key={parsedContent} style={{ whiteSpace: 'pre-wrap' }} className="mb-4">
             {parsedContent}
           </p>
         )}
@@ -160,6 +175,20 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           {new Date(message.createdAt).toLocaleString()}
           {(message.createdAt !== message.updatedAt) && " (edited)"}
         </div>
+        <Accordion
+          title="Raw message"
+          className="shadow-none max-w-full rounded-md py-0 hover:border-gray-500"
+          titleClassName="text-xs text-gray-500"
+          buttonClassName="text-gray-500 shadow-none rounded-md py-0 hover:border-gray-500"
+          content={
+            <div
+              style={{ whiteSpace: 'pre-wrap' }}
+              className=" text-xs text-gray-500 p-2"
+            >
+              {JSON.stringify(message, null, 2)}
+            </div>
+          }
+        />
       </div>
     </div>
   );
