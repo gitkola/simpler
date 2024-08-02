@@ -24,7 +24,11 @@ export const writeFile = async (code: string | null, path: string | null) => {
       activeProjectPath,
       path || `/${generateDefaultFileName()}`
     );
-    await invoke("write_file", { path: fullPath, content: code || "" });
+    const res = await invoke("write_file", {
+      path: fullPath,
+      content: code || "",
+    });
+    if (!res) throw new Error("Failed to save file");
   } catch (error) {
     console.error("Error saving file:", error);
   }

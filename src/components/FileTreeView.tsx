@@ -66,8 +66,8 @@ export default function FileTreeView() {
   );
 
   return (
-    <div className="flex flex-col h-screen border-r-2 min-w-[300px] overflow-x-scroll">
-      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+    <div className="flex flex-col h-screen border-r border-0.5 min-w-[300px] overflow-x-scroll">
+      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <Files className="w-8 h-8" />
         <h2 className="text-lg font-semibold">Files</h2>
       </div>
@@ -77,11 +77,13 @@ export default function FileTreeView() {
       {
         currentProjectFileTreeError && <div>{currentProjectFileTreeError}</div>
       }
-      <nav aria-label="Files">
-        <TreeView aria-label="Files" className="p-0">
-          {currentProjectFileTree && renderTreeItem(currentProjectFileTree)}
-        </TreeView>
-      </nav>
+      <div className="h-full p-1 space-y-1 overflow-y-scroll">
+        <nav aria-label="Files">
+          <TreeView aria-label="Files" className="p-0">
+            {currentProjectFileTree && renderTreeItem(currentProjectFileTree)}
+          </TreeView>
+        </nav>
+      </div>
     </div>
   );
 }

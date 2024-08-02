@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 // import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SidePanel from "./components/SidePanel";
-import CodeViewer from "./components/CodeViewer";
+import EditorView from "./components/EditorView";
 import ProjectStateView from "./components/ProjectStateView";
 import { ChatView } from "./components/ChatView";
 import { RootState, useAppDispatch, useAppSelector } from "./store";
@@ -9,6 +9,7 @@ import { loadProject } from "./store/currentProjectSlice";
 import ProjectList from "./components/ProjectList";
 import FileTreeView from "./components/FileTreeView";
 import Settings from "./components/Settings";
+import FilesCompareView from "./components/FilesCompareView";
 // import FileTreeView2 from "./components/FileTreeView2";
 // import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
@@ -41,7 +42,8 @@ const App: React.FC = () => {
           {showFileTree && <FileTreeView />}
           {/* {showFileTree && <FileTreeView2 />}
           {showFileTree && <FileTreeView3 />} */}
-          {showCodeEditor && <CodeViewer />}
+          {showCodeEditor && <EditorView />}
+          {showCodeEditor && <FilesCompareView />}
           {showChat && <ChatView />}
           {showSettings && <Settings />}
         </div>
@@ -111,7 +113,7 @@ const App: React.FC = () => {
   //               // maxSize={32}
   //               order={4}
   //             >
-  //               <CodeViewer />
+  //               <EditorView />
   //             </Panel>
   //             <PanelResizeHandle className={`${resizeHandle}`} />
   //           </>
@@ -151,26 +153,3 @@ const App: React.FC = () => {
 
 export default App;
 
-
-/*
-import React from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
-import Settings from "./components/Settings";
-import { ProjectView } from "./components/ProjectView";
-
-const App: React.FC = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Settings />} />
-          <Route path="/project" element={<ProjectView />} />
-        </Route>
-      </Routes>
-    </Router>
-  );
-};
-
-export default App;
-*/

@@ -54,8 +54,8 @@ export const ChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen border-r-2 min-w-[600px] overflow-x-scroll">
-      <div className="flex p-2 space-x-2 items-center justify-start border-b-2">
+    <div className="flex flex-col h-screen border-r border-0.5 min-w-[600px] overflow-x-scroll">
+      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <Chat className="w-8 h-8" />
         <h2 className="text-lg font-semibold">AI Chat</h2>
       </div>
@@ -88,7 +88,7 @@ export const ChatView: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="px-2 border-t-2">
+      <div className="px-2 border-t border-0.5">
         <div className="flex py-2 space-x-2 items-center">
           <div>Suggestions:</div>
           <button

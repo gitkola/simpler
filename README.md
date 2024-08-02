@@ -3,16 +3,18 @@
 This project is a desktop application designed to assist in software project development using OpenAI and Anthropic APIs.
 
 ## Features
+
 - Send requests to OpenAI and Anthropic APIs.
 - Manage project state using a JSON file.
 - User-friendly interface for managing project descriptions, requirements, tasks, and files.
 
 ## Getting Started
+
 To use this application, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/gitkola/simpler
    cd simpler
    ```
 2. Install dependencies:
@@ -26,6 +28,7 @@ To use this application, follow these steps:
    ```
 
 ## Technologies Used
+
 - Tauri framework
 - TypeScript
 - React.js
@@ -33,7 +36,9 @@ To use this application, follow these steps:
 - Tailwind CSS
 
 ## Recommended IDE Setup
+
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
 ## License
+
 This project is licensed under the MIT License.

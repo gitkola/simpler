@@ -93,7 +93,7 @@ export const Files = () => {
         <FileContentModal
           isOpen={!!selectedFile}
           onClose={closeModal}
-          fileName={selectedFile.path}
+          path={selectedFile.path}
           content={selectedFile.content || ''}
           language={getFileLanguage(selectedFile.path)}
           isLoading={isLoading}

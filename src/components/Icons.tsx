@@ -265,6 +265,26 @@ export const ProjectFolder: React.FC<IconProps> = (props) => (
   </SVGWrapper>
 );
 
+export const Diff: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <circle cx="5" cy="6" r="3" />
+    <path d="M12 6h5a2 2 0 0 1 2 2v7" />
+    <path d="m15 9-3-3 3-3" />
+    <circle cx="19" cy="18" r="3" />
+    <path d="M12 18H7a2 2 0 0 1-2-2V9" />
+    <path d="m9 15 3 3-3 3" />
+  </SVGWrapper>
+);
+
+export const Refresh: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+    <path d="M16 16h5v5" />
+  </SVGWrapper>
+);
+
 export const QuestionMark: React.FC<IconProps> = (props) => (
   <SVGWrapper {...props}>
     <circle cx="12" cy="12" r="10" />
@@ -300,6 +320,8 @@ export type AppIcons =
   | "file-tree"
   | "chat"
   | "project-state"
+  | "diff"
+  | "refresh"
   | "question-mark";
 
 interface IAppIconProps extends IconProps {
@@ -369,6 +391,10 @@ export default function AppIcon({
       return <Chat size={size} color={color} className={className} />;
     case "project-state":
       return <ProjectFolder size={size} color={color} className={className} />;
+    case "diff":
+      return <Diff size={size} color={color} className={className} />;
+    case "refresh":
+      return <Refresh size={size} color={color} className={className} />;
     case "question-mark":
       return <QuestionMark size={size} color={color} className={className} />;
     default:
