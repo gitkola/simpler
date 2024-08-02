@@ -68,8 +68,8 @@ const SidePanel: React.FC = () => {
         isActive={showSettings}
       />
       <div className="flex-grow" />
-      {(isLoadingCurrentProjectState || isLoadingCurrentProjectMessages || isLoadingCurrentProjectSettings || isLoadingCurrentProjectOpenedFiles || isLoadingCurrentProjectFileTree) &&
-        <div className="px-2 pb-2">
+      {(isLoadingCurrentProjectState || isLoadingCurrentProjectMessages || isLoadingCurrentProjectSettings || isLoadingCurrentProjectOpenedFiles || isLoadingCurrentProjectFileTree) && 
+        <div className="w-12 h-12 flex items-center justify-center">
           <Spinner size="sm" color="blue" />
         </div>
       }
