@@ -67,7 +67,12 @@ const SidePanel: React.FC = () => {
         icon="settings"
         isActive={showSettings}
       />
-      {(isLoadingCurrentProjectState || isLoadingCurrentProjectMessages || isLoadingCurrentProjectSettings || isLoadingCurrentProjectOpenedFiles || isLoadingCurrentProjectFileTree) && <Spinner size="sm" color="blue" />}
+      <div className="flex-grow" />
+      {(isLoadingCurrentProjectState || isLoadingCurrentProjectMessages || isLoadingCurrentProjectSettings || isLoadingCurrentProjectOpenedFiles || isLoadingCurrentProjectFileTree) &&
+        <div className="px-2 pb-2">
+          <Spinner size="sm" color="blue" />
+        </div>
+      }
     </div>
   );
 };
