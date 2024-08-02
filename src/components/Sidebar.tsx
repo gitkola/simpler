@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   OpenFolder,
-  Settings,
+  SettingsIcon,
 } from "./Icons";
 import ProjectItem from "./ProjectItem";
 import { useAppDispatch } from "../store";
@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMinimized, list, activeProjectPath 
         }
       >
         <div className="flex items-center">
-          <Settings className="flex mr-2" size={24} />
+          <SettingsIcon className="flex mr-2" size={24} />
           Settings
         </div>
       </NavLink>

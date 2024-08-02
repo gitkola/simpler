@@ -9,6 +9,8 @@ import { loadProject } from "./store/currentProjectSlice";
 import ProjectList from "./components/ProjectList";
 import FileTreeView from "./components/FileTreeView";
 import Settings from "./components/Settings";
+// import FileTreeView2 from "./components/FileTreeView2";
+// import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
 
 const App: React.FC = () => {
@@ -24,16 +26,26 @@ const App: React.FC = () => {
     loadProjectData();
   }, [activeProjectPath]);
   const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
+  // const fileTree = useAppSelector((state) => state.fileTree);
+  // const flatFileTree = useAppSelector((state) => state.flatFileTree);
+  // console.log({ fileTree, flatFileTree });
+
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
+    <div className="flex">
       <SidePanel />
-      {showProjects && <ProjectList />}
-      {showProjectState && <ProjectStateView />}
-      {showFileTree && <FileTreeView />}
-      {showCodeEditor && <CodeViewer />}
-      {showChat && <ChatView />}
-      {showSettings && <Settings />}
+      <div className="overflow-x-scroll">
+        <div className="flex">
+          {showProjects && <ProjectList />}
+          {showProjectState && <ProjectStateView />}
+          {showFileTree && <FileTreeView />}
+          {/* {showFileTree && <FileTreeView2 />}
+          {showFileTree && <FileTreeView3 />} */}
+          {showCodeEditor && <CodeViewer />}
+          {showChat && <ChatView />}
+          {showSettings && <Settings />}
+        </div>
+      </div>
     </div>
   );
 

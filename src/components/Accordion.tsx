@@ -7,9 +7,10 @@ export interface AccordionTextareaProps {
   className?: string;
   buttonClassName?: string;
   titleClassName?: string;
+  contentClassName?: string;
 }
 
-const Accordion = ({ title, content, className, buttonClassName, titleClassName }: AccordionTextareaProps) => {
+const Accordion = ({ title, content, className, buttonClassName, titleClassName, contentClassName }: AccordionTextareaProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -21,7 +22,7 @@ const Accordion = ({ title, content, className, buttonClassName, titleClassName 
         <span className={`font-bold ${titleClassName}`}>{title}</span>
         <ChevronRight size={24} className={`transform transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} />
       </button>
-      <div className={`px-0.5 overflow-y-scroll transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px]' : 'max-h-0'}`}>
+      <div className={`px-0.5 overflow-y-scroll transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px]' : 'max-h-0'} ${contentClassName}`}>
         {content}
       </div>
     </div>

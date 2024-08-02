@@ -59,7 +59,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
         />
         <div className="mt-1 flex justify-end space-x-1">
           <button
-            className="px-2 py-1 border border-gray-300 bg-white rounded-md hover:shadow-md hover:bg-gray-100 transition-colors"
+            className="px-2 py-1 border border-gray-300 bg-white bg-opacity-20 rounded-md hover:shadow-md hover:bg-opacity-40 transition-colors"
             onClick={onCancel}
           >
             Cancel
@@ -124,7 +124,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
       {(isEditMode || isEdited) && (
         <div className="mt-1 flex justify-end space-x-1">
           <button
-            className="px-2 py-1 border border-gray-300 bg-white rounded-md hover:shadow-md hover:bg-gray-100 transition-colors"
+            className="px-2 py-1 border border-gray-300 bg-white bg-opacity-20 rounded-md hover:shadow-md hover:bg-opacity-40 transition-colors"
             onClick={onCancel}
           >
             Cancel

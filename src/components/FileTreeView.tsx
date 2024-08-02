@@ -9,7 +9,7 @@ import { openFolder } from "../utils/openFolder";
 import { handleClickOnFile, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
 
-const treeItemIsFile = (tree: ITreeData) => Array.isArray(tree.children) === false;
+const treeItemIsFile = (tree: ITreeData) => Array.isArray(tree?.children) === false;
 
 export default function FileTreeView() {
   const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);

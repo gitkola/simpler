@@ -27,10 +27,23 @@ import {
 } from "../utils/getFilteredProjectFiles";
 import { cloneDeep } from "lodash";
 import { setShowCodeEditor } from "./layoutSlice";
+import { IFileTreeState } from "../components/FileTree/fileTreeInterfaces";
+import { initializeFileTree } from "../components/FileTree/useFileTree";
+import { getFolderNameFromPath } from "../utils/pathUtils";
+import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
 
 export interface IFile {
   path: string;
   isActive?: boolean;
+}
+
+export interface IProjectOpenedFile {
+  path: string;
+  isActive?: boolean;
+}
+
+export interface IProjectOpenedFiles {
+  [path: string]: boolean;
 }
 
 export interface ITreeData {
@@ -60,6 +73,7 @@ export interface ICurrentProject {
   currentProjectOpenedFilesError?: string | null;
 
   currentProjectFileTree: ITreeData | null;
+  fileTree: IFileTreeState | null;
   isLoadingCurrentProjectFileTree: boolean;
   currentProjectFileTreeError?: string | null;
 
@@ -85,6 +99,7 @@ const defaultInitialState: ICurrentProject = {
   currentProjectOpenedFilesError: null,
 
   currentProjectFileTree: null,
+  fileTree: null,
   isLoadingCurrentProjectFileTree: false,
   currentProjectFileTreeError: null,
 
@@ -169,6 +184,7 @@ const currentProjectSlice = createSlice({
     setCurrentProjectOpenedFilesError: (state, action: PayloadAction<any>) => {
       state.isLoadingCurrentProjectOpenedFiles = false;
       state.currentProjectOpenedFilesError = action.payload;
+      state.currentProjectOpenedFiles = [];
     },
 
     fetchCurrentProjectFileTree: (state) => {
@@ -177,6 +193,11 @@ const currentProjectSlice = createSlice({
     },
     setCurrentProjectFileTree: (state, action: PayloadAction<any>) => {
       state.currentProjectFileTree = action.payload;
+      state.isLoadingCurrentProjectFileTree = false;
+      state.currentProjectFileTreeError = null;
+    },
+    setFileTree: (state, action: PayloadAction<IFileTreeState | null>) => {
+      state.fileTree = action.payload;
       state.isLoadingCurrentProjectFileTree = false;
       state.currentProjectFileTreeError = null;
     },
@@ -292,6 +313,28 @@ export const loadProjectFileTree =
       const filteredFilePaths = await getFilteredProjectFiles(
         activeProjectPath
       );
+      dispatch(
+        initializeFileTree(
+          filteredFilePaths.map(
+            (path) =>
+              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+                `${activeProjectPath}/`,
+                ""
+              )}`
+          )
+        )
+      );
+      dispatch(
+        initializeFlatFileTree(
+          filteredFilePaths.map(
+            (path) =>
+              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+                `${activeProjectPath}/`,
+                ""
+              )}`
+          )
+        )
+      );
       const treeData = getTreeData(filteredFilePaths, activeProjectPath);
       dispatch(setCurrentProjectFileTree(treeData));
     } catch (error) {
@@ -384,10 +427,32 @@ export const handleClickOnFile =
         )
       );
     } catch (error) {
-      console.error("Failed to set current project opened file: ", error);
-      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+      const errorMessage = `Failed to handle click on file: ${
+        (error as Error).message
+          ? (error as Error).message
+          : JSON.stringify(error, null, 2)
+      }`;
+      console.error(errorMessage, error);
+      dispatch(setCurrentProjectOpenedFilesError(errorMessage));
     }
   };
+
+// export const handleClickOnFile2 =
+//   (path: string) =>
+//   async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const openedFiles = getState().currentProject.currentProjectOpenedFiles;
+//       if (openedFiles[path]) return;
+//       await dispatch(saveProjectOpenedFiles({ ...openedFiles, [path]: true }));
+//       dispatch(setShowCodeEditor(true));
+//     } catch (error) {
+//       const errorMessage = `Failed to handle click on file: ${
+//         (error as Error).message
+//       }`;
+//       console.error(errorMessage, error);
+//       dispatch(setCurrentProjectOpenedFilesError(errorMessage));
+//     }
+//   };
 
 export const handleClickOnFolder =
   (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
@@ -433,6 +498,24 @@ export const saveProjectOpenedFiles =
       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
     }
   };
+
+// export const saveProjectOpenedFiles2 =
+//   (newProjectOpenedFiles: IProjectOpenedFiles) =>
+//   async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const activeProjectPath = getState().projects.activeProjectPath;
+//       // if (!activeProjectPath) return;
+//       dispatch(fetchCurrentProjectOpenedFiles());
+//       await saveProjectOpenedFilesToFile(
+//         activeProjectPath!,
+//         newProjectOpenedFiles
+//       );
+//       dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
+//     } catch (error) {
+//       console.error("Failed to save project opened files:", error);
+//       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+//     }
+//   };
 
 export const syncProjectStateWithAIUpdates =
   (projectStateUpdates: IProjectState) =>

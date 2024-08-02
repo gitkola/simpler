@@ -4,6 +4,9 @@
 
 @layer utilities {
     body {
+        /* background-color: #1f1f1f;
+        color: #fffb; */
+
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -15,7 +18,12 @@
         -ms-user-select: none; /* Internet Explorer/Edge */
     }
 
+    /* textarea, input, select {
+        background-color: inherit;
+    } */
+
     button {
+        color: inherit;
         user-select: none; /* Standard syntax */
         -webkit-user-select: none; /* Safari */
         -moz-user-select: none; /* Firefox */
@@ -57,18 +65,16 @@
     }
     
     ::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.4);
-        border-radius: 2px;
+        background: rgba(59, 130, 246, 0.7);
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: rgba(59, 130, 246, 0.7);
-        border-radius: 2px;
+        background: rgba(59, 130, 246, 1.0);
     }
     
     /* Firefox */
     * {
         scrollbar-width: thin;
-        scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+        scrollbar-color: rgba(59, 130, 246, 0.7) transparent;
     }
 }
