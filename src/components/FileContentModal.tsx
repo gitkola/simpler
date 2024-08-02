@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import ReactDiffViewer from 'react-diff-viewer';
 import ProcessIndicator from './ProcessIndicator';
 import { readFile } from '../utils/readFile';
 import { useAppSelector } from '../store';
+import Editor from './Editor';
+import DiffViewer from './DiffViewer';
 
 interface FileContentModalProps {
   isOpen: boolean;
@@ -121,41 +121,15 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
             <ProcessIndicator />
           )}
           {
-            !isCompareMode ? <CodeEditor
+            !isCompareMode ? <Editor
               value={editedContent}
               language={language}
               onChange={(evn) => setEditedContent(evn.target.value)}
-              style={{
-                fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                margin: 0,
-                border: 0,
-                background: 'none',
-                boxSizing: 'inherit',
-                display: 'inherit',
-                fontSize: 'inherit',
-                fontStyle: 'inherit',
-                fontVariantLigatures: 'inherit',
-                fontWeight: 'inherit',
-                letterSpacing: 'inherit',
-                lineHeight: 'inherit',
-                tabSize: 'inherit',
-                textIndent: 'inherit',
-                textRendering: 'inherit',
-                textTransform: 'inherit',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'keep-all',
-                overflowWrap: 'break-word',
-                outline: 0,
-              }}
-              data-color-mode={'dark'}
             /> : (
-              <ReactDiffViewer
+              <DiffViewer
                 oldValue={editedContent}
                 newValue={suggestedContent}
-                splitView={true}
-                disableWordDiff
-                useDarkTheme={false}
-                showDiffOnly={false}
+                language={language}
               />)
           }
         </div>
