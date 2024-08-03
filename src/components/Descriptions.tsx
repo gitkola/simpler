@@ -12,7 +12,6 @@ const Descriptions: React.FC = () => {
   const [descriptions, setDescriptions] = useState<IProjectDescription[]>(initialDescriptions);
 
   useEffect(() => {
-    if (!initialDescriptions || initialDescriptions.length < 1) return;
     setDescriptions(initialDescriptions);
   }, [initialDescriptions]);
 

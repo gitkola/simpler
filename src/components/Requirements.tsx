@@ -12,7 +12,6 @@ const Requirements: React.FC = () => {
   const [requirements, setRequirements] = useState<IProjectRequirement[]>(initialRequirements);
 
   useEffect(() => {
-    if (!initialRequirements || initialRequirements.length < 1) return;
     setRequirements(initialRequirements);
   }, [initialRequirements]);
 

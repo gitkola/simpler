@@ -20,12 +20,8 @@ const ProjectStateView: React.FC = () => {
         <ProjectFolder className="w-8 h-8" />
         <h2 className="text-lg font-semibold">{currentProjectState?.name}</h2>
       </div>
-      {
-        isLoadingCurrentProjectState && <ProcessIndicator />
-      }
-      {
-        currentProjectStateError && <div>{currentProjectStateError}</div>
-      }
+      {isLoadingCurrentProjectState && <ProcessIndicator />}
+      {currentProjectStateError && <div className="mx-auto mt-2 px-2 py-1 rounded-md bg-red-400 text-red-700 z-100">{currentProjectStateError}</div>}
       <div className="h-full p-1 space-y-1 overflow-y-scroll">
         <Accordion
           title={`Descriptions (${currentProjectState?.descriptions?.length || 0})`}

@@ -248,11 +248,13 @@ export const loadProject =
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
-      await dispatch(loadProjectFileTree());
-      await dispatch(loadProjectOpenedFiles());
-      await dispatch(loadProjectState());
-      await dispatch(loadProjectMessages());
-      await dispatch(loadProjectSettings());
+      await Promise.all([
+        dispatch(loadProjectFileTree()),
+        dispatch(loadProjectOpenedFiles()),
+        dispatch(loadProjectState()),
+        dispatch(loadProjectMessages()),
+        dispatch(loadProjectSettings()),
+      ]);
     } catch (error) {
       const errorMessage = `Failed to load project: ${
         (error as Error).message

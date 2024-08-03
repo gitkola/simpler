@@ -10,6 +10,9 @@ const fileTreeSlice = createSlice({
   initialState: {} as IFileTreeState,
   reducers: {
     initializeFileTree: (_, action: PayloadAction<string[]>) => {
+      if (action.payload.length === 0) {
+        return {} as IFileTreeState;
+      }
       const treeObject = pathsToTreeObject(action.payload);
       return addSelectionState(treeObject);
     },
