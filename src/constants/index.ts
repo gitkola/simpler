@@ -31,7 +31,7 @@ interface IProjectRequirement {
 interface IProjectTask {
   id: number;
   task: string;
-  status: "todo" | "in_progress" | "done";
+  status: "todo" | "in_progress" | "done" | "hold" | "no_need";
   suggested_as_next_task: boolean;
   update?: "add" | "modify" | "delete";
 }
@@ -71,18 +71,18 @@ export const AI_INSTRUCTIONS_RESPONSE_GUIDELINES = `#Response Guidelines
 PROVIDE YOUR ENTIRE RESPONSE AS A SINGLE, VALID JSON ARRAY. Do not include any text outside this array.
 
 Each element in the array must be an object with one of the following structures:
-1. {"title": "string", "id": "number"} - For main titles or new topics.
-2. {"text": "string", "id": "number"} - For comments, explanations, descriptions, or non-code related text.
-3. {"code": ["code_string", "file_ext", "file_path", "description"], "id": "number"}
+1. {"updated_project_state": JSON object, "id": "number"}
+   - updated_project_state: Provide only an updated project state. Must comply with the "IProjectState" interface. Include only added, edited or deleted fields with appropriate "update" values.
+2. {"code": ["code_string", "file_ext", "file_path", "description"], "id": "number"}
    - code_string: Actual code.
    - file_ext: File extension (e.g., "js", "py", "tsx"). Use null if unknown.
    - file_path: Suggested relative path. Use null if not applicable.
    - description: Brief description of the code. Use null if not required.
-4. {"link": ["url", "description"], "id": "number"}
+3. {"title": "string", "id": "number"} - For main titles or new topics.
+4. {"text": "string", "id": "number"} - For comments, explanations, descriptions, or non-code related text.
+5. {"link": ["url", "description"], "id": "number"}
    - url: URL of the link.
    - description: Brief description. Use null if not specified.
-5. {"updated_project_state": JSON object, "id": "number"}
-   - updated_project_state: Provide only an updated project state. Must comply with the "IProjectState" interface. Include only added, edited or deleted fields with appropriate "update" values.
 6. {"error": ["error_message", "description"], "id": "number"}
    - error_message: Description of the error.
    - description: Suggested solution or request for more details.

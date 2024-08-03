@@ -151,17 +151,14 @@ const Message: React.FC<MessageProps> = ({ message }) => {
 
   return (
     <div key={message.id} className={`flex flex-col max-w-[800px] select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-200' :
-        message.role === 'app' ? 'bg-green-500' :
-          message.role === 'system' ? 'bg-yellow-500' :
-            'bg-gray-300'} hover:shadow-md`}>
+      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-200' : 'bg-gray-300'} hover:shadow-md`}>
         {Array.isArray(parsedContent) ? (
           parsedContent.map((item, index) => {
             if (React.isValidElement(item)) {
-              return (<div key={index} className="flex flex-col mb-4 rounded-md max-w-[800px] space-y-2">{item}</div>);
+              return (<div key={`${Date.now()}${index}`} className="flex flex-col mb-4 rounded-md max-w-[800px] space-y-2">{item}</div>);
             }
             return (
-              <div key={index} className="flex flex-col mb-4 rounded-md max-w-[800px] space-y-2">
+              <div key={`${Date.now()}${index}`} className="flex flex-col mb-4 rounded-md max-w-[800px] space-y-2">
                 {renderContent(item as ContentItem)}
               </div>
             );
@@ -183,7 +180,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           content={
             <div
               style={{ whiteSpace: 'pre-wrap' }}
-              className=" text-xs text-gray-500 p-2"
+              className="text-xs text-gray-700 p-2"
             >
               {JSON.stringify(message, null, 2)}
             </div>
