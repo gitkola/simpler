@@ -175,3 +175,77 @@ ${JSON.stringify(projectState, null, 2)}
 
   return { updatedProjectState, aiResponse: aiResponse as MessageContent };
 };
+
+export const getAIResponseWithProjectStateAndTools = async (
+  message: string,
+  projectState: IProjectState,
+  service: string,
+  model: string,
+  apiKey: string,
+  temperature: number,
+  max_tokens: number
+): Promise<MessageContent> => {
+  const writeFile = async (code: string | null, path: string | null) =>
+    Promise<void>;
+
+  if (service === "openai") {
+    try {
+      const response = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model,
+          messages: [
+            { role: "system", content: AI_INSTRUCTIONS_RESPONSIBILITIES },
+            { role: "system", content: AI_INSTRUCTIONS_PROJECT_STATE },
+            { role: "system", content: "Function calling: writeFile" },
+            { role: "user", content: message },
+          ],
+          temperature,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return parseAIResponse(response.data.choices[0].message.content);
+    } catch (error) {
+      console.error("Error calling OpenAI API:", error);
+      throw error;
+    }
+  } else if (service === "anthropic") {
+    try {
+      const body = Body.json({
+        max_tokens,
+        temperature,
+        messages: [
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+        model,
+        system: `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\nFunction calling: writeFile`,
+      });
+      const response: Response<{
+        content: Array<{ type: "text"; text: string }>;
+      }> = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        timeout: 120,
+        headers: {
+          "x-api-key": apiKey,
+          "Content-Type": "application/json",
+          "anthropic-version": "2023-06-01",
+        },
+        body,
+      });
+      return parseAIResponse(response.data.content[0].text);
+    } catch (error) {
+      console.error("Error calling Anthropic API:", error);
+      throw error;
+    }
+  } else {
+    throw new Error("Invalid AI service selected");
+  }
+};
