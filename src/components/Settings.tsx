@@ -117,7 +117,6 @@ const Settings: React.FC = () => {
             </button>
           </dl>
         </div>
-        {/* <AllIcons /> */}
       </div>
     </div>
   );
