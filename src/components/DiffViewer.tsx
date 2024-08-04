@@ -20,10 +20,11 @@ export default function DiffViewer({ oldValue, newValue, language, theme }: Diff
       oldValue={oldValue}
       newValue={newValue}
       extraLinesSurroundingDiff={0}
-      splitView={false}
+      splitView={true}
       compareMethod={DiffMethod.WORDS_WITH_SPACE}
-      disableWordDiff={true}
+      disableWordDiff={false}
       hideLineNumbers={true}
+      showDiffOnly={false}
       useDarkTheme={theme === 'dark'}
       renderContent={highlightSyntax}
       styles={{
@@ -32,14 +33,12 @@ export default function DiffViewer({ oldValue, newValue, language, theme }: Diff
           overflowY: 'auto',
           background: 'none',
           padding: 0,
-          // paddingLeft: 16,
           margin: 0,
           border: 0,
           tableLayout: 'fixed',
         },
         content: {
           padding: 0,
-          // paddingLeft: 16,
           margin: 0,
           color: 'blue',
           tableLayout: 'inherit',
@@ -47,15 +46,12 @@ export default function DiffViewer({ oldValue, newValue, language, theme }: Diff
         },
         diffRemoved: {
           padding: 0,
-          // paddingLeft: 16,
           margin: 0,
           border: 0,
           span: {
             padding: 0,
             margin: 0,
             border: 0,
-            // paddingRight: 2,
-            // paddinLeft: 2,
           },
         },
         diffAdded: {
@@ -66,8 +62,6 @@ export default function DiffViewer({ oldValue, newValue, language, theme }: Diff
             padding: 0,
             margin: 0,
             border: 0,
-            // paddingRight: 2,
-            // paddinLeft: 2,
           },
         },
         line: {
@@ -101,7 +95,6 @@ export default function DiffViewer({ oldValue, newValue, language, theme }: Diff
           userSelect: 'text',
         },
       }}
-      showDiffOnly={false}
     />
   );
 }

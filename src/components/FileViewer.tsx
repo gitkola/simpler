@@ -78,8 +78,8 @@ export default function FileViewer({ path, showDiff }: FileViewerProps) {
           theme={theme}
         /> :
           <DiffViewer
-            oldValue={editedContent || ""}
-            newValue={suggestedContent}
+            oldValue={suggestedContent}
+            newValue={editedContent || ""}
             language={language}
             theme={theme}
           />
