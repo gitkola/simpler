@@ -2,7 +2,7 @@ import React from "react";
 import SquareButton from "./SquareButton";
 import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
-import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjects, setShowProjectState, setShowSettings } from "../store/layoutSlice";
+import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjectInfo, setShowProjectMessages, setShowProjects, setShowProjectState, setShowSettings } from "../store/layoutSlice";
 import Spinner from './Spinner';
 import { setTheme } from "../store/settingsSlice";
 
@@ -10,7 +10,7 @@ const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector((state) => state.settings);
-  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
+  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState, showProjectInfo, showProjectMessages } = useAppSelector((state) => state.layout);
   const { isLoadingCurrentProjectState, isLoadingCurrentProjectMessages, isLoadingCurrentProjectSettings, isLoadingCurrentProjectOpenedFiles, isLoadingCurrentProjectFileTree } = useAppSelector((state) => state.currentProject);
 
   const toggleView = (value: string) => {
@@ -23,10 +23,14 @@ const SidePanel: React.FC = () => {
         return dispatch(setShowSettings(!showSettings));
       case "code-editor":
         return dispatch(setShowCodeEditor(!showCodeEditor));
-      case "chat":
-        return dispatch(setShowChat(!showChat));
+      case "project-info":
+        return dispatch(setShowProjectInfo(!showProjectInfo));
       case "project-state":
         return dispatch(setShowProjectState(!showProjectState));
+      case "messages":
+        return dispatch(setShowProjectMessages(!showProjectMessages));
+      case "ai-chat":
+        return dispatch(setShowChat(!showChat));
       default:
         return false;
     }
@@ -45,9 +49,19 @@ const SidePanel: React.FC = () => {
         isActive={showProjects}
       />
       <SquareButton
+        onClick={() => toggleView("project-info")}
+        icon="project-info"
+        isActive={showProjectInfo}
+      />
+      <SquareButton
         onClick={() => toggleView("project-state")}
         icon="project-state"
         isActive={showProjectState}
+      />
+      <SquareButton
+        onClick={() => toggleView("messages")}
+        icon="messages"
+        isActive={showProjectMessages}
       />
       <SquareButton
         onClick={() => toggleView("files")}
@@ -60,8 +74,8 @@ const SidePanel: React.FC = () => {
         isActive={showCodeEditor}
       />
       <SquareButton
-        onClick={() => toggleView("chat")}
-        icon="chat"
+        onClick={() => toggleView("ai-chat")}
+        icon="ai-chat"
         isActive={showChat}
       />
       <SquareButton

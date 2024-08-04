@@ -26,7 +26,7 @@ export const Files = () => {
   };
 
   const getFileLanguage = (fileName: string) => {
-    const extension = fileName.split('.').pop()?.toLowerCase();
+    const extension = fileName?.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'js': return 'javascript';
       case 'ts': return 'typescript';

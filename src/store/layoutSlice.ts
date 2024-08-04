@@ -8,21 +8,25 @@ export interface IView {
 
 export interface ILayoutState {
   showProjects: boolean;
+  showProjectInfo: boolean;
+  showProjectState: boolean;
+  showProjectMessages: boolean;
   showFileTree: boolean;
   showSettings: boolean;
   showCodeEditor: boolean;
   showChat: boolean;
-  showProjectState: boolean;
   views: IView[];
 }
 
 const defaultInitialState: ILayoutState = {
   showProjects: true,
+  showProjectInfo: true,
+  showProjectState: true,
+  showProjectMessages: true,
   showFileTree: true,
   showSettings: false,
   showCodeEditor: false,
   showChat: true,
-  showProjectState: true,
   views: [],
 };
 
@@ -41,6 +45,15 @@ const layoutSlice = createSlice({
     setShowProjects: (state, action: PayloadAction<boolean>) => {
       state.showProjects = action.payload;
     },
+    setShowProjectInfo: (state, action: PayloadAction<boolean>) => {
+      state.showProjectInfo = action.payload;
+    },
+    setShowProjectState: (state, action: PayloadAction<boolean>) => {
+      state.showProjectState = action.payload;
+    },
+    setShowProjectMessages: (state, action: PayloadAction<boolean>) => {
+      state.showProjectMessages = action.payload;
+    },
     setShowFolderTree: (state, action: PayloadAction<boolean>) => {
       state.showFileTree = action.payload;
     },
@@ -53,9 +66,6 @@ const layoutSlice = createSlice({
     setShowChat: (state, action: PayloadAction<boolean>) => {
       state.showChat = action.payload;
     },
-    setShowProjectState: (state, action: PayloadAction<boolean>) => {
-      state.showProjectState = action.payload;
-    },
     setViews: (state, action: PayloadAction<IView[]>) => {
       state.views = action.payload;
     },
@@ -64,11 +74,13 @@ const layoutSlice = createSlice({
 
 export const {
   setShowProjects,
+  setShowProjectInfo,
+  setShowProjectState,
+  setShowProjectMessages,
   setShowFolderTree,
   setShowSettings,
   setShowCodeEditor,
   setShowChat,
-  setShowProjectState,
   setViews,
 } = layoutSlice.actions;
 

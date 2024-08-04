@@ -1,14 +1,19 @@
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAppSelector } from '../store';
-
+import Editor from './Editor';
 
 export const ProjectMessages = () => {
   const currentProjectMessages = useAppSelector((state) => state.currentProject.currentProjectMessages);
+  const theme = useAppSelector((state) => state.settings.theme);
   if (!currentProjectMessages) return null;
-  return (
-    <SyntaxHighlighter language={'json'} style={vscDarkPlus} wrapLongLines className="select-text">
-      {(currentProjectMessages && JSON.stringify(currentProjectMessages, null, 2)) || ''}
-    </SyntaxHighlighter>
-  )
+  return (<Editor
+    value={JSON.stringify(currentProjectMessages, null, 2) || ""}
+    language={'json'}
+    minHeight={24}
+    style={{
+      marginLeft: 25,
+      lineHeight: 1.6,
+    }}
+    theme={theme}
+    disabled={true}
+  />);
 };

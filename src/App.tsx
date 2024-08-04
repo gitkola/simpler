@@ -2,14 +2,16 @@ import React, { useEffect } from "react";
 // import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SidePanel from "./components/SidePanel";
 import EditorView from "./components/EditorView";
-import ProjectStateView from "./components/ProjectStateView";
+import ProjectInfoView from "./components/ProjectInfoView";
 import { ChatView } from "./components/ChatView";
 import { RootState, useAppDispatch, useAppSelector } from "./store";
 import { loadProject } from "./store/currentProjectSlice";
-import ProjectList from "./components/ProjectList";
+import ProjectListView from "./components/ProjectListView";
 import FileTreeView from "./components/FileTreeView";
 import Settings from "./components/Settings";
 import { StyleTag } from "./styles/styles";
+import ProjectStateView from "./components/ProjectStateView";
+import ProjectMessagesView from "./components/ProjectMessagesView";
 // import FileTreeView2 from "./components/FileTreeView2";
 // import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
@@ -26,20 +28,22 @@ const App: React.FC = () => {
     if (!activeProjectPath) return;
     loadProjectData();
   }, [activeProjectPath]);
-  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
+  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState, showProjectInfo, showProjectMessages } = useAppSelector((state) => state.layout);
   // const fileTree = useAppSelector((state) => state.fileTree);
   // const flatFileTree = useAppSelector((state) => state.flatFileTree);
   // console.log({ fileTree, flatFileTree });
 
 
   return (
-    <div className="flex">
+    <div className="flex overflow-x-hidden">
       <StyleTag />
       <SidePanel />
-      <div className="overflow-x-scroll">
-        <div className="flex">
-          {showProjects && <ProjectList />}
+      <div className="flex overflow-auto">
+        <div className="flex w-full">
+          {showProjects && <ProjectListView />}
+          {showProjectInfo && <ProjectInfoView />}
           {showProjectState && <ProjectStateView />}
+          {showProjectMessages && <ProjectMessagesView />}
           {showFileTree && <FileTreeView />}
           {/* {showFileTree && <FileTreeView2 />}
           {showFileTree && <FileTreeView3 />} */}
@@ -68,7 +72,7 @@ const App: React.FC = () => {
   //               // maxSize={16}
   //               order={1}
   //             >
-  //               <ProjectList />
+  //               <ProjectListView />
   //             </Panel>
   //             <PanelResizeHandle className={`${resizeHandle}`} />
   //           </>
@@ -78,12 +82,12 @@ const App: React.FC = () => {
   //         showProjectState && (
   //           <>
   //             <Panel
-  //               id="project-state"
+  //               id="project-info"
   //               // minSize={16}
   //               // maxSize={24}
   //               order={2}
   //             >
-  //               <ProjectStateView />
+  //               <ProjectInfoView />
   //             </Panel>
   //             <PanelResizeHandle className={`${resizeHandle}`} />
   //           </>
@@ -123,7 +127,7 @@ const App: React.FC = () => {
   //         showChat && (
   //           <>
   //             <Panel
-  //               id="chat"
+  //               id="messages"
   //               // minSize={24}
   //               // maxSize={32}
   //               order={5}

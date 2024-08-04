@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IProjectSettings } from "../types";
 import Message from "./Message";
-import { ArrowUp, Chat } from "./Icons";
+import { ArrowUp, Brain } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { handleNewMessageToAIModel, saveProjectSettings } from "../store/currentProjectSlice";
@@ -54,17 +54,13 @@ export const ChatView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen border-r border-0.5 min-w-[600px] overflow-x-scroll">
+    <div className="flex flex-col h-screen border-r border-0.5 min-w-[900px] overflow-x-scroll">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <Chat className="w-8 h-8" />
+        <Brain className="w-8 h-8" />
         <h2 className="text-lg font-semibold">AI Chat</h2>
       </div>
-      {
-        isLoadingCurrentProjectMessages && <ProcessIndicator />
-      }
-      {
-        currentProjectMessagesError && <div>{currentProjectMessagesError}</div>
-      }
+      {isLoadingCurrentProjectMessages && <ProcessIndicator />}
+      {currentProjectMessagesError && <div>{currentProjectMessagesError}</div>}
       <div className="flex flex-col h-full overflow-scroll">
         <div className="p-2 h-fit space-y-2">
           {currentProjectMessages?.map((message) => (
@@ -140,12 +136,8 @@ export const ChatView: React.FC = () => {
           </button>
         </div>
         <div className="flex flex-col space-y-2">
-          {
-            isLoadingCurrentProjectSettings && <ProcessIndicator />
-          }
-          {
-            currentProjectSettingsError && <div>{currentProjectSettingsError}</div>
-          }
+          {isLoadingCurrentProjectSettings && <ProcessIndicator />}
+          {currentProjectSettingsError && <div>{currentProjectSettingsError}</div>}
           {
             (!isLoadingCurrentProjectSettings && currentProjectSettings?.service) &&
             <div className="flex my-2 space-x-2">

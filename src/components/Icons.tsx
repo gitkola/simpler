@@ -238,7 +238,7 @@ export const FolderTree: React.FC<IconProps> = (props) => (
     <path d="M3 3v13a2 2 0 0 0 2 2h3" />
   </SVGWrapper>
 );
-export const Chat: React.FC<IconProps> = (props) => (
+export const Messages: React.FC<IconProps> = (props) => (
   <SVGWrapper {...props}>
     <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z" />
     <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
@@ -249,6 +249,22 @@ export const Chat: React.FC<IconProps> = (props) => (
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /> */}
   </SVGWrapper>
 );
+
+export const Chat: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M10 7.5 8 10l2 2.5" />
+    <path d="m14 7.5 2 2.5-2 2.5" />
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </SVGWrapper>
+);
+
+export const Brain: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" /><path d="M9 13a4.5 4.5 0 0 0 3-4" /><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5" /><path d="M3.477 10.896a4 4 0 0 1 .585-.396" /><path d="M6 18a4 4 0 0 1-1.967-.516" /><path d="M12 13h4" /><path d="M12 18h6a2 2 0 0 1 2 2v1" /><path d="M12 8h8" /><path d="M16 8V5a2 2 0 0 1 2-2" /><circle cx="16" cy="13" r=".5" /><circle cx="18" cy="3" r=".5" /><circle cx="20" cy="21" r=".5" /><circle cx="20" cy="8" r=".5" />
+  </SVGWrapper>
+);
+
+
 
 export const ProjectFolder: React.FC<IconProps> = (props) => (
   <SVGWrapper {...props}>
@@ -297,6 +313,20 @@ export const Moon: React.FC<IconProps> = (props) => (
   </SVGWrapper>
 );
 
+export const Info: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 16v-4" />
+    <path d="M12 8h.01" />
+  </SVGWrapper>
+);
+
+export const Braces: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1" />
+    <path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1" />
+  </SVGWrapper>
+);
 
 export const QuestionMark: React.FC<IconProps> = (props) => (
   <SVGWrapper {...props}>
@@ -321,22 +351,26 @@ export type AppIcons =
   | "three-dots"
   | "edit"
   | "trash"
+  | "sidebar"
   | "folder"
   | "file"
   | "files"
   | "projects"
-  | "sidebar"
+  | "project-folder"
   | "open-project"
   | "open"
   | "open-folder"
   | "close"
   | "file-tree"
-  | "chat"
+  | "project-info"
   | "project-state"
+  | "messages"
+  | "ai-chat"
   | "diff"
   | "refresh"
   | "sun"
   | "moon"
+  | "info"
   | "question-mark";
 
 interface IAppIconProps extends IconProps {
@@ -345,7 +379,7 @@ interface IAppIconProps extends IconProps {
 
 export default function AppIcon({
   icon,
-  size,
+  size = 32,
   color,
   className,
 }: IAppIconProps) {
@@ -390,6 +424,8 @@ export default function AppIcon({
       return <Files size={size} color={color} className={className} />;
     case "projects":
       return <Projects size={size} color={color} className={className} />;
+    case "project-folder":
+      return <ProjectFolder size={size} color={color} className={className} />;
     case "sidebar":
       return <SidebarIcon size={size} color={color} className={className} />;
     case "open-project":
@@ -402,10 +438,12 @@ export default function AppIcon({
       return <Close size={size} color={color} className={className} />;
     case "file-tree":
       return <FolderTree size={size} color={color} className={className} />;
-    case "chat":
-      return <Chat size={size} color={color} className={className} />;
-    case "project-state":
-      return <ProjectFolder size={size} color={color} className={className} />;
+    case "messages":
+      return <Messages size={size} color={color} className={className} />;
+    case "ai-chat":
+      return <Brain size={size} color={color} className={className} />;
+    case "project-info":
+      return <Info size={size} color={color} className={className} />;
     case "diff":
       return <Diff size={size} color={color} className={className} />;
     case "refresh":
@@ -414,6 +452,10 @@ export default function AppIcon({
       return <Sun size={size} color={color} className={className} />;
     case "moon":
       return <Moon size={size} color={color} className={className} />;
+    case "info":
+      return <Info size={size} color={color} className={className} />;
+    case "project-state":
+      return <Braces size={size} color={color} className={className} />;
     case "question-mark":
       return <QuestionMark size={size} color={color} className={className} />;
     default:
@@ -442,14 +484,17 @@ export const AllIcons = () => {
       <AppIcon icon="file" />
       <AppIcon icon="files" />
       <AppIcon icon="projects" />
+      <AppIcon icon="project-folder" />
       <AppIcon icon="sidebar" />
       <AppIcon icon="open-project" />
       <AppIcon icon="open" />
       <AppIcon icon="open-folder" />
       <AppIcon icon="close" />
       <AppIcon icon="file-tree" />
-      <AppIcon icon="chat" />
+      <AppIcon icon="project-info" />
       <AppIcon icon="project-state" />
+      <AppIcon icon="messages" />
+      <AppIcon icon="ai-chat" />
       <AppIcon icon="diff" />
       <AppIcon icon="refresh" />
       <AppIcon icon="sun" />
