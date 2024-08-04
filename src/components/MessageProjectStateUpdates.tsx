@@ -1,9 +1,8 @@
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { IProjectState } from "../types";
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { syncProjectStateWithAIUpdates } from '../store/currentProjectSlice';
 import { useAppDispatch } from '../store';
 import Accordion from './Accordion';
+import Editor from './Editor';
 
 export interface IMessageProjectStateUpdatesProps {
   projectStateUpdates: IProjectState;
@@ -15,13 +14,20 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
   return (
     <Accordion
       title="Project State Updates"
-      className="max-w-full rounded-md hover:border-gray-500"
-      buttonClassName="rounded-md hover:border-gray-500"
+      className="shadow-none max-w-full rounded-md py-0 hover:border-gray-500 bg-opacity-20"
+      buttonClassName="shadow-none rounded-md py-0 hover:border-gray-500"
       content={
         <div className="flex flex-col px-2 pb-2">
-          <SyntaxHighlighter className="flex rounded-md max-w-[800px]" language={'json'} style={vscDarkPlus}>
-            {JSON.stringify(projectStateUpdates, null, 2)}
-          </SyntaxHighlighter>
+          <Editor
+            value={JSON.stringify(projectStateUpdates, null, 2)}
+            language={'json'}
+            minHeight={24}
+            style={{
+              marginLeft: 25,
+              lineHeight: 1.6,
+            }}
+            disabled={true}
+          />
           <button
             onClick={async () => await dispatch(syncProjectStateWithAIUpdates(projectStateUpdates))}
             className="flex w-fit bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-yellow-600"

@@ -12,7 +12,6 @@ import {
   IProjectDescription,
 } from "../types";
 import {
-  MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
   PROJECT_MESSAGES_FILE_NAME,
   PROJECT_OPENED_FILES_FILE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
@@ -22,14 +21,7 @@ import { getFolderNameFromPath } from "./pathUtils";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
-import {
-  IProjectOpenedFiles,
-  IFile,
-  saveProjectMessages,
-  setAIModelRequestError,
-  setAIModelRequestInProgress,
-} from "../store/currentProjectSlice";
-import { getAIResponseWithProjectState } from "../services/aiService";
+import { IProjectOpenedFiles, IFile } from "../store/currentProjectSlice";
 import { getFilteredProjectFiles } from "./getFilteredProjectFiles";
 
 export const generateInitialProjectState = (
@@ -429,61 +421,6 @@ export const mergeDescriptions = (
     }
   });
   return Array.from(mergedDescriptions.values());
-};
-
-export const handleGenerateTasksAndFiles = async () => {
-  store.dispatch(setAIModelRequestError(null));
-  store.dispatch(setAIModelRequestInProgress(true));
-
-  const projectSettings =
-    store.getState().currentProject.currentProjectSettings;
-  const projectState = store.getState().currentProject.currentProjectState;
-  const apiKeys = store.getState().settings.apiKeys;
-  const messages = store.getState().currentProject.currentProjectMessages;
-
-  if (!projectState || !projectSettings) {
-    store.dispatch(
-      setAIModelRequestError("Project State or Settings are not loaded")
-    );
-    store.dispatch(setAIModelRequestInProgress(false));
-    return;
-  }
-
-  try {
-    const { service, model, temperature, max_tokens } = projectSettings;
-    const { aiResponse } = await getAIResponseWithProjectState(
-      MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
-      projectState,
-      service,
-      model,
-      apiKeys[service],
-      temperature,
-      max_tokens
-    );
-
-    const now = Date.now();
-    const assistantMessage: IMessage = {
-      id: now,
-      content: aiResponse,
-      role: "assistant",
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const prevMessages = messages || [];
-    store.dispatch(saveProjectMessages([...prevMessages, assistantMessage]));
-  } catch (error) {
-    console.error("Error while generating tasks and files:", error);
-    store.dispatch(
-      setAIModelRequestError(
-        `An unknown error occurred while generating tasks and files: ${
-          (error as Error).message
-        }`
-      )
-    );
-  } finally {
-    store.dispatch(setAIModelRequestInProgress(false));
-  }
 };
 
 export const readFilesFromFS = async (projectPath: string) => {

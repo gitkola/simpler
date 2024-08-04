@@ -1,10 +1,9 @@
 import React from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { IMessage, MessageContent, ContentItem, isTitle, isText, isCode, isLink, isUpdatedProjectState } from '../types';
 import { MessageProjectStateUpdates } from './MessageProjectStateUpdates';
 import { writeFile } from '../utils/writeFile';
 import Accordion from './Accordion';
+import Editor from './Editor';
 
 interface MessageProps {
   message: IMessage;
@@ -67,9 +66,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
       }
       return (
         <div key={item.id} className="space-y-2">
-          <SyntaxHighlighter className="rounded-md max-w-[800px]" language={fileExt || undefined} style={vscDarkPlus}>
-            {code}
-          </SyntaxHighlighter>
+          {renderCodeBlock(code, fileExt || undefined)}
           {description && <p style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-gray-500">{description}</p>}
           <div className="flex items-center space-x-2">
             <button
@@ -118,9 +115,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           const [, language, code] = part.match(/```(\w*)\n([\s\S]*?)```/) || [, '', part.slice(3, -3)];
           return (
             <div key={index} className="space-y-2">
-              <SyntaxHighlighter language={language || undefined} style={vscDarkPlus} className="rounded-md max-w-[800px]">
-                {code.trim()}
-              </SyntaxHighlighter>
+              {renderCodeBlock(code.trim(), language)}
               <div className="flex items-center space-x-2">
                 <button
                   onClick={async () => writeFile(code.trim(), '')}
@@ -147,11 +142,26 @@ const Message: React.FC<MessageProps> = ({ message }) => {
     }
   };
 
+  const renderCodeBlock = (code: string, language: string = 'txt') => {
+    return (
+      <Editor
+        value={code}
+        language={language}
+        minHeight={24}
+        style={{
+          marginLeft: 25,
+          lineHeight: 1.6,
+        }}
+        disabled={true}
+      />
+    );
+  };
+
   const parsedContent = parseMessageContent(message?.content);
 
   return (
-    <div key={message.id} className={`flex flex-col max-w-[800px] select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-200' : 'bg-gray-300'} hover:shadow-md`}>
+    <div key={message.id} className={`flex flex-col min-w-[600px] max-w-max select-text ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div className={`p-2 space-y-2 rounded-md ${message.role === 'user' ? 'bg-blue-600 bg-opacity-20' : 'bg-gray-600 bg-opacity-20'} hover:shadow-md`}>
         {Array.isArray(parsedContent) ? (
           parsedContent.map((item, index) => {
             if (React.isValidElement(item)) {
@@ -176,11 +186,11 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           title="Raw message"
           className="shadow-none max-w-full rounded-md py-0 hover:border-gray-500"
           titleClassName="text-xs text-gray-500"
-          buttonClassName="text-gray-500 shadow-none rounded-md py-0 hover:border-gray-500"
+          buttonClassName="hadow-none rounded-md py-0 hover:border-gray-500"
           content={
             <div
               style={{ whiteSpace: 'pre-wrap' }}
-              className="text-xs text-gray-700 p-2"
+              className="text-xs text-gray-500 p-2"
             >
               {JSON.stringify(message, null, 2)}
             </div>
