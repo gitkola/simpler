@@ -10,12 +10,9 @@ import ProjectList from "./components/ProjectList";
 import FileTreeView from "./components/FileTreeView";
 import Settings from "./components/Settings";
 import { StyleTag } from "./styles/styles";
-// import FilesCompareView from "./components/FilesCompareView";
 // import FileTreeView2 from "./components/FileTreeView2";
 // import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
-
-
 
 const App: React.FC = () => {
   const activeProjectPath = useAppSelector((state: RootState) => state.projects.activeProjectPath);
@@ -47,7 +44,6 @@ const App: React.FC = () => {
           {/* {showFileTree && <FileTreeView2 />}
           {showFileTree && <FileTreeView3 />} */}
           {showCodeEditor && <EditorView />}
-          {/* {showCodeEditor && <FilesCompareView />} */}
           {showChat && <ChatView />}
           {showSettings && <Settings />}
         </div>

@@ -44,7 +44,12 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
               ? 'border-blue-500 bg-blue-500 bg-opacity-50 hover:bg-opacity-70'
               : 'border-blue-300 bg-blue-300 bg-opacity-50 hover:bg-opacity-70'
             }`}
-          onClick={async () => {
+          onClick={async (e) => {
+            if (e.type === 'click' && e.nativeEvent.which === 2) {
+              await handleCloseTab(child.props.path);
+              e.stopPropagation();
+              return;
+            }
             !child.props.isActive && await handleTabClick(child.props.path);
           }}
         >

@@ -17,7 +17,8 @@ export interface SettingsState {
     projectStateInstructions: string;
   };
   styles: string;
-  theme: "light" | "dark" | "system";
+  theme: "light" | "dark";
+  showDiff: boolean;
 }
 
 const defaultInitialState: SettingsState = {
@@ -32,6 +33,7 @@ const defaultInitialState: SettingsState = {
   },
   styles: "",
   theme: "dark",
+  showDiff: false,
 };
 
 const loadInitialState = (): SettingsState => {
@@ -70,8 +72,11 @@ const settingsSlice = createSlice({
     setStyles: (state, action: PayloadAction<string>) => {
       state.styles = action.payload;
     },
-    setTheme: (state, action: PayloadAction<"light" | "dark" | "system">) => {
+    setTheme: (state, action: PayloadAction<"light" | "dark">) => {
       state.theme = action.payload;
+    },
+    setShowDiff: (state, action: PayloadAction<boolean>) => {
+      state.showDiff = action.payload;
     },
   },
 });
@@ -84,6 +89,7 @@ export const {
   resetToDefaultInstructions,
   setStyles,
   setTheme,
+  setShowDiff,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

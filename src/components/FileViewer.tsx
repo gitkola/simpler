@@ -7,12 +7,14 @@ import { IProjectState } from '../types';
 import { saveProjectState } from '../store/currentProjectSlice';
 import { writeFile } from '../utils/writeFile';
 import Editor from './Editor';
+import DiffViewer from './DiffViewer';
 
 interface FileViewerProps {
   path: string;
+  showDiff?: boolean;
 }
 
-export default function FileViewer({ path }: FileViewerProps) {
+export default function FileViewer({ path, showDiff }: FileViewerProps) {
   const [editedContent, setEditedContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [language, setLanguage] = useState<string>('txt');
@@ -20,7 +22,9 @@ export default function FileViewer({ path }: FileViewerProps) {
   const currentProjectState = useAppSelector((state) => state.currentProject.currentProjectState);
   const files = currentProjectState?.files || [];
   const relativePath = path.replace(`${activeProjectPath!}/`, '');
+  const suggestedContent = files?.find((file) => file.path === relativePath)?.content || "";
   const dispatch = useAppDispatch();
+  const theme = useAppSelector((state) => state.settings.theme);
 
   const fetchContent = async (path: string) => {
     setIsLoading(true);
@@ -61,12 +65,24 @@ export default function FileViewer({ path }: FileViewerProps) {
     <div className="">
       {isLoading && <ProcessIndicator />}
       {
-        editedContent && <Editor
-          value={editedContent}
+        !showDiff ? <Editor
+          value={editedContent || ""}
           language={language}
           onChange={(e) => setEditedContent(e.target.value)}
           onKeyDown={handleOnKeyDown}
-        />
+          minHeight={24}
+          style={{
+            marginLeft: 25,
+            lineHeight: 1.6,
+          }}
+          theme={theme}
+        /> :
+          <DiffViewer
+            oldValue={editedContent || ""}
+            newValue={suggestedContent}
+            language={language}
+            theme={theme}
+          />
       }
     </div>
   );
