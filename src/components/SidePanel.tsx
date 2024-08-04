@@ -4,10 +4,12 @@ import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
 import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjects, setShowProjectState, setShowSettings } from "../store/layoutSlice";
 import Spinner from './Spinner';
+import { setTheme } from "../store/settingsSlice";
 
 const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
+  const { theme } = useAppSelector((state) => state.settings);
   const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState } = useAppSelector((state) => state.layout);
   const { isLoadingCurrentProjectState, isLoadingCurrentProjectMessages, isLoadingCurrentProjectSettings, isLoadingCurrentProjectOpenedFiles, isLoadingCurrentProjectFileTree } = useAppSelector((state) => state.currentProject);
 
@@ -31,7 +33,7 @@ const SidePanel: React.FC = () => {
   };
 
   return (
-    <div className={`flex flex-col h-screen space-y-0.5 border-r border-0.5`}>
+    <div className={`flex flex-col h-screen border-r border-opacity-30`}>
       <SquareButton
         onClick={async () => await handleOpenProject()}
         icon="open-folder"
@@ -73,6 +75,11 @@ const SidePanel: React.FC = () => {
           <Spinner size="sm" color="blue" />
         </div>
       }
+      <SquareButton
+        onClick={() => dispatch(setTheme(theme === "dark" ? "light" : "dark"))}
+        icon={theme === "dark" ? "sun" : "moon"}
+        isActive={false}
+      />
     </div>
   );
 };

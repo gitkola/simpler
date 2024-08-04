@@ -5,7 +5,7 @@ interface LineProgressIndicatorProps {
 
 const LineProgressIndicator: React.FC<LineProgressIndicatorProps> = ({
   color = '#3b82f6', // Default color (blue-500 in Tailwind)
-  height = 4 // Default height in pixels
+  height = 8 // Default height in pixels
 }) => {
   return (
     <div className="w-[100%] overflow-hidden">

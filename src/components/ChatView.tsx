@@ -110,6 +110,11 @@ export const ChatView: React.FC = () => {
         </div>
         <div className="flex items-end space-x-2">
           <textarea
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            autoSave="off"
+            spellCheck={false}
             ref={inputRef}
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
@@ -122,7 +127,7 @@ export const ChatView: React.FC = () => {
             className={`${textInput}`}
             placeholder="Type your message... (Shift+Enter for new line)"
             disabled={aiModelRequestInProgress}
-            rows={3}
+            rows={5}
           />
           <button
             onClick={handleSendMessage}

@@ -15,7 +15,7 @@ export default function FilesCompareView() {
           <Diff className="w-8 h-8" />
           <h2 className="text-lg font-semibold">Compare View</h2>
         </div>
-        <SquareButton icon="refresh" onClick={() => { }} className="w-8 h-8 " />
+        <SquareButton icon="edit" onClick={() => { }} className="w-8 h-8 " />
       </div>
       {isLoadingCurrentProjectOpenedFiles && <ProcessIndicator />}
       {currentProjectOpenedFilesError && <div>{currentProjectOpenedFilesError}</div>}

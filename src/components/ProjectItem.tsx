@@ -2,6 +2,7 @@ import React from "react";
 import { ProjectPathListItem } from "../types";
 import { getFolderNameFromPath } from "../utils/pathUtils";
 import SquareButton from "./SquareButton";
+import { cPrimary } from "../styles/styles";
 
 const ProjectItem: React.FC<{
   isActive?: boolean;
@@ -18,7 +19,7 @@ const ProjectItem: React.FC<{
 }) => {
     return (
       <div
-        className={`group flex justify-between items-center pr-2 space-x-2 hover:bg-blue-200 ${isActive && "bg-blue-300"}`}
+        className={`group flex justify-between items-center ${cPrimary(isActive)}`}
       >
         <button
           onClick={() => onSelectProject(projectPath)}
@@ -27,16 +28,17 @@ const ProjectItem: React.FC<{
           {getFolderNameFromPath(projectPath)}
         </button>
         <SquareButton
-          icon="close"
-          iconSize={20}
-          onClick={() => onDeleteProject(projectPath)}
-          className="w-6 h-6 opacity-0 group-hover:opacity-100 hover:text-red-600"
-        />
-        <SquareButton
           icon="open-folder"
           iconSize={20}
           onClick={() => onOpenProjectFolder(projectPath)}
-          className="w-6 h-6 opacity-0 group-hover:opacity-100 hover:text-blue-800"
+          className="w-8 h-8 opacity-0 group-hover:opacity-100 hover:bg-blue-400 hover:bg-opacity-70"
+        />
+        <SquareButton
+          icon="close"
+          iconSize={26}
+          onClick={() => onDeleteProject(projectPath)}
+          className="w-8 h-8 opacity-0 group-hover:opacity-100 hover:bg-blue-400 hover:bg-opacity-70"
+          iconClassName="text-red-500"
         />
       </div>
     );

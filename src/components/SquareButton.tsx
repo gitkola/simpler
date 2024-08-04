@@ -1,3 +1,4 @@
+import { cPrimary } from "../styles/styles";
 import AppIcon, { AppIcons } from "./Icons";
 
 interface ISquareButtonProps {
@@ -24,14 +25,14 @@ export default function SquareButton({
   return (
     <button
       onClick={onClick}
-      className={`w-12 h-12 flex items-center justify-center ${isActive && "bg-blue-300"} hover:text-blue-600 hover:bg-blue-200 ${className}`}
+      className={`w-12 h-12 flex items-center justify-center ${cPrimary(isActive)} ${className}`}
       disabled={disabled}
     >
       <AppIcon
         icon={icon}
         size={iconSize}
         color={iconColor}
-        className={iconClassName}
+        className={`hover:scale-110 transition-all duration-100 ${iconClassName}`}
       />
     </button>
   );

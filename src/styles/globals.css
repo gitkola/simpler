@@ -4,9 +4,7 @@
 
 @layer utilities {
     body {
-        /* background-color: #1f1f1f;
-        color: #fffb; */
-
+        font-family: ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace;
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -18,9 +16,19 @@
         -ms-user-select: none; /* Internet Explorer/Edge */
     }
 
-    /* textarea, input, select {
+    textarea, input, select {
         background-color: inherit;
-    } */
+    }
+
+    .border-r {
+        border-right: 1px dashed rgba(59, 130, 246, 0.3);
+    }
+    .border-b {
+        border-bottom: 1px dashed rgba(59, 130, 246, 0.3);
+    }
+    .border-t {
+        border-top: 1px dashed rgba(59, 130, 246, 0.3);
+    }
 
     button {
         color: inherit;
@@ -56,8 +64,9 @@
 
     /* Webkit Browsers */
     ::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
+        width: 8px;
+        height: 8px;
+        opacity: 0.7;
     }
     
     ::-webkit-scrollbar-track {

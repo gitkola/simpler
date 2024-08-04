@@ -23,37 +23,35 @@ export default function DiffViewer({ oldValue, newValue, language }: DiffViewerP
       compareMethod={DiffMethod.WORDS_WITH_SPACE}
       disableWordDiff={true}
       hideLineNumbers={true}
-      useDarkTheme={false}
+      useDarkTheme={true}
       renderContent={highlightSyntax}
-      styles={{
-        contentText: {
-          fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-          margin: 0,
-          padding: 0,
-          border: 0,
-          background: 'none',
-          boxSizing: 'inherit',
-          display: 'inherit',
-          fontSize: 'inherit',
-          fontStyle: 'inherit',
-          fontVariantLigatures: 'inherit',
-          fontWeight: 'inherit',
-          letterSpacing: 'inherit',
-          lineHeight: 12,
-          tabSize: 'inherit',
-          textIndent: 'inherit',
-          textRendering: 'inherit',
-          textTransform: 'inherit',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'keep-all',
-          overflowWrap: 'break-word',
-          outline: 0,
-          userSelect: 'text',
-        },
-      }}
+      // styles={{
+      //   contentText: {
+      //     fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+      //     margin: 0,
+      //     padding: 0,
+      //     border: 0,
+      //     background: 'none',
+      //     boxSizing: 'inherit',
+      //     display: 'inherit',
+      //     fontSize: 'inherit',
+      //     fontStyle: 'inherit',
+      //     fontVariantLigatures: 'inherit',
+      //     fontWeight: 'inherit',
+      //     letterSpacing: 'inherit',
+      //     lineHeight: 'inherit',
+      //     tabSize: 'inherit',
+      //     textIndent: 'inherit',
+      //     textRendering: 'inherit',
+      //     textTransform: 'inherit',
+      //     whiteSpace: 'pre-wrap',
+      //     wordBreak: 'keep-all',
+      //     overflowWrap: 'break-word',
+      //     outline: 0,
+      //     userSelect: 'text',
+      //   },
+      // }}
       showDiffOnly={false}
-    // leftTitle="From File System"
-    // rightTitle="From Project State"
     />
   );
 }

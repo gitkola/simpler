@@ -285,6 +285,19 @@ export const Refresh: React.FC<IconProps> = (props) => (
   </SVGWrapper>
 );
 
+export const Sun: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+  </SVGWrapper>
+);
+
+export const Moon: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+  </SVGWrapper>
+);
+
+
 export const QuestionMark: React.FC<IconProps> = (props) => (
   <SVGWrapper {...props}>
     <circle cx="12" cy="12" r="10" />
@@ -322,6 +335,8 @@ export type AppIcons =
   | "project-state"
   | "diff"
   | "refresh"
+  | "sun"
+  | "moon"
   | "question-mark";
 
 interface IAppIconProps extends IconProps {
@@ -395,9 +410,51 @@ export default function AppIcon({
       return <Diff size={size} color={color} className={className} />;
     case "refresh":
       return <Refresh size={size} color={color} className={className} />;
+    case "sun":
+      return <Sun size={size} color={color} className={className} />;
+    case "moon":
+      return <Moon size={size} color={color} className={className} />;
     case "question-mark":
       return <QuestionMark size={size} color={color} className={className} />;
     default:
       return <QuestionMark size={size} color={color} className={className} />;
   }
 }
+
+export const AllIcons = () => {
+  return (
+    <div className="flex flex-col m-auto space-y-2">
+      <AppIcon icon="chevron-down" />
+      <AppIcon icon="chevron-right" />
+      <AppIcon icon="chevron-left" />
+      <AppIcon icon="chevron-double-right" />
+      <AppIcon icon="chevron-double-left" />
+      <AppIcon icon="plus" />
+      <AppIcon icon="dashboard" />
+      <AppIcon icon="code-editor" />
+      <AppIcon icon="file-explorer" />
+      <AppIcon icon="settings" />
+      <AppIcon icon="arrow-up" />
+      <AppIcon icon="three-dots" />
+      <AppIcon icon="edit" />
+      <AppIcon icon="trash" />
+      <AppIcon icon="folder" />
+      <AppIcon icon="file" />
+      <AppIcon icon="files" />
+      <AppIcon icon="projects" />
+      <AppIcon icon="sidebar" />
+      <AppIcon icon="open-project" />
+      <AppIcon icon="open" />
+      <AppIcon icon="open-folder" />
+      <AppIcon icon="close" />
+      <AppIcon icon="file-tree" />
+      <AppIcon icon="chat" />
+      <AppIcon icon="project-state" />
+      <AppIcon icon="diff" />
+      <AppIcon icon="refresh" />
+      <AppIcon icon="sun" />
+      <AppIcon icon="moon" />
+      <AppIcon icon="question-mark" />
+    </div>
+  );
+};

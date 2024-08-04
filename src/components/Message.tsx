@@ -76,7 +76,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
               onClick={async () => { await writeFile(code, filePath); }}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm"
             >
-              Save to
+              Write to file
             </button>
             <span style={{ whiteSpace: 'pre-wrap' }} className="text-sm text-gray-500">{filePath || '/'}</span>
           </div>
@@ -126,7 +126,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                   onClick={async () => writeFile(code.trim(), '')}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md text-sm"
                 >
-                  Save to
+                  Write to file
                 </button>
                 <span className="text-sm text-gray-500">No path suggested</span>
               </div>

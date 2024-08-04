@@ -62,6 +62,11 @@ const Settings: React.FC = () => {
               <dt className="font-medium">AI Responsibilities Instructions</dt>
               <dd className="mt-1">
                 <textarea
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  autoComplete="off"
+                  autoSave="off"
+                  spellCheck={false}
                   value={settings?.instructions?.responsibilitiesInstructions}
                   onChange={(e) => handleResponsibilitiesInstructionsChange(e.target.value)}
                   className={`${textInput}`}
@@ -74,6 +79,11 @@ const Settings: React.FC = () => {
               <dt className="font-medium">AI Project State Instructions</dt>
               <dd className="mt-1">
                 <textarea
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  autoComplete="off"
+                  autoSave="off"
+                  spellCheck={false}
                   value={settings?.instructions?.projectStateInstructions}
                   onChange={(e) => handleProjectStateInstructionsChange(e.target.value)}
                   className={`${textInput}`}
@@ -86,6 +96,11 @@ const Settings: React.FC = () => {
               <dt className="font-medium">AI Response Guidelines Instructions</dt>
               <dd className="mt-1">
                 <textarea
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  autoComplete="off"
+                  autoSave="off"
+                  spellCheck={false}
                   value={settings?.instructions?.responseGuidelinesInstructions}
                   onChange={(e) => handleResponseGuidelinesInstructionsChange(e.target.value)}
                   className={`${textInput}`}

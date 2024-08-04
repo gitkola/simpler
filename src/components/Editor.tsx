@@ -1,4 +1,5 @@
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { useAppSelector } from '../store';
 
 export interface TextareaCodeEditorProps {
   value?: string;
@@ -13,7 +14,7 @@ export interface TextareaCodeEditorProps {
 }
 
 export default function Editor({ value, language, onChange, onKeyDown, disabled }: TextareaCodeEditorProps) {
-
+  const theme = useAppSelector((state) => state.settings.theme);
   return (
     <CodeEditor
       disabled={disabled}
@@ -21,12 +22,12 @@ export default function Editor({ value, language, onChange, onKeyDown, disabled 
       language={language}
       onChange={onChange}
       onKeyDown={onKeyDown}
-      padding={0}
       style={{
         fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
         margin: 0,
         border: 0,
-        padding: 0,
+        paddingLeft: 16,
+        paddingRight: 16,
         background: 'none',
         boxSizing: 'inherit',
         display: 'inherit',
@@ -46,7 +47,7 @@ export default function Editor({ value, language, onChange, onKeyDown, disabled 
         outline: 0,
         userSelect: 'text',
       }}
-      data-color-mode={'light'}
+      data-color-mode={theme as "light" | "dark"}
     />
   );
 }

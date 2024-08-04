@@ -14,7 +14,7 @@ const Accordion = ({ title, content, className, buttonClassName, titleClassName,
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`max-w-[600px] rounded-sm shadow-md border border-transparent hover:shadow-md hover:border hover:border-opacity-30 hover:border-blue-500 ${className}`}>
+    <div className={`max-w-[600px] rounded-sm shadow-md hover:shadow-md ${className}`}>
       <button
         className={`pl-2 pr-1 py-1 flex w-full justify-between items-center rounded-sm border-b border-transparent hover:shadow-md hover:border-b hover:border-opacity-30 hover:border-blue-500 ${buttonClassName}`}
         onClick={() => setIsOpen(!isOpen)}

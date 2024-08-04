@@ -74,17 +74,17 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
       }}
     >
       <div
-        className="flex flex-col bg-white rounded-lg max-h-[100%]"
+        className="flex flex-col bg-[#1f1f1f] rounded-lg max-h-[100%]"
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
-        <div className="flex justify-between items-center px-4 py-2">
+        <div className="flex justify-between items-center px-4 py-2 border-b">
           <h2 className="text-xl font-semibold">{path}</h2>
           <div className="space-x-4">
             <button
               onClick={() => setIsCompareMode(!isCompareMode)}
-              className="bg-yellow-500 hover:bg-yellow-300 rounded px-2 py-1 border"
+              className="bg-yellow-600 hover:bg-yellow-400 rounded px-2 py-1 border"
             >
               {!isCompareMode ? 'Compare' : 'Edit'}
             </button>

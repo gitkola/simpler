@@ -9,10 +9,13 @@ import { loadProject } from "./store/currentProjectSlice";
 import ProjectList from "./components/ProjectList";
 import FileTreeView from "./components/FileTreeView";
 import Settings from "./components/Settings";
-import FilesCompareView from "./components/FilesCompareView";
+import { StyleTag } from "./styles/styles";
+// import FilesCompareView from "./components/FilesCompareView";
 // import FileTreeView2 from "./components/FileTreeView2";
 // import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
+
+
 
 const App: React.FC = () => {
   const activeProjectPath = useAppSelector((state: RootState) => state.projects.activeProjectPath);
@@ -34,6 +37,7 @@ const App: React.FC = () => {
 
   return (
     <div className="flex">
+      <StyleTag />
       <SidePanel />
       <div className="overflow-x-scroll">
         <div className="flex">
@@ -43,7 +47,7 @@ const App: React.FC = () => {
           {/* {showFileTree && <FileTreeView2 />}
           {showFileTree && <FileTreeView3 />} */}
           {showCodeEditor && <EditorView />}
-          {showCodeEditor && <FilesCompareView />}
+          {/* {showCodeEditor && <FilesCompareView />} */}
           {showChat && <ChatView />}
           {showSettings && <Settings />}
         </div>

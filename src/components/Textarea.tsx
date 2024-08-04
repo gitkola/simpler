@@ -50,6 +50,11 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
     return (
       <div className={`${className}`}>
         <textarea
+          autoCapitalize="off"
+          autoCorrect="off"
+          autoComplete="off"
+          autoSave="off"
+          spellCheck={false}
           ref={textareaRef}
           className={`${textInput} py-1`}
           value={text}
@@ -104,6 +109,11 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
       {
         (editing || isEditMode) ? (
           <textarea
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            autoSave="off"
+            spellCheck={false}
             ref={textareaRef}
             className={`${textInput} py-1`}
             value={text}
