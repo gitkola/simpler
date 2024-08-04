@@ -20,7 +20,10 @@ import {
   saveProjectOpenedFilesToFile,
 } from "../utils/projectStateUtils";
 import { AppDispatch, RootState } from "./index";
-import { getAIResponseWithProjectState } from "../services/aiService";
+import {
+  getAIResponseWithProjectState,
+  getAIResponseWithProjectStateAndTools,
+} from "../services/aiService";
 import {
   getFilteredProjectFiles,
   getTreeData,
@@ -563,7 +566,7 @@ export const requestAIModelWithProjectState =
       }
       const apiKeys = getState().settings.apiKeys;
       const { service, model, temperature, max_tokens } = projectSettings;
-      const { aiResponse } = await getAIResponseWithProjectState(
+      const { aiResponse } = await getAIResponseWithProjectStateAndTools(
         prompt,
         projectState,
         service,
