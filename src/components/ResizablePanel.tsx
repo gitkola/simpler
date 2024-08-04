@@ -73,7 +73,7 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
         {left}
       </div>
       <div
-        className="w-2 bg-gray-800 cursor-col-resize hover:bg-gray-700 transition-colors absolute h-full"
+        className="w-2 cursor-col-resize hover:bg-gray-700 transition-colors absolute h-full"
         style={{ left: projectStateViewWidth }}
         onMouseDown={handleMouseDown}
       />

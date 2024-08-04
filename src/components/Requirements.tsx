@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IProjectState, IProjectRequirement } from '../types';
 import { useAppDispatch, useAppSelector } from '../store';
 import { saveProjectState } from '../store/currentProjectSlice';
@@ -10,6 +10,10 @@ const Requirements: React.FC = () => {
   const currentProjectState: IProjectState | null = useAppSelector((state) => state.currentProject.currentProjectState);
   const initialRequirements = currentProjectState?.requirements || [];
   const [requirements, setRequirements] = useState<IProjectRequirement[]>(initialRequirements);
+
+  useEffect(() => {
+    setRequirements(initialRequirements);
+  }, [initialRequirements]);
 
   const onSave = async (updatedRequirements: IProjectRequirement[]) => {
     await dispatch(saveProjectState({ ...currentProjectState!, requirements: [...updatedRequirements] }));
@@ -44,7 +48,7 @@ const Requirements: React.FC = () => {
   };
 
   return (
-    <div className="space-y-1 p-1">
+    <div className="space-y-1 py-1">
       {requirements.map(requirement => (
         <div key={requirement.id} className="flex-1 justify-between space-x-1">
           <Textarea

@@ -1,14 +1,19 @@
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAppSelector } from '../store';
-
+import Editor from './Editor';
 
 export const ProjectState = () => {
   const currentProjectState = useAppSelector((state) => state.currentProject.currentProjectState);
+  const theme = useAppSelector((state) => state.settings.theme);
   if (!currentProjectState) return null;
-  return (
-    <SyntaxHighlighter className="no-scrollbar rounded-md p-0 m-0" language={'json'} style={vscDarkPlus} wrapLongLines>
-      {(currentProjectState && JSON.stringify(currentProjectState, null, 2)) || ''}
-    </SyntaxHighlighter>
-  );
+  return (<Editor
+    value={JSON.stringify(currentProjectState, null, 2) || ""}
+    language={'json'}
+    minHeight={24}
+    style={{
+      marginLeft: 25,
+      lineHeight: 1.6,
+    }}
+    theme={theme}
+    disabled={true}
+  />);
 };

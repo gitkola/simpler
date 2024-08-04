@@ -87,7 +87,7 @@ export interface IProjectRequirement {
 export interface IProjectTask {
   id: number;
   task: string;
-  status: "todo" | "in_progress" | "done";
+  status: "todo" | "in_progress" | "done" | "hold" | "no_need";
   suggested_as_next_task: boolean;
   update?: "add" | "modify" | "delete";
 }

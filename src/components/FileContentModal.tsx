@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import Spinner from './Spinner';
+import ProcessIndicator from './ProcessIndicator';
+import { readFile } from '../utils/readFile';
+import { useAppSelector } from '../store';
+import Editor from './Editor';
+import DiffViewer from './DiffViewer';
 
 interface FileContentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  fileName: string;
+  path: string;
   content: string;
   language: string;
   isLoading: boolean;
@@ -15,13 +18,30 @@ interface FileContentModalProps {
 const FileContentModal: React.FC<FileContentModalProps> = ({
   isOpen,
   onClose,
-  fileName,
+  path,
   content,
   language,
   isLoading,
   onSave,
 }) => {
   const [editedContent, setEditedContent] = useState(content);
+  const [suggestedContent, setSuggestedContent] = useState<string>("");
+  const [isCompareMode, setIsCompareMode] = useState<boolean>(false);
+  const [isLoadingFromDisk, setIsLoadingFromDisk] = useState<boolean>(false);
+  const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
+  const absolutePath = `${activeProjectPath!}/${path}`;
+
+  const fetchContent = async (path: string) => {
+    setIsLoadingFromDisk(true);
+    const content = await readFile(path);
+    setSuggestedContent(content);
+    setIsLoadingFromDisk(false);
+  };
+
+  useEffect(() => {
+    if (!absolutePath) return;
+    fetchContent(absolutePath);
+  }, [absolutePath]);
 
   useEffect(() => {
     setEditedContent(content);
@@ -47,21 +67,27 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex-1 h-full w-full items-center justify-center z-10"
+      className="fixed p-16 h-full inset-0 bg-black bg-opacity-50 flex-1 items-center justify-center z-10"
       onClick={(e) => {
         e.stopPropagation();
         onClose();
       }}
     >
       <div
-        className="flex flex-col bg-white rounded-lg m-32 max-h-[80%] overflow-y-auto"
+        className="flex flex-col bg-[#1f1f1f] rounded-lg max-h-[100%]"
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
-        <div className="flex justify-between items-center px-4 py-2">
-          <h2 className="text-xl font-semibold">{fileName}</h2>
+        <div className="flex justify-between items-center px-4 py-2 border-b">
+          <h2 className="text-xl font-semibold">{path}</h2>
           <div className="space-x-4">
+            <button
+              onClick={() => setIsCompareMode(!isCompareMode)}
+              className="bg-yellow-600 hover:bg-yellow-400 rounded px-2 py-1 border"
+            >
+              {!isCompareMode ? 'Compare' : 'Edit'}
+            </button>
             {editedContent !== content &&
               (
                 <button
@@ -90,23 +116,21 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
             </button>
           </div>
         </div>
-        <div>
+        <div className=' overflow-y-auto'>
+          {(isLoading || isLoadingFromDisk) && (
+            <ProcessIndicator />
+          )}
           {
-            isLoading ? (
-              <div className="flex justify-center items-center p-16">
-                <Spinner size="lg" color="blue" />
-              </div>
-            ) : (
-              <CodeEditor
-                value={editedContent}
+            !isCompareMode ? <Editor
+              value={editedContent}
+              language={language}
+              onChange={(evn) => setEditedContent(evn.target.value)}
+            /> : (
+              <DiffViewer
+                oldValue={editedContent}
+                newValue={suggestedContent}
                 language={language}
-                onChange={(evn) => setEditedContent(evn.target.value)}
-                style={{
-                  fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                }}
-                data-color-mode={'dark'}
-              />
-            )
+              />)
           }
         </div>
       </div>

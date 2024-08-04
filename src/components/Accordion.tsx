@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight } from './Icons';
+import { ChevronRight } from './Icons';
 
 export interface AccordionTextareaProps {
   title: string;
   content: React.JSX.Element;
+  className?: string;
+  buttonClassName?: string;
+  titleClassName?: string;
+  contentClassName?: string;
 }
 
-const Accordion = ({ title, content }: AccordionTextareaProps) => {
+const Accordion = ({ title, content, className, buttonClassName, titleClassName, contentClassName }: AccordionTextareaProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="rounded-md shadow-sm transition-all duration-100 bg-gray-400">
+    <div className={`rounded-sm shadow-md hover:shadow-md ${className}`}>
       <button
-        className="w-full px-2 py-1 flex justify-between items-center rounded-md transition-colors hover:shadow-md"
+        className={`pl-2 pr-1 py-1 flex w-full justify-between items-center rounded-sm border-b border-transparent hover:shadow-md hover:border-b hover:border-opacity-30 hover:border-blue-500 ${buttonClassName}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="font-bold">{title}</span>
-        {!isOpen ? <ChevronRight size={24} /> : <ChevronDown size={24} />}
+        <span className={`font-bold ${titleClassName}`}>{title}</span>
+        <ChevronRight size={24} className={`transform transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} />
       </button>
-      <div className={`flex-grow ${!isOpen && 'h-0 overflow-hidden'} transition-all duration-100 ease-in-out`}>
+      <div className={`px-0.5 overflow-y-scroll transition-all duration-300 ease-in-out ${isOpen ? 'max-h-max' : 'max-h-0'} ${contentClassName}`}>
         {content}
       </div>
     </div>

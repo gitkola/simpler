@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IProjectState, IProjectDescription } from '../types';
 import { useAppDispatch, useAppSelector } from '../store';
 import { saveProjectState } from '../store/currentProjectSlice';
@@ -10,6 +10,10 @@ const Descriptions: React.FC = () => {
   const currentProjectState: IProjectState | null = useAppSelector((state) => state.currentProject.currentProjectState);
   const initialDescriptions = currentProjectState?.descriptions || [];
   const [descriptions, setDescriptions] = useState<IProjectDescription[]>(initialDescriptions);
+
+  useEffect(() => {
+    setDescriptions(initialDescriptions);
+  }, [initialDescriptions]);
 
   const onSave = async (updatedDescriptions: IProjectDescription[]) => {
     await dispatch(saveProjectState({ ...currentProjectState!, descriptions: [...updatedDescriptions] }));
@@ -44,7 +48,7 @@ const Descriptions: React.FC = () => {
   };
 
   return (
-    <div className="space-y-1 p-1">
+    <div className="space-y-1 py-1">
       {descriptions.map(description => (
         <div key={description.id} className="flex-1 justify-between space-x-1">
           <Textarea
@@ -55,7 +59,6 @@ const Descriptions: React.FC = () => {
             placeholder="Enter a description..."
             rows={1}
           />
-          {/* {description?.update && <span className={`px-2 py-1 text-sm`}>{description.update}</span>} */}
         </div>
       ))}
       <Textarea

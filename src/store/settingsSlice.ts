@@ -16,6 +16,9 @@ export interface SettingsState {
     responseGuidelinesInstructions: string;
     projectStateInstructions: string;
   };
+  styles: string;
+  theme: "light" | "dark";
+  showDiff: boolean;
 }
 
 const defaultInitialState: SettingsState = {
@@ -28,6 +31,9 @@ const defaultInitialState: SettingsState = {
     responseGuidelinesInstructions: AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
     projectStateInstructions: AI_INSTRUCTIONS_PROJECT_STATE,
   },
+  styles: "",
+  theme: "dark",
+  showDiff: false,
 };
 
 const loadInitialState = (): SettingsState => {
@@ -63,6 +69,15 @@ const settingsSlice = createSlice({
     resetToDefaultInstructions: (state) => {
       state.instructions = { ...defaultInitialState.instructions };
     },
+    setStyles: (state, action: PayloadAction<string>) => {
+      state.styles = action.payload;
+    },
+    setTheme: (state, action: PayloadAction<"light" | "dark">) => {
+      state.theme = action.payload;
+    },
+    setShowDiff: (state, action: PayloadAction<boolean>) => {
+      state.showDiff = action.payload;
+    },
   },
 });
 
@@ -72,6 +87,9 @@ export const {
   setResponseGuidelinesInstructions,
   setProjectStateInstructions,
   resetToDefaultInstructions,
+  setStyles,
+  setTheme,
+  setShowDiff,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

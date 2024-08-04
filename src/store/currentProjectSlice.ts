@@ -16,33 +16,93 @@ import {
   mergeProjectStates,
   readFilesFromFS,
   mergeFiles,
+  loadProjectOpenedFilesFromFile,
+  saveProjectOpenedFilesToFile,
 } from "../utils/projectStateUtils";
 import { AppDispatch, RootState } from "./index";
 import { getAIResponseWithProjectState } from "../services/aiService";
 import {
-  MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST,
-  MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST,
-  MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST,
-} from "../constants";
+  getFilteredProjectFiles,
+  getTreeData,
+} from "../utils/getFilteredProjectFiles";
+import { cloneDeep } from "lodash";
+import { setShowCodeEditor } from "./layoutSlice";
+import { IFileTreeState } from "../components/FileTree/fileTreeInterfaces";
+import { initializeFileTree } from "../components/FileTree/useFileTree";
+import { getFolderNameFromPath } from "../utils/pathUtils";
+import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
+
+export interface IFile {
+  path: string;
+  isActive?: boolean;
+}
+
+export interface IProjectOpenedFile {
+  path: string;
+  isActive?: boolean;
+}
+
+export interface IProjectOpenedFiles {
+  [path: string]: boolean;
+}
+
+export interface ITreeData {
+  name: string;
+  path: string;
+  checked: number;
+  isOpen?: boolean;
+  children?: ITreeData[];
+  selected?: boolean;
+}
 
 export interface ICurrentProject {
   currentProjectState: IProjectState | null;
-  currentProjectMessages: IMessage[];
-  currentProjectSettings: IProjectSettings | null;
+  isLoadingCurrentProjectState: boolean;
   currentProjectStateError?: string | null;
+
+  currentProjectMessages: IMessage[];
+  isLoadingCurrentProjectMessages: boolean;
   currentProjectMessagesError?: string | null;
+
+  currentProjectSettings: IProjectSettings | null;
+  isLoadingCurrentProjectSettings: boolean;
   currentProjectSettingsError?: string | null;
+
+  currentProjectOpenedFiles: IFile[];
+  isLoadingCurrentProjectOpenedFiles: boolean;
+  currentProjectOpenedFilesError?: string | null;
+
+  currentProjectFileTree: ITreeData | null;
+  fileTree: IFileTreeState | null;
+  isLoadingCurrentProjectFileTree: boolean;
+  currentProjectFileTreeError?: string | null;
+
   aiModelRequestInProgress: boolean;
   aiModelRequestError: string | null;
 }
 
 const defaultInitialState: ICurrentProject = {
   currentProjectState: null,
-  currentProjectMessages: [],
-  currentProjectSettings: null,
+  isLoadingCurrentProjectState: false,
   currentProjectStateError: null,
+
+  currentProjectMessages: [],
+  isLoadingCurrentProjectMessages: false,
   currentProjectMessagesError: null,
+
+  currentProjectSettings: null,
+  isLoadingCurrentProjectSettings: false,
   currentProjectSettingsError: null,
+
+  currentProjectOpenedFiles: [],
+  isLoadingCurrentProjectOpenedFiles: false,
+  currentProjectOpenedFilesError: null,
+
+  currentProjectFileTree: null,
+  fileTree: null,
+  isLoadingCurrentProjectFileTree: false,
+  currentProjectFileTreeError: null,
+
   aiModelRequestInProgress: false,
   aiModelRequestError: null,
 };
@@ -51,42 +111,101 @@ const currentProjectSlice = createSlice({
   name: "currentProject",
   initialState: defaultInitialState,
   reducers: {
-    resetCurrentProject: (state) => {
-      state = { ...state, ...defaultInitialState };
+    resetCurrentProject: () => {
+      return defaultInitialState;
+    },
+
+    fetchCurrentProjectState: (state) => {
+      state.isLoadingCurrentProjectState = true;
+      state.currentProjectStateError = null;
     },
     setCurrentProjectState: (
       state,
       action: PayloadAction<IProjectState | null>
     ) => {
       state.currentProjectState = action.payload;
+      state.isLoadingCurrentProjectState = false;
+      state.currentProjectStateError = null;
     },
     setCurrentProjectStateError: (
       state,
       action: PayloadAction<string | null>
     ) => {
+      state.isLoadingCurrentProjectState = false;
       state.currentProjectStateError = action.payload;
+    },
+
+    fetchCurrentProjectMessages: (state) => {
+      state.isLoadingCurrentProjectMessages = true;
+      state.currentProjectMessagesError = null;
     },
     setCurrentProjectMessages: (state, action: PayloadAction<IMessage[]>) => {
       state.currentProjectMessages = action.payload;
+      state.isLoadingCurrentProjectMessages = false;
+      state.currentProjectMessagesError = null;
     },
     setCurrentProjectMessagesError: (
       state,
       action: PayloadAction<string | null>
     ) => {
+      state.isLoadingCurrentProjectMessages = false;
       state.currentProjectMessagesError = action.payload;
+    },
+
+    fetchCurrentProjectSettings: (state) => {
+      state.isLoadingCurrentProjectSettings = true;
+      state.currentProjectSettingsError = null;
     },
     setCurrentProjectSettings: (
       state,
       action: PayloadAction<IProjectSettings | null>
     ) => {
       state.currentProjectSettings = action.payload;
+      state.isLoadingCurrentProjectSettings = false;
+      state.currentProjectSettingsError = null;
     },
     setCurrentProjectSettingsError: (
       state,
       action: PayloadAction<string | null>
     ) => {
+      state.isLoadingCurrentProjectSettings = false;
       state.currentProjectSettingsError = action.payload;
     },
+
+    fetchCurrentProjectOpenedFiles: (state) => {
+      state.isLoadingCurrentProjectOpenedFiles = true;
+      state.currentProjectOpenedFilesError = null;
+    },
+    setCurrentProjectOpenedFiles: (state, action: PayloadAction<IFile[]>) => {
+      state.currentProjectOpenedFiles = action.payload;
+      state.isLoadingCurrentProjectOpenedFiles = false;
+      state.currentProjectOpenedFilesError = null;
+    },
+    setCurrentProjectOpenedFilesError: (state, action: PayloadAction<any>) => {
+      state.isLoadingCurrentProjectOpenedFiles = false;
+      state.currentProjectOpenedFilesError = action.payload;
+      state.currentProjectOpenedFiles = [];
+    },
+
+    fetchCurrentProjectFileTree: (state) => {
+      state.isLoadingCurrentProjectFileTree = true;
+      state.currentProjectFileTreeError = null;
+    },
+    setCurrentProjectFileTree: (state, action: PayloadAction<any>) => {
+      state.currentProjectFileTree = action.payload;
+      state.isLoadingCurrentProjectFileTree = false;
+      state.currentProjectFileTreeError = null;
+    },
+    setFileTree: (state, action: PayloadAction<IFileTreeState | null>) => {
+      state.fileTree = action.payload;
+      state.isLoadingCurrentProjectFileTree = false;
+      state.currentProjectFileTreeError = null;
+    },
+    setCurrentProjectFileTreeError: (state, action: PayloadAction<any>) => {
+      state.isLoadingCurrentProjectFileTree = false;
+      state.currentProjectFileTreeError = action.payload;
+    },
+
     setAIModelRequestInProgress: (state, action: PayloadAction<boolean>) => {
       state.aiModelRequestInProgress = action.payload;
     },
@@ -98,256 +217,46 @@ const currentProjectSlice = createSlice({
 
 export const {
   resetCurrentProject,
+  fetchCurrentProjectState,
   setCurrentProjectState,
-  setCurrentProjectMessages,
-  setCurrentProjectSettings,
   setCurrentProjectStateError,
+
+  fetchCurrentProjectMessages,
+  setCurrentProjectMessages,
   setCurrentProjectMessagesError,
+
+  fetchCurrentProjectSettings,
+  setCurrentProjectSettings,
   setCurrentProjectSettingsError,
+
+  fetchCurrentProjectOpenedFiles,
+  setCurrentProjectOpenedFiles,
+  setCurrentProjectOpenedFilesError,
+
+  fetchCurrentProjectFileTree,
+  setCurrentProjectFileTree,
+  setCurrentProjectFileTreeError,
+
   setAIModelRequestInProgress,
   setAIModelRequestError,
 } = currentProjectSlice.actions;
 
 export default currentProjectSlice.reducer;
 
-export const processProjectMessages =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const activeProjectPath = getState().projects.activeProjectPath;
-      if (!activeProjectPath) return;
-      const {
-        currentProjectState: projectState,
-        currentProjectMessages: messages,
-      } = getState().currentProject;
-      if (!projectState) {
-        throw new Error("Project State is not loaded");
-      }
-      // const { description, requirements, files, tasks } = projectState;
-
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.role === "app") {
-        // Expecting user action
-        return;
-      }
-
-      if (lastMessage?.role === "user") {
-        // await dispatch(processUserMessage(lastMessage));
-        return;
-      }
-    } catch (error) {
-      const errorMessage = `Error processing project messages: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setCurrentProjectStateError(errorMessage));
-    }
-  };
-
-// export const processUserMessage =
-//   (message: IMessage) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     const {
-//       currentProjectState: projectState,
-//       currentProjectMessages: messages,
-//     } = getState().currentProject;
-//     const prevMessage = messages[messages.length - 2];
-//     const { description, requirements, files, tasks } = projectState!;
-//     if (
-//       (!description || description === "") &&
-//       prevMessage.content === MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST
-//     ) {
-//       await dispatch(processProjectDescription(message));
-//       return;
-//     } else if (!requirements || requirements?.length === 0) {
-//       // await dispatch(processProjectRequirements(message));
-//       return;
-//     } else if (!tasks || tasks?.length === 0 || !files || files?.length === 0) {
-//       await dispatch(handleGenerateTasksAndFiles());
-//     } else {
-//       // await sendMessageToAI(message.content as string);
-//     }
-//   };
-
-export const processProjectDescription =
-  (message: IMessage) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const projectState = getState().currentProject.currentProjectState;
-      const updatedProjectState = {
-        ...projectState,
-        description: [
-          { description: message.content as string, id: Date.now() },
-        ],
-      };
-      await dispatch(saveProjectState(updatedProjectState as IProjectState));
-    } catch (error) {
-      const errorMessage = `Error processing project description: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setCurrentProjectStateError(errorMessage));
-    }
-  };
-
-// export const processProjectRequirements =
-//   (message: IMessage) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     try {
-//       const projectState = getState().currentProject.currentProjectState;
-//       const requirementDescriptions = (message?.content as string)
-//         ?.split("\n")
-//         .filter((req) => req.trim() !== "");
-//       const requirements: IProjectRequirement[] = requirementDescriptions.map(
-//         (description, index) => ({
-//           id: `REQ-${index + 1}`,
-//           description,
-//           status: "not_started",
-//           priority: "medium",
-//           createdAt: message.createdAt,
-//           updatedAt: message.updatedAt,
-//         })
-//       );
-//       const updatedProjectState = { ...projectState, requirements };
-//       await dispatch(saveProjectState(updatedProjectState as IProjectState));
-//     } catch (error) {
-//       const errorMessage = `Error processing project requirements: ${
-//         (error as Error).message
-//       }`;
-//       console.error(errorMessage);
-//       dispatch(setCurrentProjectStateError(errorMessage));
-//     }
-//   };
-
-export const handleRequestAIModelAPI =
-  (prompt: string) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      dispatch(setAIModelRequestError(null));
-      dispatch(setAIModelRequestInProgress(true));
-      const projectState = getState().currentProject.currentProjectState;
-      const currentProjectSettings =
-        getState().currentProject.currentProjectSettings;
-      const settings = getState().settings;
-      if (!projectState || !currentProjectSettings) {
-        throw new Error("Project State or Settings are not loaded");
-      }
-      const { service, model, temperature, max_tokens } =
-        currentProjectSettings;
-      const { aiResponse, updatedProjectState } =
-        await getAIResponseWithProjectState(
-          prompt,
-          projectState,
-          service,
-          model,
-          settings.apiKeys[service],
-          temperature,
-          max_tokens
-        );
-
-      const messages = getState().currentProject.currentProjectMessages;
-      const prevMessages = messages || [];
-      const now = Date.now();
-      const assistantMessage: IMessage = {
-        id: now,
-        content: aiResponse,
-        role: "assistant",
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      const nextProjectState = mergeProjectStates(
-        projectState,
-        updatedProjectState
-      );
-      await dispatch(saveProjectState(nextProjectState));
-      await dispatch(saveProjectMessages([...prevMessages, assistantMessage]));
-    } catch (error) {
-      const errorMessage = `Error while requesting AI Model API: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setAIModelRequestError(errorMessage));
-    } finally {
-      dispatch(setAIModelRequestInProgress(false));
-    }
-  };
-
-export const processProjectState =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const activeProjectPath = getState().projects.activeProjectPath;
-      if (!activeProjectPath) return;
-      const {
-        currentProjectState: projectState,
-        currentProjectMessages: messages,
-      } = getState().currentProject;
-      if (!projectState) {
-        throw new Error("Project State is not loaded");
-      }
-      const { descriptions, requirements, files, tasks } = projectState;
-
-      const lastMessage = messages[messages.length - 1];
-
-      if (descriptions === null || descriptions?.length === 0) {
-        if (
-          lastMessage?.content === MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST
-        ) {
-          // Expecting user to provide description
-          return;
-        } else {
-          dispatch(
-            addMessageToThread(
-              MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST,
-              "app"
-            )
-          );
-        }
-        return;
-      }
-
-      if (requirements?.length === 0) {
-        if (
-          lastMessage?.content !== MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST
-        ) {
-          dispatch(
-            addMessageToThread(
-              MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST,
-              "app"
-            )
-          );
-        }
-        return;
-      }
-
-      if (files?.length === 0 || tasks?.length === 0) {
-        dispatch(
-          addMessageToThread(
-            MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST,
-            "app",
-            "generate_tasks_and_files"
-          )
-        );
-        return;
-      }
-    } catch (error) {
-      console.error("Error while processing Project State:", error);
-      dispatch(
-        setCurrentProjectStateError(
-          `Error while processing Project State: ${(error as Error).message}`
-        )
-      );
-    }
-  };
-
 export const loadProject =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
-      await dispatch(loadProjectState());
-      await dispatch(loadProjectMessages());
-      await dispatch(loadProjectSettings());
-      // await dispatch(processProjectState());
+      const start = Date.now();
+      await Promise.all([
+        dispatch(loadProjectFileTree()),
+        dispatch(loadProjectOpenedFiles()),
+        dispatch(loadProjectState()),
+        dispatch(loadProjectMessages()),
+        dispatch(loadProjectSettings()),
+      ]);
+      console.log(`Project loaded in ${Date.now() - start}ms`);
     } catch (error) {
       const errorMessage = `Failed to load project: ${
         (error as Error).message
@@ -359,9 +268,10 @@ export const loadProject =
 
 export const loadProjectState =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const activeProjectPath = getState().projects.activeProjectPath;
-    if (!activeProjectPath) return;
     try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectState());
       let projectState = await loadProjectStateFromFile(activeProjectPath);
       dispatch(setCurrentProjectState(projectState));
     } catch (error) {
@@ -372,9 +282,10 @@ export const loadProjectState =
 
 export const loadProjectMessages =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const activeProjectPath = getState().projects.activeProjectPath;
-    if (!activeProjectPath) return;
     try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectMessages());
       let messages = await loadProjectMessagesFromFile(activeProjectPath);
       dispatch(setCurrentProjectMessages(messages));
     } catch (error) {
@@ -385,14 +296,70 @@ export const loadProjectMessages =
 
 export const loadProjectSettings =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const activeProjectPath = getState().projects.activeProjectPath;
-    if (!activeProjectPath) return;
     try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectSettings());
       const settings = await loadProjectSettingsFromFile(activeProjectPath);
       dispatch(setCurrentProjectSettings(settings));
     } catch (error) {
       console.error("Failed to load project settings:", error);
       dispatch(setCurrentProjectSettingsError((error as Error).message));
+    }
+  };
+
+export const loadProjectFileTree =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectFileTree());
+      const filteredFilePaths = await getFilteredProjectFiles(
+        activeProjectPath
+      );
+      dispatch(
+        initializeFileTree(
+          filteredFilePaths.map(
+            (path) =>
+              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+                `${activeProjectPath}/`,
+                ""
+              )}`
+          )
+        )
+      );
+      dispatch(
+        initializeFlatFileTree(
+          filteredFilePaths.map(
+            (path) =>
+              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+                `${activeProjectPath}/`,
+                ""
+              )}`
+          )
+        )
+      );
+      const treeData = getTreeData(filteredFilePaths, activeProjectPath);
+      dispatch(setCurrentProjectFileTree(treeData));
+    } catch (error) {
+      console.error("Failed to load project file tree: ", error);
+      dispatch(setCurrentProjectStateError((error as Error).message));
+    }
+  };
+
+export const loadProjectOpenedFiles =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectOpenedFiles());
+      const openedFiles = await loadProjectOpenedFilesFromFile(
+        activeProjectPath
+      );
+      dispatch(setCurrentProjectOpenedFiles(openedFiles));
+    } catch (error) {
+      console.error("Failed to load project opened files:", error);
+      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
     }
   };
 
@@ -402,6 +369,7 @@ export const saveProjectState =
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectState());
       await saveProjectStateToFile(activeProjectPath, newProjectState);
       dispatch(setCurrentProjectState(newProjectState));
     } catch (error) {
@@ -416,6 +384,7 @@ export const saveProjectMessages =
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectMessages());
       await saveProjectMessagesToFile(activeProjectPath, newProjectMessages);
       dispatch(setCurrentProjectMessages(newProjectMessages));
     } catch (error) {
@@ -430,6 +399,7 @@ export const saveProjectSettings =
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectSettings());
       await saveProjectSettingsToFile(activeProjectPath, newProjectSettings);
       dispatch(setCurrentProjectSettings(newProjectSettings));
     } catch (error) {
@@ -438,12 +408,126 @@ export const saveProjectSettings =
     }
   };
 
+export const handleClickOnFile =
+  (path: string) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const openedFiles = getState().currentProject.currentProjectOpenedFiles;
+      if (openedFiles.some((file) => file.path === path && file.isActive))
+        return;
+      let newOpenedFiles;
+      if (!openedFiles.some((file) => file.path === path)) {
+        newOpenedFiles = [...openedFiles, { path, isActive: true }];
+      } else {
+        newOpenedFiles = [...openedFiles];
+      }
+      dispatch(setShowCodeEditor(true));
+      await dispatch(
+        saveProjectOpenedFiles(
+          newOpenedFiles.map((file) => ({
+            path: file.path,
+            isActive: file.path === path,
+          }))
+        )
+      );
+    } catch (error) {
+      const errorMessage = `Failed to handle click on file: ${
+        (error as Error).message
+          ? (error as Error).message
+          : JSON.stringify(error, null, 2)
+      }`;
+      console.error(errorMessage, error);
+      dispatch(setCurrentProjectOpenedFilesError(errorMessage));
+    }
+  };
+
+// export const handleClickOnFile2 =
+//   (path: string) =>
+//   async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const openedFiles = getState().currentProject.currentProjectOpenedFiles;
+//       if (openedFiles[path]) return;
+//       await dispatch(saveProjectOpenedFiles({ ...openedFiles, [path]: true }));
+//       dispatch(setShowCodeEditor(true));
+//     } catch (error) {
+//       const errorMessage = `Failed to handle click on file: ${
+//         (error as Error).message
+//       }`;
+//       console.error(errorMessage, error);
+//       dispatch(setCurrentProjectOpenedFilesError(errorMessage));
+//     }
+//   };
+
+export const handleClickOnFolder =
+  (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      dispatch(fetchCurrentProjectFileTree());
+      const currentProjectFileTree =
+        getState().currentProject.currentProjectFileTree;
+      if (!currentProjectFileTree) throw new Error("No file tree found");
+      const toggleTreeFolder = (tree: ITreeData, path: string) => {
+        if (Array.isArray(tree.children)) {
+          if (tree.path === path) {
+            tree.isOpen = !tree.isOpen;
+            return;
+          }
+          for (const child of tree.children) {
+            toggleTreeFolder(child, path);
+          }
+        }
+      };
+      const newFileTree = cloneDeep(currentProjectFileTree);
+      toggleTreeFolder(newFileTree, tree.path);
+      dispatch(setCurrentProjectFileTree(newFileTree));
+    } catch (error) {
+      console.error("Failed to handle toggle open folder: ", error);
+      dispatch(setCurrentProjectFileTreeError((error as Error).message));
+    }
+  };
+
+export const saveProjectOpenedFiles =
+  (newProjectOpenedFiles: IFile[]) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectOpenedFiles());
+      await saveProjectOpenedFilesToFile(
+        activeProjectPath,
+        newProjectOpenedFiles
+      );
+      dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
+    } catch (error) {
+      console.error("Failed to save project opened files:", error);
+      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+    }
+  };
+
+// export const saveProjectOpenedFiles2 =
+//   (newProjectOpenedFiles: IProjectOpenedFiles) =>
+//   async (dispatch: AppDispatch, getState: () => RootState) => {
+//     try {
+//       const activeProjectPath = getState().projects.activeProjectPath;
+//       // if (!activeProjectPath) return;
+//       dispatch(fetchCurrentProjectOpenedFiles());
+//       await saveProjectOpenedFilesToFile(
+//         activeProjectPath!,
+//         newProjectOpenedFiles
+//       );
+//       dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
+//     } catch (error) {
+//       console.error("Failed to save project opened files:", error);
+//       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+//     }
+//   };
+
 export const syncProjectStateWithAIUpdates =
   (projectStateUpdates: IProjectState) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       const projectPath = getState().projects.activeProjectPath;
       if (!projectPath) return;
+      dispatch(fetchCurrentProjectState());
       const projectState = getState().currentProject.currentProjectState;
       const mergedState = mergeProjectStates(
         projectState!,
@@ -540,6 +624,7 @@ export const handleSyncFilesFromFS =
       if (!activeProjectPath) {
         throw new Error("activeProjectPath is not defined");
       }
+      dispatch(fetchCurrentProjectState());
       const files = (await readFilesFromFS(activeProjectPath)) || [];
       const mergedFiles = mergeFiles(
         currentProjectState!.files || [],
@@ -566,7 +651,7 @@ export const updateFileContent =
       const state = getState();
       const currentProjectState = state.currentProject.currentProjectState;
       if (!currentProjectState) throw new Error("No active project state");
-
+      dispatch(fetchCurrentProjectState());
       const updatedFiles = currentProjectState.files?.map((file) =>
         file.id === fileId
           ? { ...file, content: newContent, update: "modify" }

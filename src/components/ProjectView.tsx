@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ChatView } from "./ChatView";
-import ProjectStateView from "./ProjectStateView";
+import ProjectInfoView from "./ProjectInfoView";
 import ResizablePanel from "./ResizablePanel";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { loadProject } from "../store/currentProjectSlice";
@@ -49,7 +49,7 @@ export const ProjectView = () => {
     <ResizablePanel
       minLeftWidth={200}
       maxLeftWidth={800}
-      left={<ProjectStateView />}
+      left={<ProjectInfoView />}
       right={<ChatView />}
     />
   );

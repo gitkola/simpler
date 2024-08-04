@@ -1,49 +1,23 @@
 import React from 'react';
 import { RootState, useAppSelector } from '../store';
-import Requirements from './Requirements';
-import Accordion from './Accordion';
-import Tasks from './Tasks';
-import { Files } from './Files';
 import { ProjectState } from './ProjectState';
-import Descriptions from './Descriptions';
-import { ProjectMessages } from './ProjectMessages';
-
+import { Braces } from './Icons';
+import ProcessIndicator from './ProcessIndicator';
 
 
 const ProjectStateView: React.FC = () => {
-  const projectState = useAppSelector((state: RootState) => state?.currentProject?.currentProjectState);
-
-  if (!projectState) return null;
+  const { isLoadingCurrentProjectState, currentProjectStateError } = useAppSelector((state: RootState) => state?.currentProject);
 
   return (
-    <div className="h-full p-2 pr-0 pt-0 space-y-1 overflow-y-auto no-scrollbar bg-gray-800">
-      <div className="h-full p-2 space-y-2 rounded-md overflow-y-auto no-scrollbar bg-white">
-        <Accordion
-          title={`Descriptions (${projectState?.descriptions?.length || 0})`}
-          content={
-            <Descriptions />
-          }
-        />
-        <Accordion
-          title={`Requirements (${projectState?.requirements?.length || 0})`}
-          content={<Requirements />}
-        />
-        <Accordion
-          title={`Tasks (${projectState?.tasks?.length || 0})`}
-          content={<Tasks />}
-        />
-        <Accordion
-          title={`Files (${projectState?.files?.length || 0})`}
-          content={<Files />}
-        />
-        <Accordion
-          title="Project State"
-          content={<ProjectState />}
-        />
-        <Accordion
-          title="Project Messages"
-          content={<ProjectMessages />}
-        />
+    <div className="flex flex-col h-screen border-r border-0.5 w-[900px]">
+      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
+        <Braces className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">Project State</h2>
+      </div>
+      {isLoadingCurrentProjectState && <ProcessIndicator />}
+      {currentProjectStateError && <div className="mx-auto mt-2 px-2 py-1 rounded-md bg-red-400 text-red-700 z-100">{currentProjectStateError}</div>}
+      <div className="h-full p-1 space-y-1 overflow-y-scroll">
+        <ProjectState />
       </div>
     </div>
   );

@@ -48,7 +48,7 @@ const Tasks: React.FC = () => {
   };
 
   return (
-    <div className="space-y-1 p-1">
+    <div className="space-y-1 py-1">
       {tasks.map(task => (
         <div key={task.id} className="flex justify-between space-x-1">
           <div className="flex-1">

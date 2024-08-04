@@ -12,21 +12,16 @@ import {
   IProjectDescription,
 } from "../types";
 import {
-  MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
   PROJECT_MESSAGES_FILE_NAME,
+  PROJECT_OPENED_FILES_FILE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
 } from "../constants";
-import { getFolderNameFromPath } from "./getFolderNameFromPath";
+import { getFolderNameFromPath } from "./pathUtils";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
-import {
-  saveProjectMessages,
-  setAIModelRequestError,
-  setAIModelRequestInProgress,
-} from "../store/currentProjectSlice";
-import { getAIResponseWithProjectState } from "../services/aiService";
+import { IProjectOpenedFiles, IFile } from "../store/currentProjectSlice";
 import { getFilteredProjectFiles } from "./getFilteredProjectFiles";
 
 export const generateInitialProjectState = (
@@ -34,7 +29,7 @@ export const generateInitialProjectState = (
 ): IProjectState => {
   const { createdAt, updatedAt } = createTimestamps();
   return {
-    name: getFolderNameFromPath(projectPath),
+    name: getFolderNameFromPath(projectPath) || "",
     descriptions: [],
     requirements: [],
     files: [],
@@ -169,6 +164,47 @@ export const saveProjectSettingsToFile = async (
   }
 };
 
+export const saveProjectOpenedFilesToFile = async (
+  projectPath: string,
+  projectOpenedFiles: IFile[]
+) => {
+  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
+  try {
+    const result = await invoke("write_file", {
+      path: openedFilesFilePath,
+      content: JSON.stringify(projectOpenedFiles || [], null, 2),
+    });
+    if (result !== null) {
+      throw new Error(result as string);
+    }
+  } catch (error) {
+    console.error("Failed to save Project Opened Files:", error);
+    throw new Error("Failed to save Project Opened Files");
+  }
+};
+
+export const saveProjectOpenedFilesToFile2 = async (
+  projectPath: string,
+  projectOpenedFiles: IProjectOpenedFiles = {}
+) => {
+  try {
+    const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
+    const result = await invoke("write_file", {
+      path: openedFilesFilePath,
+      content: JSON.stringify(projectOpenedFiles, null, 2),
+    });
+    if (result !== null) {
+      throw new Error(result as string);
+    }
+  } catch (error) {
+    const errorMessage = `Failed to save Project Opened Files: ${
+      (error as Error).message
+    }`;
+    console.error(errorMessage, error);
+    throw new Error(errorMessage);
+  }
+};
+
 export const loadProjectSettingsFromFile = async (
   projectPath: string
 ): Promise<IProjectSettings | null> => {
@@ -196,6 +232,46 @@ export const loadProjectSettingsFromFile = async (
     const newProjectSettings = generateInitialProjectSettings();
     await saveProjectSettingsToFile(projectPath, newProjectSettings);
     return newProjectSettings;
+  }
+};
+
+export const loadProjectOpenedFilesFromFile = async (
+  projectPath: string
+): Promise<IFile[]> => {
+  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
+  try {
+    const fileExists = await invoke("file_exists", {
+      path: openedFilesFilePath,
+    });
+    if (!fileExists) {
+      return [];
+    }
+    const result = await invoke("read_file", {
+      path: openedFilesFilePath,
+    });
+    if (typeof result !== "string") {
+      throw new Error("Invalid Project Opened Files file content");
+    }
+    const openedFiles: IFile[] = JSON.parse(result);
+    return openedFiles;
+  } catch (error) {
+    console.error("Error reading Project Opened Files file:", error);
+    return [];
+  }
+};
+
+export const loadProjectOpenedFilesFromFile2 = async (
+  projectPath: string
+): Promise<IProjectOpenedFiles> => {
+  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
+  try {
+    const result = await invoke("read_file", {
+      path: openedFilesFilePath,
+    });
+    return JSON.parse(result as string);
+  } catch (error) {
+    console.error("Error reading Project Opened Files file:", error);
+    return {};
   }
 };
 
@@ -347,65 +423,10 @@ export const mergeDescriptions = (
   return Array.from(mergedDescriptions.values());
 };
 
-export const handleGenerateTasksAndFiles = async () => {
-  store.dispatch(setAIModelRequestError(null));
-  store.dispatch(setAIModelRequestInProgress(true));
-
-  const projectSettings =
-    store.getState().currentProject.currentProjectSettings;
-  const projectState = store.getState().currentProject.currentProjectState;
-  const apiKeys = store.getState().settings.apiKeys;
-  const messages = store.getState().currentProject.currentProjectMessages;
-
-  if (!projectState || !projectSettings) {
-    store.dispatch(
-      setAIModelRequestError("Project State or Settings are not loaded")
-    );
-    store.dispatch(setAIModelRequestInProgress(false));
-    return;
-  }
-
-  try {
-    const { service, model, temperature, max_tokens } = projectSettings;
-    const { aiResponse } = await getAIResponseWithProjectState(
-      MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
-      projectState,
-      service,
-      model,
-      apiKeys[service],
-      temperature,
-      max_tokens
-    );
-
-    const now = Date.now();
-    const assistantMessage: IMessage = {
-      id: now,
-      content: aiResponse,
-      role: "assistant",
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const prevMessages = messages || [];
-    store.dispatch(saveProjectMessages([...prevMessages, assistantMessage]));
-  } catch (error) {
-    console.error("Error while generating tasks and files:", error);
-    store.dispatch(
-      setAIModelRequestError(
-        `An unknown error occurred while generating tasks and files: ${
-          (error as Error).message
-        }`
-      )
-    );
-  } finally {
-    store.dispatch(setAIModelRequestInProgress(false));
-  }
-};
-
 export const readFilesFromFS = async (projectPath: string) => {
   try {
     if (typeof projectPath !== "string" || !projectPath) return null;
-    const filteredFilePaths = await getFilteredProjectFiles(projectPath);
+    const filteredFilePaths = await getFilteredProjectFiles(projectPath, true);
     const projectFiles: IProjectFile[] = [];
     for await (const filePath of filteredFilePaths) {
       try {

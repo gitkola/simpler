@@ -26,7 +26,7 @@ export const Files = () => {
   };
 
   const getFileLanguage = (fileName: string) => {
-    const extension = fileName.split('.').pop()?.toLowerCase();
+    const extension = fileName?.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'js': return 'javascript';
       case 'ts': return 'typescript';
@@ -55,10 +55,10 @@ export const Files = () => {
   };
 
   return (
-    <div className="space-y-1 p-1">
+    <div className="space-y-1 py-1">
       <div className="flex flex-col p-1 space-y-1 items-end justify-end">
         <button
-          className="px-3 py-1 text-sm bg-blue-500 text-white hover:bg-blue-600 hover:shadow-md rounded-full justify-end"
+          className="px-3 py-1 text-sm bg-yellow-600 text-white hover:bg-yellow-500 hover:shadow-md rounded-full justify-end"
           onClick={async () => await dispatch(handleSyncFilesFromFS())}
         >
           Sync Files from File System
@@ -69,20 +69,20 @@ export const Files = () => {
           {files.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center p-1 bg-white border hover:border-gray-300 hover:shadow-md rounded-md cursor-pointer ${!file?.content && 'opacity-50'}`}
+              className={`flex items-center px-2 py-1 border border-gray-300 border-opacity-30 hover:border-gray-300 hover:border-opacity-80 hover:shadow-md rounded-sm cursor-pointer ${!file?.content && 'opacity-50'}`}
               onClick={() => handleFileClick(file)}
             >
-              <File className="text-blue-500" />
-              {file?.path && <span className={`px-2 text-sm`}>{file.path}</span>}
+              {/* <File className="text-blue-500" /> */}
+              {file?.path && <span className={`text-md`}>{file.path}</span>}
               {file?.content && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     writeFile(file.content, file.path);
                   }}
-                  className="ml-auto px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 hover:shadow-md text-white rounded-full"
+                  className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 hover:shadow-md text-white rounded-full"
                 >
-                  Write
+                  Write to file
                 </button>
               )}
             </div>
@@ -93,7 +93,7 @@ export const Files = () => {
         <FileContentModal
           isOpen={!!selectedFile}
           onClose={closeModal}
-          fileName={selectedFile.path}
+          path={selectedFile.path}
           content={selectedFile.content || ''}
           language={getFileLanguage(selectedFile.path)}
           isLoading={isLoading}
