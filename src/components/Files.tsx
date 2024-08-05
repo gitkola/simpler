@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { handleSyncFilesFromFS, saveProjectState } from "../store/currentProjectSlice";
 import { IProjectFile, IProjectState } from "../types";
 import { writeFile } from "../utils/writeFile";
-import { File } from './Icons';
 import FileContentModal from './FileContentModal';
+import { invoke } from '@tauri-apps/api/tauri';
 
 export const Files = () => {
   const dispatch = useAppDispatch();
@@ -16,8 +16,6 @@ export const Files = () => {
   const handleFileClick = async (file: IProjectFile) => {
     setIsLoading(true);
     setSelectedFile(file);
-    // Simulate file content fetching delay
-    await new Promise(resolve => setTimeout(resolve, 100));
     setIsLoading(false);
   };
 
@@ -54,6 +52,19 @@ export const Files = () => {
     }
   };
 
+  const handleDeleteFile = async (filePath: string) => {
+    try {
+      await invoke('remove_file', { path: filePath }); // TODO: Implement this function on the Rust side
+
+      dispatch(saveProjectState({
+        ...currentProjectState!,
+        files: currentProjectState?.files?.filter(file => file?.path !== filePath)
+      }));
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
+  };
+
   return (
     <div className="space-y-1 py-1">
       <div className="flex flex-col p-1 space-y-1 items-end justify-end">
@@ -76,15 +87,24 @@ export const Files = () => {
               {file?.path && <span className={`text-md`}>{file.path}</span>}
               {file?.content && (
                 <button
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
-                    writeFile(file.content, file.path);
+                    await writeFile(file.content, file.path);
                   }}
                   className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 hover:shadow-md text-white rounded-full"
                 >
                   Write to file
                 </button>
               )}
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await handleDeleteFile(file.path);
+                }}
+                className="ml-auto px-3 text-sm bg-red-500 hover:bg-red-600 hover:shadow-md text-white rounded-full"
+              >
+                Delete
+              </button>
             </div>
           ))}
         </div>
