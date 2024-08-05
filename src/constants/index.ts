@@ -129,16 +129,8 @@ Example of a correct response:
 
 WARNING: Do not add any explanatory text outside the JSON array. All natural language responses must be contained within appropriate JSON objects in the array.
 
-Ensure your response is well-structured and easy to understand. Always include the updated state if you change the project status.
-`;
+Ensure your response is well-structured and easy to understand. Always include the updated state if you change the project status.`;
 
-export const MESSAGE_TO_USER_PROJECT_DESCRIPTION_REQUEST =
-  "Please provide a project description.";
-export const MESSAGE_TO_USER_PROJECT_REQUIREMENTS_REQUEST =
-  "Please provide a list of requirements for the project. Each requirement should be on a new line.";
-export const MESSAGE_GENERATE_PROJECT_FILES_AND_TASKS_REQUEST =
-  "Would you like AI model to generate or update tasks and file structure based on the project description and requirements.";
-export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST =
-  "Generate or update tasks based on the project description, requirements and files.";
-export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST =
-  "Generate or update planned file structure based on the project description, requirements and files. Don't add files content.";
+export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST = `Generate or update tasks based on the Project State description, requirements, files and tasks. Respond with "updated_project_state" containing the new, updated or deleted tasks with appropriate statuses and "suggested_as_next_task" field filled.`;
+
+export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST = `Generate or update files based on the Project State description, requirements, files and tasks. Respond with "updated_project_state" containing the new, updated or deleted files with appropriate statuses. Don't add files content.`;
