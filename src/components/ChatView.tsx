@@ -11,7 +11,7 @@ import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL
 import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
-import { setInputValue } from "../store/chatSlice";
+import { setAddProjectStateToContext, setInputValue } from "../store/chatSlice";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -26,6 +26,7 @@ export const ChatView: React.FC = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { inputValue } = useAppSelector((state: RootState) => state.chat);
+  const { addProjectStateToContext } = useAppSelector((state: RootState) => state.chat);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -108,6 +109,15 @@ export const ChatView: React.FC = () => {
             <div>Generate File Structure</div>
             <ArrowUp size={20} />
           </button>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={addProjectStateToContext}
+              onChange={(e) => dispatch(setAddProjectStateToContext(e.target.checked))}
+              className="mr-2"
+            />
+            Add Project State to context
+          </label>
         </div>
         <div className="flex items-end space-x-2">
           <textarea

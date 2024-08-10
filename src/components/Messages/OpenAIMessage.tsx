@@ -25,7 +25,11 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <div className="flex flex-col space-y-2">
-                {JSON.parse(args).paths.map((path: string, index: number) => <p key={index}>{path}</p>)}
+                {JSON.parse(args).paths.map((path: string, index: number) => (
+                  <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path, content: null })) }}>
+                    <p key={index}>{path}</p>
+                  </button>
+                ))}
               </div>
               <button
                 onClick={async () => {
@@ -52,7 +56,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               </div>
               <button
                 onClick={async () => {
-                  syncProjectStateWithAIUpdates(JSON.parse(args));
+                  await dispatch(syncProjectStateWithAIUpdates(JSON.parse(args)));
                 }}
                 className='px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full'
               >

@@ -176,7 +176,7 @@ export const createTools = (service: "openai" | "anthropic") => {
                       enum: ["add", "modify", "delete"],
                     },
                   },
-                  required: ["path", "update"],
+                  required: ["path", "content", "update"],
                 },
               },
             },

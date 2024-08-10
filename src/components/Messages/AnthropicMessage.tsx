@@ -19,7 +19,11 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
         <div key={index} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
           <p className="text-lg font-bold">The model requests a call to the function `{block.name}` with arguments:</p>
           <div className="flex flex-col space-y-2">
-            {(block.input as { paths: string[] }).paths.map((path, index) => <p key={index}>{path}</p>)}
+            {(block.input as { paths: string[] }).paths.map((path, index) => (
+              <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path, content: null })) }}>
+                <p key={index}>{path}</p>
+              </button>
+            ))}
           </div>
           <button
             onClick={async () => {
@@ -46,7 +50,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           </div>
           <button
             onClick={async () => {
-              syncProjectStateWithAIUpdates(block.input as IProjectState)
+              await dispatch(syncProjectStateWithAIUpdates(block.input as IProjectState));
             }}
             className='px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full'
           >

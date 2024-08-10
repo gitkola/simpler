@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../store";
 import { RootState } from "../store";
-import { resetToDefaultInstructions, setApiKey, setProjectStateInstructions, setResponseGuidelinesInstructions, setResponsibilitiesInstructions } from "../store/settingsSlice";
+import { resetToDefaultInstructions, setApiKey, setProjectStateInstructions, setResponseGuidelinesInstructions, setResponsibilitiesInstructions, setGeneralInstructions } from "../store/settingsSlice";
 import { textInput } from "../styles/styles";
 import { SettingsIcon } from "./Icons";
 
@@ -23,6 +23,10 @@ const Settings: React.FC = () => {
 
   const handleProjectStateInstructionsChange = (value: string) => {
     dispatch(setProjectStateInstructions(value));
+  };
+
+  const handleGeneralInstructionsChange = (value: string) => {
+    dispatch(setGeneralInstructions(value));
   };
 
   return (
@@ -105,6 +109,23 @@ const Settings: React.FC = () => {
                   onChange={(e) => handleResponseGuidelinesInstructionsChange(e.target.value)}
                   className={`${textInput}`}
                   placeholder="Enter AI Response Guidelines Instructions"
+                  rows={8}
+                />
+              </dd>
+            </div>
+            <div>
+              <dt className="font-medium">AI General Instructions</dt>
+              <dd className="mt-1">
+                <textarea
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  autoComplete="off"
+                  autoSave="off"
+                  spellCheck={false}
+                  value={settings?.instructions?.generalInstructions}
+                  onChange={(e) => handleGeneralInstructionsChange(e.target.value)}
+                  className={`${textInput}`}
+                  placeholder="Enter AI General Instructions"
                   rows={8}
                 />
               </dd>

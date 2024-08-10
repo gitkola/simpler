@@ -30,7 +30,6 @@ import {
   OPENAI_API_URL,
 } from "../api/apiAIModels";
 import { Body } from "@tauri-apps/api/http";
-import { INSTRUCTIONS } from "../configs/instructions";
 import { createTools } from "../utils/createTools";
 import createBaseMessage from "../utils/createBaseMessage";
 import { readFilesFromFS } from "../services/fsService";
@@ -501,7 +500,7 @@ export const syncProjectStateWithAIUpdates =
         projectState!,
         projectStateUpdates
       );
-      dispatch(saveProjectState(mergedState));
+      await dispatch(saveProjectState(mergedState));
     } catch (error) {
       console.error("Error while syncing Project State:", error);
       dispatch(
@@ -528,6 +527,8 @@ export const handleSendMessage =
 
       const projectSettings = getState().currentProject.currentProjectSettings;
       const projectState = getState().currentProject.currentProjectState;
+      const { addProjectStateToContext } = getState().chat;
+      const { generalInstructions } = getState().settings.instructions;
 
       if (!projectState || !projectSettings) {
         dispatch(
@@ -555,7 +556,9 @@ ${JSON.stringify(lightProjectState, null, 2)}
 You must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
 `;
       // const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
-      const systemPrompt = `${INSTRUCTIONS}\n\n${CURRENT_PROJECT_STATE}\n`;
+      const systemPrompt = `${generalInstructions}${
+        addProjectStateToContext && `\n\n${CURRENT_PROJECT_STATE}\n`
+      }`;
       let url: API_URL;
       let options: IRequestOptions;
       if (service === "openai") {

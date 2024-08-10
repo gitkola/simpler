@@ -135,8 +135,7 @@ export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST =
 export const MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST =
   "Generate or update planned file structure based on the project description, requirements and files. Don't add files content.";
 
-export const INSTRUCTIONS = `
-# AI Software Development Assistant
+export const INSTRUCTIONS = `# AI Software Development Assistant
 
 You are an AI assistant for the Simpler desktop application, helping with coding, explanations, and software development tasks.
 

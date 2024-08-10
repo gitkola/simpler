@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-// import ProcessIndicator from './ProcessIndicator';
-// import { readFile } from '../services/fsService';
+import React, { useEffect, useState } from 'react';
+import ProcessIndicator from './ProcessIndicator';
+import { readFile } from '../services/fsService';
 import { useAppDispatch, useAppSelector } from '../store';
 import Editor from './Editor';
 // import DiffViewer from './DiffViewer';
@@ -27,26 +27,26 @@ const ModalFileContent: React.FC<ModalFileContentProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { fileInModal } = useAppSelector((state) => state.layout);
-  // const [editedContent, setEditedContent] = useState<string>('');
+  const [editedContent, setEditedContent] = useState<string>('');
   // const [suggestedContent, setSuggestedContent] = useState<string | null>(null);
   // const [isCompareMode, setIsCompareMode] = useState<boolean>(false);
-  // const [isLoadingFromDisk, setIsLoadingFromDisk] = useState<boolean>(false);
-  // const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
-  // const absolutePath = `${activeProjectPath!}/${fileInModal?.path}`;
+  const [isLoadingFromDisk, setIsLoadingFromDisk] = useState<boolean>(false);
+  const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
+  const absolutePath = `${activeProjectPath!}/${fileInModal?.path}`;
 
   const onClose = () => dispatch(setFileInModal(null));
 
-  // const fetchContentFromFS = async (path: string) => {
-  //   setIsLoadingFromDisk(true);
-  //   const content = await readFile(path);
-  //   setEditedContent(content);
-  //   setIsLoadingFromDisk(false);
-  // };
+  const fetchContentFromFS = async (path: string) => {
+    setIsLoadingFromDisk(true);
+    const content = await readFile(path);
+    setEditedContent(content);
+    setIsLoadingFromDisk(false);
+  };
 
-  // useEffect(() => {
-  //   if (!absolutePath) return;
-  //   fetchContentFromFS(absolutePath);
-  // }, [absolutePath]);
+  useEffect(() => {
+    if (!absolutePath || fileInModal?.content) return;
+    fetchContentFromFS(absolutePath);
+  }, [absolutePath, fileInModal?.content]);
 
   // useEffect(() => {
   //   setSuggestedContent(fileInModal?.content || null);
@@ -122,9 +122,9 @@ const ModalFileContent: React.FC<ModalFileContentProps> = ({
           </div>
         </div>
         <div className=' overflow-y-auto'>
-          {/* {(isLoading || isLoadingFromDisk) && (
+          {(isLoadingFromDisk) && (
             <ProcessIndicator />
-          )} */}
+          )}
           {/* {
             !isCompareMode ? <Editor
               value={editedContent}
@@ -138,7 +138,7 @@ const ModalFileContent: React.FC<ModalFileContentProps> = ({
               />)
           } */}
           <Editor
-            value={fileInModal?.content || ''}
+            value={fileInModal?.content || editedContent}
             language={fileInModal?.path.split('.').pop() || 'txt'}
             // onChange={(evn) => setEditedContent(evn.target.value)}
             disabled={true}

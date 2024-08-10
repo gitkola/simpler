@@ -3,6 +3,7 @@ import {
   AI_INSTRUCTIONS_PROJECT_STATE,
   AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
   AI_INSTRUCTIONS_RESPONSIBILITIES,
+  INSTRUCTIONS,
 } from "../configs/instructions";
 import { LOCAL_STORAGE_KEY_SETTINGS } from "../constants";
 
@@ -15,6 +16,7 @@ export interface SettingsState {
     responsibilitiesInstructions: string;
     responseGuidelinesInstructions: string;
     projectStateInstructions: string;
+    generalInstructions: string;
   };
   styles: string;
   theme: "light" | "dark";
@@ -30,6 +32,7 @@ const defaultInitialState: SettingsState = {
     responsibilitiesInstructions: AI_INSTRUCTIONS_RESPONSIBILITIES,
     responseGuidelinesInstructions: AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
     projectStateInstructions: AI_INSTRUCTIONS_PROJECT_STATE,
+    generalInstructions: INSTRUCTIONS,
   },
   styles: "",
   theme: "dark",
@@ -66,6 +69,9 @@ const settingsSlice = createSlice({
     setProjectStateInstructions: (state, action: PayloadAction<string>) => {
       state.instructions.projectStateInstructions = action.payload;
     },
+    setGeneralInstructions: (state, action: PayloadAction<string>) => {
+      state.instructions.generalInstructions = action.payload;
+    },
     resetToDefaultInstructions: (state) => {
       state.instructions = { ...defaultInitialState.instructions };
     },
@@ -86,6 +92,7 @@ export const {
   setResponsibilitiesInstructions,
   setResponseGuidelinesInstructions,
   setProjectStateInstructions,
+  setGeneralInstructions,
   resetToDefaultInstructions,
   setStyles,
   setTheme,
