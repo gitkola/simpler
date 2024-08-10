@@ -30,7 +30,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               <button
                 onClick={async () => {
                   const files = await readFiles(JSON.parse(args).paths);
-                  const userMessage = `${(message as IMessage)?.context?.content}\nHere are the contents of some existing files for more context:\n${JSON.stringify(files, null, 2)}`;
+                  const userMessage = `${(message as IMessage)?.context?.content}\nHere are the contents of some existing files for more context:\n\`\`\`json\n${JSON.stringify(files, null, 2)}\n\`\`\``;
                   dispatch(appendToInputValue(userMessage));
                 }}
                 className='px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full'
@@ -79,7 +79,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
   };
 
   return (
-    <div className="flex flex-col p-2 rounded-md bg-blue-600 bg-opacity-50 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start">
+    <div className="flex flex-col p-2 rounded-md bg-green-600 bg-opacity-50 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start">
       <div className='space-y-2'>
         <h2 className='text-lg font-bold'>OpenAI {message.model} {choice?.message?.role}</h2>
         {choice?.message?.content && <p style={{ whiteSpace: 'pre-wrap' }}>{choice.message.content}</p>}

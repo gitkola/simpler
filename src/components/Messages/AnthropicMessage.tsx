@@ -24,7 +24,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           <button
             onClick={async () => {
               const files = await readFiles((block.input as { paths: string[] }).paths);
-              const userMessage = `${message?.context?.content}\nHere are the contents of some existing files for more context:\n${JSON.stringify(files, null, 2)}`;
+              const userMessage = `${message?.context?.content}\nHere are the contents of some existing files for more context:\n\`\`\`json\n${JSON.stringify(files, null, 2)}\n\`\`\``;
               dispatch(appendToInputValue(userMessage));
             }}
             className='px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full'
