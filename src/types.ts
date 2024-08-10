@@ -40,7 +40,7 @@ export type ContentItem =
   | { text: string; id: number }
   | { code: CodeTuple; id: number }
   | { link: LinkTuple; id: number }
-  | { updated_project_state: IProjectState; id: number }
+  | { project_state_updates: IProjectState; id?: number }
   | { error: ErrorTuple; id: number };
 
 export type CodeTuple = [
@@ -75,8 +75,8 @@ export const isLink = (
 ): item is { link: LinkTuple; id: number } => "link" in item;
 export const isUpdatedProjectState = (
   item: ContentItem
-): item is { updated_project_state: IProjectState; id: number } =>
-  "updated_project_state" in item;
+): item is { project_state_updates: IProjectState; id?: number } =>
+  "project_state_updates" in item;
 
 export type TUpdate = "add" | "modify" | "delete";
 

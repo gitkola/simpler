@@ -30,7 +30,7 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
           />
           <button
             onClick={async () => await dispatch(syncProjectStateWithAIUpdates(projectStateUpdates))}
-            className="flex w-fit bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-yellow-600"
+            className="flex w-fit bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-yellow-700"
           >
             Sync
           </button>

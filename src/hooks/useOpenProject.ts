@@ -1,6 +1,6 @@
 import { useAppDispatch } from "../store";
 import { handleSetActiveProject } from "../store/projectsSlice";
-import { selectProjectStateFolder } from "../utils/projectStateUtils";
+import { selectProjectStateFolder } from "../services/projectStateService";
 // import { useNavigate } from "react-router-dom";
 
 export const useOpenProject = () => {

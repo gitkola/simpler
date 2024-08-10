@@ -12,7 +12,7 @@ import {
   mergeFiles,
   loadProjectOpenedFilesFromFile,
   saveProjectOpenedFilesToFile,
-} from "../utils/projectStateUtils";
+} from "../services/projectStateService";
 import { AppDispatch, RootState } from "./index";
 // import {
 // getAIResponseWithProjectState,
@@ -663,11 +663,11 @@ export const syncProjectStateWithAIUpdates =
 //       })
 //     );
 //     // const updatedStateItem = (aiResponse as MessageContent).find(
-//     //   (item) => "updated_project_state" in item
+//     //   (item) => "project_state_updates" in item
 //     // );
-//     // if (updatedStateItem && "updated_project_state" in updatedStateItem) {
+//     // if (updatedStateItem && "project_state_updates" in updatedStateItem) {
 //     //   updatedProjectState =
-//     //     updatedStateItem.updated_project_state as IProjectState;
+//     //     updatedStateItem.project_state_updates as IProjectState;
 //     // }
 
 //     // return { updatedProjectState, aiResponse: aiResponse as MessageContent };
@@ -744,7 +744,7 @@ You must request only the necessary files for the current task by calling \`read
             },
             { role: "user", content: message?.content },
           ],
-          functions: createTools(service),
+          tools: createTools(service),
         });
 
         options = {
@@ -797,17 +797,17 @@ You must request only the necessary files for the current task by calling \`read
         })
       );
       // const updatedStateItem = (aiResponse as MessageContent).find(
-      //   (item) => "updated_project_state" in item
+      //   (item) => "project_state_updates" in item
       // );
-      // if (updatedStateItem && "updated_project_state" in updatedStateItem) {
+      // if (updatedStateItem && "project_state_updates" in updatedStateItem) {
       //   updatedProjectState =
-      //     updatedStateItem.updated_project_state as IProjectState;
+      //     updatedStateItem.project_state_updates as IProjectState;
       // }
 
       // return { updatedProjectState, aiResponse: aiResponse as MessageContent };
     } catch (error) {
       const errorMessage = `Error in handleNewMessageToAIModel: ${
-        (error as Error).message
+        typeof error === "string" ? error : (error as Error).message
       }`;
       console.error(error);
       dispatch(setAIModelRequestError(errorMessage));

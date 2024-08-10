@@ -173,11 +173,11 @@ ${JSON.stringify(projectState, null, 2)}
   }
 
   const updatedStateItem = (aiResponse as MessageContent).find(
-    (item) => "updated_project_state" in item
+    (item) => "project_state_updates" in item
   );
-  if (updatedStateItem && "updated_project_state" in updatedStateItem) {
+  if (updatedStateItem && "project_state_updates" in updatedStateItem) {
     updatedProjectState =
-      updatedStateItem.updated_project_state as IProjectState;
+      updatedStateItem.project_state_updates as IProjectState;
   }
 
   return { updatedProjectState, aiResponse: aiResponse as MessageContent };

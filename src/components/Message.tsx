@@ -3,6 +3,8 @@ import { IMessage } from '../types';
 import { AnthropicMessage } from './AnthropicMessage';
 import UserMessage from './UserMessage';
 import SystemMessage from './SystemMessage';
+import { OpenAIMessage } from './OpenAIMessage';
+import OpenAI from 'openai';
 
 interface MessageProps {
   message: IMessage;
@@ -10,13 +12,13 @@ interface MessageProps {
 
 const Message: React.FC<MessageProps> = ({ message }) => {
   if (message?.service === 'openai') {
-    return <div>{JSON.stringify(message, null, 2)}</div>; // TODO: Create <OpenAIMessage message={message} />;
+    return <OpenAIMessage key={message?.id} message={(message as OpenAI.ChatCompletion)} />; // TODO: Create <OpenAIMessage message={message} />;
   } else if (message?.service === 'anthropic') {
-    return <AnthropicMessage key={message.id} message={message} />;
+    return <AnthropicMessage key={message?.id} message={message} />;
   } else if (message?.role === 'system') {
-    return <SystemMessage key={message.id} message={message} />;
+    return <SystemMessage key={message?.id} message={message} />;
   } else if (message?.role === 'user') {
-    return <UserMessage key={message.id} message={message} />;
+    return <UserMessage key={message?.id} message={message} />;
   } else {
     return <div>{JSON.stringify(message, null, 2)}</div>;
   }
@@ -52,7 +54,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
   //     }
   //   } else if (isUpdatedProjectState(item)) {
   //     return (
-  //       <MessageProjectStateUpdates key={item.id} projectStateUpdates={item?.updated_project_state} />
+  //       <MessageProjectStateUpdates key={item.id} projectStateUpdates={item?.project_state_updates} />
   //     );
   //   } else if (isCode(item)) {
   //     const [code, fileExt, filePath, description] = item.code;
@@ -63,8 +65,8 @@ const Message: React.FC<MessageProps> = ({ message }) => {
   //           return (
   //             <div className="space-y-2" key={item.id}>{parsedCode.map((item) => renderContent(item))}</div>
   //           );
-  //         } else if (parsedCode?.updated_project_state) {
-  //           return <MessageProjectStateUpdates key={item.id} projectStateUpdates={parsedCode?.updated_project_state} />;
+  //         } else if (parsedCode?.project_state_updates) {
+  //           return <MessageProjectStateUpdates key={item.id} projectStateUpdates={parsedCode?.project_state_updates} />;
   //         }
   //       } catch (error) {
   //         return (
