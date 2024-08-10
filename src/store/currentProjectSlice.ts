@@ -8,8 +8,6 @@ import {
   saveProjectMessagesToFile,
   saveProjectSettingsToFile,
   mergeProjectStates,
-  readFilesFromFS,
-  mergeFiles,
   loadProjectOpenedFilesFromFile,
   saveProjectOpenedFilesToFile,
 } from "../services/projectStateService";
@@ -35,6 +33,7 @@ import { Body } from "@tauri-apps/api/http";
 import { INSTRUCTIONS } from "../configs/instructions";
 import { createTools } from "../utils/createTools";
 import createBaseMessage from "../utils/createBaseMessage";
+import { readFilesFromFS } from "../services/fsService";
 
 export interface IFile {
   path: string;
@@ -648,13 +647,10 @@ export const handleSyncFilesFromFS =
       }
       dispatch(fetchCurrentProjectState());
       const files = (await readFilesFromFS(activeProjectPath)) || [];
-      const mergedFiles = mergeFiles(
-        currentProjectState!.files || [],
-        files
-      ).sort((a, b) => a.path.localeCompare(b.path));
+      files.sort((a, b) => a.path.localeCompare(b.path));
       const updatedProjectState = {
         ...currentProjectState!,
-        files: mergedFiles,
+        files,
       };
       await dispatch(saveProjectState(updatedProjectState));
     } catch (error) {

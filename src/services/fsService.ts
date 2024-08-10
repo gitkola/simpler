@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { join } from "@tauri-apps/api/path";
 import store from "../store"; //TODO: is this OK to use store in utils?
+import { getFilteredProjectFiles } from "../utils/getFilteredProjectFiles";
+import { IProjectFile } from "../types";
 
 export const openFolder = async (path: string | null) => {
   try {
@@ -25,7 +27,10 @@ export const generateDefaultFileName = (fileExtension?: string) => {
   return fileName;
 };
 
-export const writeFile = async (code: string | null, path: string | null) => {
+export const writeFile = async (
+  content: string | null,
+  path: string | null
+) => {
   try {
     const activeProjectPath = store.getState().projects.activeProjectPath;
     if (!activeProjectPath) throw new Error("No active project path");
@@ -35,7 +40,7 @@ export const writeFile = async (code: string | null, path: string | null) => {
     );
     await invoke("write_file", {
       path: fullPath,
-      content: code || "",
+      content: content || "",
     });
   } catch (error) {
     console.error("Error saving file:", error);
@@ -107,3 +112,41 @@ export async function updateFiles(files: IFile[]): Promise<IUpdatedFile[]> {
   }
   return updatedFilesStatuses;
 }
+
+export const readFilesFromFS = async (projectPath: string) => {
+  try {
+    if (typeof projectPath !== "string" || !projectPath) return null;
+    const filteredFilePaths = await getFilteredProjectFiles(projectPath, true);
+    const projectFiles: IProjectFile[] = [];
+    for await (const filePath of filteredFilePaths) {
+      try {
+        const fileContent = await invoke<string>("read_file", {
+          path: filePath,
+        });
+        const file: IProjectFile = {
+          path: filePath.replace(`${projectPath}/`, ""),
+          content: fileContent as string,
+          // update: "add",
+        };
+        projectFiles.push(file);
+      } catch (fileError) {
+        console.warn(
+          `Skipping file ${filePath}: ${JSON.stringify(
+            fileError as Error,
+            null,
+            2
+          )}`
+        );
+        // Optionally, you can still add the file to projectFiles with empty content
+        // projectFiles.push({ path: filePath, content: '' });
+      }
+    }
+    return projectFiles;
+  } catch (error) {
+    const errorMessage = `Failed to read files from the selected folder: ${
+      (error as Error).message
+    }`;
+    console.error(errorMessage, error);
+    throw new Error(errorMessage);
+  }
+};

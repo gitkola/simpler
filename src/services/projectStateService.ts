@@ -22,7 +22,6 @@ import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
 import { IFile } from "../store/currentProjectSlice";
-import { getFilteredProjectFiles } from "../utils/getFilteredProjectFiles";
 
 export const generateInitialProjectState = (
   projectPath: string
@@ -125,12 +124,6 @@ export const loadProjectMessagesFromFile = async (
 ): Promise<IMessage[]> => {
   const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
   try {
-    const fileExists = await invoke("file_exists", {
-      path: messagesFilePath,
-    });
-    if (!fileExists) {
-      return [];
-    }
     const result = await invoke("read_file", {
       path: messagesFilePath,
     });
@@ -140,7 +133,7 @@ export const loadProjectMessagesFromFile = async (
     const messages: IMessage[] = JSON.parse(result);
     return messages;
   } catch (error) {
-    console.error("Error reading Project State file:", error);
+    console.error("Error reading Project Messages file:", error);
     return [];
   }
 };
@@ -374,42 +367,4 @@ export const mergeDescriptions = (
     }
   });
   return Array.from(mergedDescriptions.values());
-};
-
-export const readFilesFromFS = async (projectPath: string) => {
-  try {
-    if (typeof projectPath !== "string" || !projectPath) return null;
-    const filteredFilePaths = await getFilteredProjectFiles(projectPath, true);
-    const projectFiles: IProjectFile[] = [];
-    for await (const filePath of filteredFilePaths) {
-      try {
-        const fileContent = await invoke<string>("read_file", {
-          path: filePath,
-        });
-        const file: IProjectFile = {
-          path: filePath.replace(`${projectPath}/`, ""),
-          content: fileContent as string,
-          update: "add",
-        };
-        projectFiles.push(file);
-      } catch (fileError) {
-        console.warn(
-          `Skipping file ${filePath}: ${JSON.stringify(
-            fileError as Error,
-            null,
-            2
-          )}`
-        );
-        // Optionally, you can still add the file to projectFiles with empty content
-        // projectFiles.push({ path: filePath, content: '' });
-      }
-    }
-    return projectFiles;
-  } catch (error) {
-    const errorMessage = `Failed to read files from the selected folder: ${
-      (error as Error).message
-    }`;
-    console.error(errorMessage, error);
-    throw new Error(errorMessage);
-  }
 };
