@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../store';
 import { handleNewMessageToAIModel, saveProjectState } from '../store/currentProjectSlice';
 import Textarea from './Textarea';
 import { Select } from './Select';
+import createBaseMessage from '../utils/createBaseMessage';
 
 
 const Tasks: React.FC = () => {
@@ -44,11 +45,11 @@ const Tasks: React.FC = () => {
 
   const handleSuggestedNextTask = async (task: IProjectTask) => {
     await handleChange({ target: { name: 'status', value: 'in_progress' } } as any, task.id);
-    await dispatch(handleNewMessageToAIModel(task?.task, "user"));
+    await dispatch(handleNewMessageToAIModel(createBaseMessage(task?.task, "user")));
   };
 
   return (
-    <div className="space-y-1 py-1">
+    <div className="space-y-1 py-1 px-0.5">
       {tasks.map(task => (
         <div key={task.id} className="flex justify-between space-x-1">
           <div className="flex-1">

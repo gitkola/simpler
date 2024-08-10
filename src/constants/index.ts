@@ -16,16 +16,18 @@ export const AI_INSTRUCTIONS_PROJECT_STATE = `#Project State
 "Project State" is a JSON object that represents the current state of the project.
 Here is the TypeScript interface for "Project State":
 \`\`\`typescript
+type TUpdate = "add" | "modify" | "delete";
+
 interface IProjectDescription {
   id: number;
   description: string;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 interface IProjectRequirement {
   id: number;
   requirement: string;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 interface IProjectTask {
@@ -33,14 +35,13 @@ interface IProjectTask {
   task: string;
   status: "todo" | "in_progress" | "done" | "hold" | "no_need";
   suggested_as_next_task: boolean;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 interface IProjectFile {
-  id: number;
   path: string;
   content: string | null;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 interface IProjectState {
@@ -54,16 +55,16 @@ interface IProjectState {
   context?: Record<string, any>;
 }
 \`\`\`
-Ensure all changes comply with these interfaces. Updates will be checked and synchronized by the user with the local project state and files. React according to these rules:
+You need to modify Project State by calling \`updatedProjectState\` function with project state updated fields only. Ensure all changes comply with these interfaces. Updates will be checked and synchronized by the user with the local project state and files. React according to these rules:
 1. Request missing "description" or "requirements".
-2. According to the "description", "requirements" and the user's message, update "tasks" with a unique "id", clear "description", "status", "suggested_as_next_task", and "update" type.
-3. According to the "description", "requirements" and the user's message, update "files" with a valid relative path and "update" type. Fill file "content" with the generated code according to the task in the user's message.
-4. Ask for more details if you don't understand the problem.
-5. Request missing data for a task if needed.
+2. According to the "description", "requirements" and the user's message, update "tasks" with a unique "id", clear "task", "status", "suggested_as_next_task", and "update" type.
+3. According to the "description", "requirements" and the user's message, update "files" with a valid relative "path" and "update" type. Fill file "content" with the generated code according to the task in the user's message.
+4. Ask for more details if you don't understand the task.
+5. Request missing data for a task if needed. Call \`readFiles\` function with array of relative file paths to add content of this files if needed.
 6. Generate code and update the "Project State" accordingly.
 7. Update task status.
 8. Provide 3-5 specific, achievable tasks as recommendations.
-9. Only include changes to the "Project State" in your response.
+9. Only include updates to the "Project State" in your response by calling \`updatedProjectState\` function.
 10. Ensure project files include a README.md with installation and running instructions.
 `;
 

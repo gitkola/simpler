@@ -48,7 +48,7 @@ const Requirements: React.FC = () => {
   };
 
   return (
-    <div className="space-y-1 py-1">
+    <div className="space-y-1 py-1 px-0.5">
       {requirements.map(requirement => (
         <div key={requirement.id} className="flex-1 justify-between space-x-1">
           <Textarea

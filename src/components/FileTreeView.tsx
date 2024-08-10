@@ -5,7 +5,7 @@ import {
 } from "../utils/pathUtils";
 import { File, Files } from "./Icons";
 import SquareButton from "./SquareButton";
-import { openFolder } from "../utils/openFolder";
+import { openFolder } from "../services/fsService";
 import { handleClickOnFile, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
 

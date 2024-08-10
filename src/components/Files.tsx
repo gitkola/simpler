@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../store";
 import { handleSyncFilesFromFS, saveProjectState } from "../store/currentProjectSlice";
 import { IProjectFile, IProjectState } from "../types";
-import { writeFile } from "../utils/writeFile";
-import { File } from './Icons';
+import { writeFile } from "../services/fsService";
 import FileContentModal from './FileContentModal';
 
 export const Files = () => {
@@ -55,10 +54,10 @@ export const Files = () => {
   };
 
   return (
-    <div className="space-y-1 py-1">
-      <div className="flex flex-col p-1 space-y-1 items-end justify-end">
+    <div className="space-y-1 py-1 px-0.5">
+      <div className="flex flex-col items-end justify-end">
         <button
-          className="px-3 py-1 text-sm bg-yellow-600 text-white hover:bg-yellow-500 hover:shadow-md rounded-full justify-end"
+          className="px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full"
           onClick={async () => await dispatch(handleSyncFilesFromFS())}
         >
           Sync Files from File System
@@ -80,7 +79,7 @@ export const Files = () => {
                     e.stopPropagation();
                     writeFile(file.content, file.path);
                   }}
-                  className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 hover:shadow-md text-white rounded-full"
+                  className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full"
                 >
                   Write to file
                 </button>

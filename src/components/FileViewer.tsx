@@ -1,11 +1,10 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { readFile } from '../utils/readFile';
+import { readFile, writeFile } from '../services/fsService';
 import ProcessIndicator from './ProcessIndicator';
 import { useAppDispatch, useAppSelector } from '../store';
 import { IProjectState } from '../types';
 import { saveProjectState } from '../store/currentProjectSlice';
-import { writeFile } from '../utils/writeFile';
 import Editor from './Editor';
 import DiffViewer from './DiffViewer';
 
@@ -24,7 +23,6 @@ export default function FileViewer({ path, showDiff }: FileViewerProps) {
   const relativePath = path.replace(`${activeProjectPath!}/`, '');
   const suggestedContent = files?.find((file) => file.path === relativePath)?.content || "";
   const dispatch = useAppDispatch();
-  const theme = useAppSelector((state) => state.settings.theme);
 
   const fetchContent = async (path: string) => {
     setIsLoading(true);
@@ -75,13 +73,11 @@ export default function FileViewer({ path, showDiff }: FileViewerProps) {
             marginLeft: 25,
             lineHeight: 1.6,
           }}
-          theme={theme}
         /> :
           <DiffViewer
             oldValue={suggestedContent}
             newValue={editedContent || ""}
             language={language}
-            theme={theme}
           />
       }
     </div>

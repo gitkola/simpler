@@ -12,12 +12,14 @@ import Settings from "./components/Settings";
 import { StyleTag } from "./styles/styles";
 import ProjectStateView from "./components/ProjectStateView";
 import ProjectMessagesView from "./components/ProjectMessagesView";
+import ModalFileContent from "./components/ModalFileContent";
 // import FileTreeView2 from "./components/FileTreeView2";
 // import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
 
 const App: React.FC = () => {
   const activeProjectPath = useAppSelector((state: RootState) => state.projects.activeProjectPath);
+  const { fileInModal } = useAppSelector((state: RootState) => state.layout);
   const dispatch = useAppDispatch();
 
   const loadProjectData = async () => {
@@ -52,6 +54,7 @@ const App: React.FC = () => {
           {showSettings && <Settings />}
         </div>
       </div>
+      {fileInModal && <ModalFileContent />}
     </div>
   );
 

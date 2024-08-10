@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LOCAL_STORAGE_KEY_LAYOUT } from "../constants";
+import { IProjectFile } from "../types";
 
 export interface IView {
   name: "projects" | "file-tree" | "settings";
@@ -15,6 +16,7 @@ export interface ILayoutState {
   showSettings: boolean;
   showCodeEditor: boolean;
   showChat: boolean;
+  fileInModal: IProjectFile | null;
   views: IView[];
 }
 
@@ -27,6 +29,7 @@ const defaultInitialState: ILayoutState = {
   showSettings: false,
   showCodeEditor: false,
   showChat: true,
+  fileInModal: null,
   views: [],
 };
 
@@ -69,6 +72,9 @@ const layoutSlice = createSlice({
     setViews: (state, action: PayloadAction<IView[]>) => {
       state.views = action.payload;
     },
+    setFileInModal: (state, action: PayloadAction<IProjectFile | null>) => {
+      state.fileInModal = action.payload;
+    },
   },
 });
 
@@ -82,6 +88,7 @@ export const {
   setShowCodeEditor,
   setShowChat,
   setViews,
+  setFileInModal,
 } = layoutSlice.actions;
 
 export default layoutSlice.reducer;

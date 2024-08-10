@@ -10,6 +10,7 @@ import Spinner from "./Spinner";
 import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../constants";
 import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
+import createBaseMessage from "../utils/createBaseMessage";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -49,8 +50,11 @@ export const ChatView: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
+    const content = inputMessage.trim();
+    if (!content) return;
+    const message = createBaseMessage(content, "user");
     setInputMessage("");
-    await dispatch(handleNewMessageToAIModel(inputMessage, "user"));
+    await dispatch(handleNewMessageToAIModel(message));
   };
 
   return (
@@ -62,10 +66,10 @@ export const ChatView: React.FC = () => {
       {isLoadingCurrentProjectMessages && <ProcessIndicator />}
       {currentProjectMessagesError && <div>{currentProjectMessagesError}</div>}
       <div className="flex flex-col h-full overflow-scroll">
-        <div className="p-2 h-fit space-y-2">
+        <div className="p-2 h-fit space-y-8">
           {currentProjectMessages?.map((message) => (
             <Message
-              key={message.createdAt}
+              key={message.id}
               message={message}
             />
           ))}
@@ -88,7 +92,7 @@ export const ChatView: React.FC = () => {
         <div className="flex py-2 space-x-2 items-center">
           <div>Suggestions:</div>
           <button
-            onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user"))}
+            onClick={async () => await dispatch(handleNewMessageToAIModel(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user")))}
             className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
@@ -96,7 +100,7 @@ export const ChatView: React.FC = () => {
             <ArrowUp size={20} />
           </button>
           <button
-            onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user"))}
+            onClick={async () => await dispatch(handleNewMessageToAIModel(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user")))}
             className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
