@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { IProjectSettings } from "../types";
-import Message from "./Message";
+import Message from "./Messages/Message";
 import { ArrowUp, Brain } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
-import { handleNewMessageToAIModel, saveProjectSettings } from "../store/currentProjectSlice";
+import { saveProjectSettings, handleSendMessage } from "../store/currentProjectSlice";
 import { Select } from "./Select";
 import Spinner from "./Spinner";
-import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../constants";
+import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../configs/instructions";
 import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
@@ -50,12 +50,12 @@ export const ChatView: React.FC = () => {
     await dispatch(saveProjectSettings(newSettings as IProjectSettings));
   };
 
-  const handleSendMessage = async () => {
+  const handleNewMessage = async () => {
     const content = inputValue.trim();
     if (!content) return;
     const message = createBaseMessage(content, "user");
     dispatch(setInputValue(""));
-    await dispatch(handleNewMessageToAIModel(message));
+    await dispatch(handleSendMessage(message));
   };
 
   return (
@@ -93,7 +93,7 @@ export const ChatView: React.FC = () => {
         <div className="flex py-2 space-x-2 items-center">
           <div>Suggestions:</div>
           <button
-            onClick={async () => await dispatch(handleNewMessageToAIModel(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user")))}
+            onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user")))}
             className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
@@ -101,7 +101,7 @@ export const ChatView: React.FC = () => {
             <ArrowUp size={20} />
           </button>
           <button
-            onClick={async () => await dispatch(handleNewMessageToAIModel(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user")))}
+            onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user")))}
             className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
@@ -122,16 +122,16 @@ export const ChatView: React.FC = () => {
             onKeyPress={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                handleSendMessage();
+                handleNewMessage();
               }
             }}
             className={`${textInput}`}
             placeholder="Type your message... (Shift+Enter for new line)"
             disabled={aiModelRequestInProgress}
-            rows={5}
+            rows={10}
           />
           <button
-            onClick={handleSendMessage}
+            onClick={handleNewMessage}
             className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
             disabled={aiModelRequestInProgress || !inputValue}
           >

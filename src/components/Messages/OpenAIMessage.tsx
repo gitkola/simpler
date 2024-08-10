@@ -1,12 +1,12 @@
 import React from "react";
-import Accordion from "./Accordion";
+import Accordion from "../Accordion";
 import OpenAI from "openai";
-import { readFiles, updateFiles } from '../services/fsService';
-import { useAppDispatch } from '../store';
-import { setFileInModal } from '../store/layoutSlice';
-import { appendToInputValue } from '../store/chatSlice';
-import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
-import { IMessage } from "../types";
+import { readFiles, updateFiles } from '../../services/fsService';
+import { useAppDispatch } from '../../store';
+import { setFileInModal } from '../../store/layoutSlice';
+import { appendToInputValue } from '../../store/chatSlice';
+import { MessageProjectStateUpdates } from "../MessageProjectStateUpdates";
+import { IMessage } from "../../types";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
   const dispatch = useAppDispatch();
@@ -30,7 +30,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
                 onClick={async () => {
                   const files = await readFiles(JSON.parse(args).paths);
                   const userMessage = `${(message as IMessage)?.context?.content}\nHere are the contents of some existing files for more context:\n${JSON.stringify(files, null, 2)}`;
-                  await dispatch(appendToInputValue(userMessage));
+                  dispatch(appendToInputValue(userMessage));
                 }}
                 className='px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full'
               >
@@ -66,16 +66,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           return (
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
-              {/* <pre className="whitespace-pre-wrap">{JSON.stringify(JSON.parse(args), null, 2)}</pre> */}
               <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).project_state_updates} />
-              {/* <button
-                onClick={async () => {
-                  await updateProjectState(JSON.parse(args).project_state_updates);
-                }}
-                className='px-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full'
-              >
-                Update Project State
-              </button> */}
             </div>
           );
         default:

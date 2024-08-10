@@ -3,7 +3,8 @@ import Editor from './Editor';
 
 export const ProjectState = () => {
   const currentProjectState = useAppSelector((state) => state.currentProject.currentProjectState);
-  const theme = useAppSelector((state) => state.settings.theme);
+  console.log({ currentProjectState });
+
   if (!currentProjectState) return null;
   return (<Editor
     value={JSON.stringify(currentProjectState, null, 2) || ""}
@@ -13,7 +14,6 @@ export const ProjectState = () => {
       marginLeft: 25,
       lineHeight: 1.6,
     }}
-    theme={theme}
     disabled={true}
   />);
 };

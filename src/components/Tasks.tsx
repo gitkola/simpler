@@ -1,7 +1,7 @@
 import React from 'react';
 import { IProjectState, IProjectTask } from '../types';
 import { useAppDispatch, useAppSelector } from '../store';
-import { handleNewMessageToAIModel, saveProjectState } from '../store/currentProjectSlice';
+import { handleSendMessage, saveProjectState } from '../store/currentProjectSlice';
 import Textarea from './Textarea';
 import { Select } from './Select';
 import createBaseMessage from '../utils/createBaseMessage';
@@ -45,7 +45,7 @@ const Tasks: React.FC = () => {
 
   const handleSuggestedNextTask = async (task: IProjectTask) => {
     await handleChange({ target: { name: 'status', value: 'in_progress' } } as any, task.id);
-    await dispatch(handleNewMessageToAIModel(createBaseMessage(task?.task, "user")));
+    await dispatch(handleSendMessage(createBaseMessage(task?.task, "user")));
   };
 
   return (
@@ -80,7 +80,6 @@ const Tasks: React.FC = () => {
           >
             Execute
           </button>
-          {/* {task?.update && <span className={`px-2 py-1 text-sm`}>{task.update}</span>} */}
         </div>
       ))}
       <Textarea

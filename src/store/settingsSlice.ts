@@ -3,8 +3,8 @@ import {
   AI_INSTRUCTIONS_PROJECT_STATE,
   AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
   AI_INSTRUCTIONS_RESPONSIBILITIES,
-  LOCAL_STORAGE_KEY_SETTINGS,
-} from "../constants";
+} from "../configs/instructions";
+import { LOCAL_STORAGE_KEY_SETTINGS } from "../constants";
 
 export interface SettingsState {
   apiKeys: {

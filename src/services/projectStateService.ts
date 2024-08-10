@@ -21,7 +21,7 @@ import { getFolderNameFromPath } from "../utils/pathUtils";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
-import { IProjectOpenedFiles, IFile } from "../store/currentProjectSlice";
+import { IFile } from "../store/currentProjectSlice";
 import { getFilteredProjectFiles } from "../utils/getFilteredProjectFiles";
 
 export const generateInitialProjectState = (
@@ -183,28 +183,6 @@ export const saveProjectOpenedFilesToFile = async (
   }
 };
 
-export const saveProjectOpenedFilesToFile2 = async (
-  projectPath: string,
-  projectOpenedFiles: IProjectOpenedFiles = {}
-) => {
-  try {
-    const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
-    const result = await invoke("write_file", {
-      path: openedFilesFilePath,
-      content: JSON.stringify(projectOpenedFiles, null, 2),
-    });
-    if (result !== null) {
-      throw new Error(result as string);
-    }
-  } catch (error) {
-    const errorMessage = `Failed to save Project Opened Files: ${
-      (error as Error).message
-    }`;
-    console.error(errorMessage, error);
-    throw new Error(errorMessage);
-  }
-};
-
 export const loadProjectSettingsFromFile = async (
   projectPath: string
 ): Promise<IProjectSettings | null> => {
@@ -240,38 +218,13 @@ export const loadProjectOpenedFilesFromFile = async (
 ): Promise<IFile[]> => {
   const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
   try {
-    const fileExists = await invoke("file_exists", {
-      path: openedFilesFilePath,
-    });
-    if (!fileExists) {
-      return [];
-    }
-    const result = await invoke("read_file", {
-      path: openedFilesFilePath,
-    });
-    if (typeof result !== "string") {
-      throw new Error("Invalid Project Opened Files file content");
-    }
-    const openedFiles: IFile[] = JSON.parse(result);
-    return openedFiles;
-  } catch (error) {
-    console.error("Error reading Project Opened Files file:", error);
-    return [];
-  }
-};
-
-export const loadProjectOpenedFilesFromFile2 = async (
-  projectPath: string
-): Promise<IProjectOpenedFiles> => {
-  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
-  try {
     const result = await invoke("read_file", {
       path: openedFilesFilePath,
     });
     return JSON.parse(result as string);
   } catch (error) {
     console.error("Error reading Project Opened Files file:", error);
-    return {};
+    return [];
   }
 };
 
@@ -448,7 +401,7 @@ export const readFilesFromFS = async (projectPath: string) => {
           )}`
         );
         // Optionally, you can still add the file to projectFiles with empty content
-        // projectFiles.push({ id: Date.now() + Math.random(), path: filePath, content: '' });
+        // projectFiles.push({ path: filePath, content: '' });
       }
     }
     return projectFiles;

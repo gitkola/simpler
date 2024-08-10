@@ -1,12 +1,14 @@
-import { IBaseMessage } from "../types";
-import Accordion from "./Accordion";
+import { IBaseMessage } from "../../types";
+import Accordion from "../Accordion";
 
-export default function UserMessage({ message }: { message: IBaseMessage }) {
+export default function SystemMessage({ message }: { message: IBaseMessage }) {
   return (
-    <div key={message.id} className={`flex flex-col p-2 rounded-md bg-blue-600 bg-opacity-50 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-end`}>
+    <div key={message.id} className={`flex flex-col p-2 rounded-md bg-gray-600 bg-opacity-50 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-end`}>
       <div className={`space-y-2`}>
-        <h1 className="text-xl font-bold">User</h1>
-        {typeof message?.content === 'string' && <p>{message?.content}</p>}
+        <Accordion
+          title="System"
+          content={<div style={{ whiteSpace: 'pre-wrap' }}>{message?.content}</div>}
+        />
         <div className="text-xs opacity-50">
           {new Date((message as IBaseMessage)?.createdAt ?? '').toLocaleString()}
           {(message?.createdAt !== message?.updatedAt) && " (edited)"}

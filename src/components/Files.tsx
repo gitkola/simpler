@@ -15,8 +15,6 @@ export const Files = () => {
   const handleFileClick = async (file: IProjectFile) => {
     setIsLoading(true);
     setSelectedFile(file);
-    // Simulate file content fetching delay
-    await new Promise(resolve => setTimeout(resolve, 100));
     setIsLoading(false);
   };
 

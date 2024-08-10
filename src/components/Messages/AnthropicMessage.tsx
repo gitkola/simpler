@@ -1,13 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import React from 'react';
-import { IBaseMessage, IMessage, IProjectState } from '../types';
-import { readFiles, updateFiles } from '../services/fsService';
-import Accordion from './Accordion';
+import { IBaseMessage, IMessage, IProjectState } from '../../types';
+import { readFiles, updateFiles } from '../../services/fsService';
+import Accordion from '../Accordion';
 import { ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
-import { useAppDispatch } from '../store';
-import { setFileInModal } from '../store/layoutSlice';
-import { appendToInputValue } from '../store/chatSlice';
-import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
+import { useAppDispatch } from '../../store';
+import { setFileInModal } from '../../store/layoutSlice';
+import { appendToInputValue } from '../../store/chatSlice';
+import { MessageProjectStateUpdates } from "../MessageProjectStateUpdates";
 
 export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) => {
   const dispatch = useAppDispatch();
@@ -24,7 +24,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
             onClick={async () => {
               const files = await readFiles((block.input as { paths: string[] }).paths);
               const userMessage = `${message?.context?.content}\nHere are the contents of some existing files for more context:\n${JSON.stringify(files, null, 2)}`;
-              await dispatch(appendToInputValue(userMessage));
+              dispatch(appendToInputValue(userMessage));
             }}
             className='px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full'
           >

@@ -14,10 +14,6 @@ import {
   saveProjectOpenedFilesToFile,
 } from "../services/projectStateService";
 import { AppDispatch, RootState } from "./index";
-// import {
-// getAIResponseWithProjectState,
-// getAIResponseWithProjectStateAndTools,
-// } from "../services/aiService";
 import {
   getFilteredProjectFiles,
   getTreeData,
@@ -25,9 +21,9 @@ import {
 import { cloneDeep } from "lodash";
 import { setShowCodeEditor } from "./layoutSlice";
 import { IFileTreeState } from "../components/FileTree/fileTreeInterfaces";
-import { initializeFileTree } from "../components/FileTree/useFileTree";
-import { getFolderNameFromPath } from "../utils/pathUtils";
-import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
+// import { initializeFileTree } from "../components/FileTree/useFileTree";
+// import { getFolderNameFromPath } from "../utils/pathUtils";
+// import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
 import {
   ANTHROPIC_API_URL,
   API_URL,
@@ -36,11 +32,7 @@ import {
   OPENAI_API_URL,
 } from "../api/apiAIModels";
 import { Body } from "@tauri-apps/api/http";
-import {
-  // AI_INSTRUCTIONS_PROJECT_STATE,
-  // AI_INSTRUCTIONS_RESPONSIBILITIES,
-  INSTRUCTIONS,
-} from "../constants";
+import { INSTRUCTIONS } from "../configs/instructions";
 import { createTools } from "../utils/createTools";
 import createBaseMessage from "../utils/createBaseMessage";
 
@@ -329,28 +321,28 @@ export const loadProjectFileTree =
       const filteredFilePaths = await getFilteredProjectFiles(
         activeProjectPath
       );
-      dispatch(
-        initializeFileTree(
-          filteredFilePaths.map(
-            (path) =>
-              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
-                `${activeProjectPath}/`,
-                ""
-              )}`
-          )
-        )
-      );
-      dispatch(
-        initializeFlatFileTree(
-          filteredFilePaths.map(
-            (path) =>
-              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
-                `${activeProjectPath}/`,
-                ""
-              )}`
-          )
-        )
-      );
+      // dispatch(
+      //   initializeFileTree(
+      //     filteredFilePaths.map(
+      //       (path) =>
+      //         `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+      //           `${activeProjectPath}/`,
+      //           ""
+      //         )}`
+      //     )
+      //   )
+      // );
+      // dispatch(
+      //   initializeFlatFileTree(
+      //     filteredFilePaths.map(
+      //       (path) =>
+      //         `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+      //           `${activeProjectPath}/`,
+      //           ""
+      //         )}`
+      //     )
+      //   )
+      // );
       const treeData = getTreeData(filteredFilePaths, activeProjectPath);
       dispatch(setCurrentProjectFileTree(treeData));
     } catch (error) {
@@ -453,23 +445,6 @@ export const handleClickOnFile =
     }
   };
 
-// export const handleClickOnFile2 =
-//   (path: string) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     try {
-//       const openedFiles = getState().currentProject.currentProjectOpenedFiles;
-//       if (openedFiles[path]) return;
-//       await dispatch(saveProjectOpenedFiles({ ...openedFiles, [path]: true }));
-//       dispatch(setShowCodeEditor(true));
-//     } catch (error) {
-//       const errorMessage = `Failed to handle click on file: ${
-//         (error as Error).message
-//       }`;
-//       console.error(errorMessage, error);
-//       dispatch(setCurrentProjectOpenedFilesError(errorMessage));
-//     }
-//   };
-
 export const handleClickOnFolder =
   (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
     try {
@@ -515,24 +490,6 @@ export const saveProjectOpenedFiles =
     }
   };
 
-// export const saveProjectOpenedFiles2 =
-//   (newProjectOpenedFiles: IProjectOpenedFiles) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     try {
-//       const activeProjectPath = getState().projects.activeProjectPath;
-//       // if (!activeProjectPath) return;
-//       dispatch(fetchCurrentProjectOpenedFiles());
-//       await saveProjectOpenedFilesToFile(
-//         activeProjectPath!,
-//         newProjectOpenedFiles
-//       );
-//       dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
-//     } catch (error) {
-//       console.error("Failed to save project opened files:", error);
-//       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
-//     }
-//   };
-
 export const syncProjectStateWithAIUpdates =
   (projectStateUpdates: IProjectState) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -556,132 +513,6 @@ export const syncProjectStateWithAIUpdates =
     }
   };
 
-// export const requestAIModelWithProjectState =
-// (prompt: string) =>
-// async (dispatch: AppDispatch, getState: () => RootState) => {
-//   try {
-//     dispatch(setAIModelRequestError(null));
-//     dispatch(setAIModelRequestInProgress(true));
-
-//     const projectSettings = getState().currentProject.currentProjectSettings;
-//     const projectState = getState().currentProject.currentProjectState;
-
-//     if (!projectState || !projectSettings) {
-//       dispatch(
-//         setAIModelRequestError("Project State or Settings are not loaded")
-//       );
-//       dispatch(setAIModelRequestInProgress(false));
-//       return;
-//     }
-//     const apiKeys = getState().settings.apiKeys;
-//     const { service, model, temperature, max_tokens } = projectSettings;
-
-//     const lightProjectState = {
-//       ...projectState,
-//       files: projectState?.files?.map((file) => {
-//         if (file.content) {
-//           return { path: file.path };
-//         }
-//       }),
-//     };
-//     const CURRENT_PROJECT_STATE = `#Current Project State
-//     The project state has been simplified to show only the existing file paths without content to avoid reaching tokens limit.
-//     \`\`\`
-//     ${JSON.stringify(lightProjectState, null, 2)}
-//     \`\`\`
-//     You must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
-//     `;
-//     const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
-//     let url: API_URL;
-//     let options: IRequestOptions;
-//     if (service === "openai") {
-//       url = OPENAI_API_URL;
-//       const body = Body.json({
-//         model,
-//         tool_choice: "auto",
-//         max_tokens: 4095,
-//         temperature,
-//         frequency_penalty: 0,
-//         presence_penalty: 0,
-//         messages: [
-//           {
-//             role: "system",
-//             content: systemPrompt,
-//           },
-//           { role: "user", content: prompt },
-//         ],
-//         functions: createTools(service),
-//       });
-
-//       options = {
-//         method: "POST",
-//         timeout: 120,
-//         headers: {
-//           Authorization: `Bearer ${apiKeys[service]}`,
-//           "Content-Type": "application/json",
-//         },
-//         body,
-//       };
-//     } else if (service === "anthropic") {
-//       url = ANTHROPIC_API_URL;
-
-//       const body = Body.json({
-//         model,
-//         system: systemPrompt,
-//         messages: [{ role: "user", content: prompt }],
-//         tools: createTools(service),
-//         max_tokens,
-//         temperature,
-//       });
-
-//       options = {
-//         method: "POST",
-//         timeout: 120,
-//         headers: {
-//           "x-api-key": apiKeys[service],
-//           "Content-Type": "application/json",
-//           "anthropic-version": "2023-06-01",
-//         },
-//         body,
-//       };
-//     } else {
-//       throw new Error("Invalid AI service selected");
-//     }
-//     const systemMessage = createBaseMessage(systemPrompt, "system");
-//     await dispatch(addMessageToThread(systemMessage));
-//     const userMessage = createBaseMessage(prompt, "user");
-//     await dispatch(addMessageToThread(userMessage));
-//     const response = await callAIModelAPI(url, options);
-//     const now = Date.now();
-//     await dispatch(
-//       addMessageToThread({
-//         ...response,
-//         context: { userMessage },
-//         service,
-//         createdAt: now,
-//         updatedAt: now,
-//       })
-//     );
-//     // const updatedStateItem = (aiResponse as MessageContent).find(
-//     //   (item) => "project_state_updates" in item
-//     // );
-//     // if (updatedStateItem && "project_state_updates" in updatedStateItem) {
-//     //   updatedProjectState =
-//     //     updatedStateItem.project_state_updates as IProjectState;
-//     // }
-
-//     // return { updatedProjectState, aiResponse: aiResponse as MessageContent };
-//   } catch (error) {
-//     const errorMessage = `Error in requestAIModelWithProjectState: ${
-//       (error as Error).message
-//     }`;
-//     console.error(error);
-//     dispatch(setAIModelRequestError(errorMessage));
-//   } finally {
-//     dispatch(setAIModelRequestInProgress(false));
-//   }
-// };
-
 export const addMessageToThread =
   (message: IMessage) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -689,7 +520,7 @@ export const addMessageToThread =
     await dispatch(saveProjectMessages([...messages, message]));
   };
 
-export const handleNewMessageToAIModel =
+export const handleSendMessage =
   (message: IMessage) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
@@ -796,17 +627,8 @@ You must request only the necessary files for the current task by calling \`read
           updatedAt: now,
         })
       );
-      // const updatedStateItem = (aiResponse as MessageContent).find(
-      //   (item) => "project_state_updates" in item
-      // );
-      // if (updatedStateItem && "project_state_updates" in updatedStateItem) {
-      //   updatedProjectState =
-      //     updatedStateItem.project_state_updates as IProjectState;
-      // }
-
-      // return { updatedProjectState, aiResponse: aiResponse as MessageContent };
     } catch (error) {
-      const errorMessage = `Error in handleNewMessageToAIModel: ${
+      const errorMessage = `Error in handleSendMessage: ${
         typeof error === "string" ? error : (error as Error).message
       }`;
       console.error(error);
@@ -843,32 +665,3 @@ export const handleSyncFilesFromFS =
       dispatch(setCurrentProjectStateError(errorMessage));
     }
   };
-
-// export const updateFileContent =
-//   (filePath: string, newContent: string) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     try {
-//       const state = getState();
-//       const currentProjectState = state.currentProject.currentProjectState;
-//       if (!currentProjectState) throw new Error("No active project state");
-//       dispatch(fetchCurrentProjectState());
-//       const updatedFiles = currentProjectState.files?.map((file) =>
-//         file.path === filePath
-//           ? { ...file, content: newContent, update: "modify" }
-//           : file
-//       );
-
-//       const updatedProjectState = {
-//         ...currentProjectState,
-//         files: updatedFiles,
-//       };
-
-//       await dispatch(saveProjectState(updatedProjectState as IProjectState));
-//     } catch (error) {
-//       const errorMessage = `Error updating file content:: ${
-//         (error as Error).message
-//       }`;
-//       console.error(errorMessage);
-//       dispatch(setCurrentProjectStateError(errorMessage));
-//     }
-//   };
