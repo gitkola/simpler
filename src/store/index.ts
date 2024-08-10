@@ -4,6 +4,7 @@ import settingsReducer from "./settingsSlice";
 import projectsReducer from "./projectsSlice";
 import currentProjectReducer from "./currentProjectSlice";
 import layoutReducer from "./layoutSlice";
+import chatReducer from "./chatSlice";
 // import fileTreeReducer from "../components/FileTree/useFileTree";
 // import flatFileTreeReducer from "../components/FileTree/useFlatFileTree";
 import { persistSettingsMiddleware } from "./persistSettingsMiddleware";
@@ -16,6 +17,7 @@ const store = configureStore({
     projects: projectsReducer,
     currentProject: currentProjectReducer,
     layout: layoutReducer,
+    chat: chatReducer,
     // fileTree: fileTreeReducer,
     // flatFileTree: flatFileTreeReducer,
   },

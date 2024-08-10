@@ -37,8 +37,9 @@ import {
 } from "../api/apiAIModels";
 import { Body } from "@tauri-apps/api/http";
 import {
-  AI_INSTRUCTIONS_PROJECT_STATE,
-  AI_INSTRUCTIONS_RESPONSIBILITIES,
+  // AI_INSTRUCTIONS_PROJECT_STATE,
+  // AI_INSTRUCTIONS_RESPONSIBILITIES,
+  INSTRUCTIONS,
 } from "../constants";
 import { createTools } from "../utils/createTools";
 import createBaseMessage from "../utils/createBaseMessage";
@@ -723,7 +724,8 @@ ${JSON.stringify(lightProjectState, null, 2)}
 \`\`\`
 You must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
 `;
-      const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
+      // const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
+      const systemPrompt = `${INSTRUCTIONS}\n\n${CURRENT_PROJECT_STATE}\n`;
       let url: API_URL;
       let options: IRequestOptions;
       if (service === "openai") {

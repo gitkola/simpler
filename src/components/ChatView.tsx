@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { IProjectSettings } from "../types";
 import Message from "./Message";
 import { ArrowUp, Brain } from "./Icons";
@@ -11,6 +11,7 @@ import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL
 import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
+import { setInputValue } from "../store/chatSlice";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -24,7 +25,7 @@ export const ChatView: React.FC = () => {
   } = useAppSelector((state: RootState) => state.currentProject);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [inputMessage, setInputMessage] = useState("");
+  const { inputValue } = useAppSelector((state: RootState) => state.chat);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -50,10 +51,10 @@ export const ChatView: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    const content = inputMessage.trim();
+    const content = inputValue.trim();
     if (!content) return;
     const message = createBaseMessage(content, "user");
-    setInputMessage("");
+    dispatch(setInputValue(""));
     await dispatch(handleNewMessageToAIModel(message));
   };
 
@@ -116,8 +117,8 @@ export const ChatView: React.FC = () => {
             autoSave="off"
             spellCheck={false}
             ref={inputRef}
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
+            value={inputValue}
+            onChange={(e) => dispatch(setInputValue(e.target.value))}
             onKeyPress={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -131,8 +132,8 @@ export const ChatView: React.FC = () => {
           />
           <button
             onClick={handleSendMessage}
-            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:bottom-0.5 hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
-            disabled={aiModelRequestInProgress || !inputMessage}
+            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
+            disabled={aiModelRequestInProgress || !inputValue}
           >
             {
               aiModelRequestInProgress ? (<Spinner size="sm" color="white" />) : (<ArrowUp size={24} />)
