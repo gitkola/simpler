@@ -270,9 +270,12 @@ export const mergeFiles = (
     mergedFiles.set(file.path, file);
   });
   nextFiles.forEach((file) => {
-    if (file.update === "delete") {
+    if (file.update === "delete" || !file.content) {
       mergedFiles.delete(file.path);
-    } else if (["add", "modify"].includes(file.update as string)) {
+    } else if (
+      ["add", "modify"].includes(file.update as string) ||
+      file.content
+    ) {
       mergedFiles.set(file.path, {
         ...file,
         update: undefined,

@@ -1,12 +1,13 @@
 import React from "react";
 import Accordion from "../Accordion";
 import OpenAI from "openai";
-import { readFiles, updateFiles } from '../../services/fsService';
+import { readFiles } from '../../services/fsService';
 import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
 import { appendToInputValue } from '../../store/chatSlice';
 import { MessageProjectStateUpdates } from "../MessageProjectStateUpdates";
 import { IMessage } from "../../types";
+import { syncProjectStateWithAIUpdates } from "../../store/currentProjectSlice";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
   const dispatch = useAppDispatch();
@@ -51,14 +52,11 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               </div>
               <button
                 onClick={async () => {
-                  const files = await updateFiles(JSON.parse(args).files);
-                  files.forEach((file) => {
-                    if (file.status === 'error') console.log(`Updated file error: ${file.path}`, file.error);
-                  });
+                  syncProjectStateWithAIUpdates(JSON.parse(args));
                 }}
-                className='px-3 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-full'
+                className='px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full'
               >
-                Write these files to disk
+                Update files in Project State
               </button>
             </div>
           );

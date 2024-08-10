@@ -1,13 +1,14 @@
 import Anthropic from '@anthropic-ai/sdk';
 import React from 'react';
 import { IBaseMessage, IMessage, IProjectState } from '../../types';
-import { readFiles, updateFiles } from '../../services/fsService';
+import { readFiles } from '../../services/fsService';
 import Accordion from '../Accordion';
 import { ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
 import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
 import { appendToInputValue } from '../../store/chatSlice';
 import { MessageProjectStateUpdates } from "../MessageProjectStateUpdates";
+import { syncProjectStateWithAIUpdates } from '../../store/currentProjectSlice';
 
 export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) => {
   const dispatch = useAppDispatch();
@@ -45,14 +46,11 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           </div>
           <button
             onClick={async () => {
-              const files = await updateFiles((block.input as { files: { path: string; content: string }[] }).files);
-              (files).forEach((file) => {
-                if (file.error) console.log(`Updated file error: ${file.path}`, file.error); // TODO: handle updateFiles errors
-              });
+              syncProjectStateWithAIUpdates(block.input as IProjectState)
             }}
-            className='px-3 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-full'
+            className='px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full'
           >
-            Update these files in the Project State
+            Update files in Project State
           </button>
         </div >
       );
