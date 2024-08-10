@@ -95,6 +95,12 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
         <h2 className='text-lg font-bold'>OpenAI {message.model} {choice?.message?.role}</h2>
         {choice?.message?.content && <p style={{ whiteSpace: 'pre-wrap' }}>{choice.message.content}</p>}
         {choice?.message?.tool_calls && renderToolCalls(choice.message.tool_calls)}
+        <p className='text-xs opacity-50 flex items-center justify-start'>Usage: {message?.usage?.prompt_tokens}/{message?.usage?.completion_tokens}</p>
+        {message.choices.length > 1 && (
+          <button onClick={() => setChoiceIndex((choiceIndex + 1) % message.choices.length)}>
+            {choiceIndex + 1} of {message.choices.length} choices
+          </button>
+        )}
         <Accordion
           title="Raw message"
           className="shadow-none max-w-full rounded-md py-0 hover:border-gray-500"
@@ -110,12 +116,6 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           }
         />
       </div>
-      <p className='text-xs opacity-50'>Usage: {message?.usage?.prompt_tokens}/{message?.usage?.completion_tokens}</p>
-      {message.choices.length > 1 && (
-        <button onClick={() => setChoiceIndex((choiceIndex + 1) % message.choices.length)}>
-          {choiceIndex + 1} of {message.choices.length} choices
-        </button>
-      )}
     </div>
   );
 };

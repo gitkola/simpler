@@ -1,12 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import React from 'react';
-import { IBaseMessage, IMessage } from '../types';
+import { IBaseMessage, IMessage, IProjectState } from '../types';
 import { readFiles, updateFiles } from '../services/fsService';
 import Accordion from './Accordion';
 import { ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
 import { useAppDispatch } from '../store';
 import { setFileInModal } from '../store/layoutSlice';
 import { appendToInputValue } from '../store/chatSlice';
+import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
 
 export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) => {
   const dispatch = useAppDispatch();
@@ -54,6 +55,13 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
             Update these files in the Project State
           </button>
         </div >
+      );
+    } else if (block.type === 'tool_use' && block.name === 'updateProjectState') {
+      return (
+        <div key={index} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+          <p className="text-lg font-bold">The model requests a call to the function `{block.name}` with arguments:</p>
+          <MessageProjectStateUpdates projectStateUpdates={(block.input as { project_state_updates: IProjectState }).project_state_updates} />
+        </div>
       );
     };
   };
