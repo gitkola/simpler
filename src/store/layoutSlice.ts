@@ -12,6 +12,7 @@ export interface ILayoutState {
   showProjectInfo: boolean;
   showProjectState: boolean;
   showProjectMessages: boolean;
+  showProjectFiles: boolean;
   showFileTree: boolean;
   showSettings: boolean;
   showCodeEditor: boolean;
@@ -25,6 +26,7 @@ const defaultInitialState: ILayoutState = {
   showProjectInfo: true,
   showProjectState: true,
   showProjectMessages: true,
+  showProjectFiles: true,
   showFileTree: true,
   showSettings: false,
   showCodeEditor: false,
@@ -57,6 +59,9 @@ const layoutSlice = createSlice({
     setShowProjectMessages: (state, action: PayloadAction<boolean>) => {
       state.showProjectMessages = action.payload;
     },
+    setShowProjectFiles: (state, action: PayloadAction<boolean>) => {
+      state.showProjectFiles = action.payload;
+    },
     setShowFolderTree: (state, action: PayloadAction<boolean>) => {
       state.showFileTree = action.payload;
     },
@@ -86,6 +91,7 @@ export const {
   setShowProjectInfo,
   setShowProjectState,
   setShowProjectMessages,
+  setShowProjectFiles,
   setShowFolderTree,
   setShowSettings,
   setShowCodeEditor,
