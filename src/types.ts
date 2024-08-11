@@ -1,20 +1,26 @@
+import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
+
 export type ProjectPathListItem = string;
 
-export type IMessageAction =
-  | "generate_tasks_and_files"
-  | "generate_suggested_tasks"
-  | "suggestion";
-
 export type IMessageRole = "user" | "assistant" | "system" | "app";
+export type MessageService = "openai" | "anthropic" | "simpler";
 
-export interface IMessage {
-  id: number;
+export interface IBaseMessage {
+  id: string;
   role: IMessageRole;
-  content: MessageContent | string;
-  createdAt: number;
-  updatedAt: number;
-  action?: IMessageAction;
+  content: string;
+  createdAt?: number;
+  updatedAt?: number;
+  service?: MessageService;
+  model?: string;
+  context?: Record<string, any>;
 }
+
+export type IMessage =
+  | IBaseMessage
+  | (OpenAI.ChatCompletion & IBaseMessage)
+  | (Anthropic.Message & IBaseMessage);
 
 export type Entity = IProjectState | IMessage;
 
@@ -34,7 +40,7 @@ export type ContentItem =
   | { text: string; id: number }
   | { code: CodeTuple; id: number }
   | { link: LinkTuple; id: number }
-  | { updated_project_state: IProjectState; id: number }
+  | { project_state_updates: IProjectState; id?: number }
   | { error: ErrorTuple; id: number };
 
 export type CodeTuple = [
@@ -69,19 +75,21 @@ export const isLink = (
 ): item is { link: LinkTuple; id: number } => "link" in item;
 export const isUpdatedProjectState = (
   item: ContentItem
-): item is { updated_project_state: IProjectState; id: number } =>
-  "updated_project_state" in item;
+): item is { project_state_updates: IProjectState; id?: number } =>
+  "project_state_updates" in item;
+
+export type TUpdate = "add" | "modify" | "delete";
 
 export interface IProjectDescription {
   id: number;
   description: string;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 export interface IProjectRequirement {
   id: number;
   requirement: string;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 export interface IProjectTask {
@@ -89,14 +97,13 @@ export interface IProjectTask {
   task: string;
   status: "todo" | "in_progress" | "done" | "hold" | "no_need";
   suggested_as_next_task: boolean;
-  update?: "add" | "modify" | "delete";
+  update?: TUpdate;
 }
 
 export interface IProjectFile {
-  id: number;
   path: string;
-  content: string | null;
-  update?: "add" | "modify" | "delete";
+  content?: string;
+  update?: TUpdate;
 }
 
 export interface IProjectState {

@@ -1,19 +1,26 @@
+import React, { useMemo } from 'react';
 import { useAppSelector } from '../store';
 import Editor from './Editor';
 
-export const ProjectState = () => {
+export const ProjectState = React.memo(() => {
   const currentProjectState = useAppSelector((state) => state.currentProject.currentProjectState);
-  const theme = useAppSelector((state) => state.settings.theme);
+
+  const stringifiedState = useMemo(() => {
+    if (!currentProjectState) return '';
+    return JSON.stringify(currentProjectState, null, 2);
+  }, [currentProjectState]);
+
   if (!currentProjectState) return null;
-  return (<Editor
-    value={JSON.stringify(currentProjectState, null, 2) || ""}
-    language={'json'}
-    minHeight={24}
-    style={{
-      marginLeft: 25,
-      lineHeight: 1.6,
-    }}
-    theme={theme}
-    disabled={true}
-  />);
-};
+  return (
+    <Editor
+      value={stringifiedState}
+      language={'json'}
+      minHeight={24}
+      style={{
+        marginLeft: 25,
+        lineHeight: 1.6,
+      }}
+      disabled={true}
+    />
+  );
+});

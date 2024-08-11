@@ -1,11 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  IMessage,
-  IProjectState,
-  IProjectSettings,
-  IMessageAction,
-  MessageContent,
-} from "../types";
+import { IMessage, IProjectState, IProjectSettings } from "../types";
 import {
   loadProjectStateFromFile,
   loadProjectMessagesFromFile,
@@ -14,13 +8,10 @@ import {
   saveProjectMessagesToFile,
   saveProjectSettingsToFile,
   mergeProjectStates,
-  readFilesFromFS,
-  mergeFiles,
   loadProjectOpenedFilesFromFile,
   saveProjectOpenedFilesToFile,
-} from "../utils/projectStateUtils";
+} from "../services/projectStateService";
 import { AppDispatch, RootState } from "./index";
-import { getAIResponseWithProjectState } from "../services/aiService";
 import {
   getFilteredProjectFiles,
   getTreeData,
@@ -28,9 +19,20 @@ import {
 import { cloneDeep } from "lodash";
 import { setShowCodeEditor } from "./layoutSlice";
 import { IFileTreeState } from "../components/FileTree/fileTreeInterfaces";
-import { initializeFileTree } from "../components/FileTree/useFileTree";
-import { getFolderNameFromPath } from "../utils/pathUtils";
-import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
+// import { initializeFileTree } from "../components/FileTree/useFileTree";
+// import { getFolderNameFromPath } from "../utils/pathUtils";
+// import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
+import {
+  ANTHROPIC_API_URL,
+  API_URL,
+  callAIModelAPI,
+  IRequestOptions,
+  OPENAI_API_URL,
+} from "../api/apiAIModels";
+import { Body } from "@tauri-apps/api/http";
+import { createTools } from "../utils/createTools";
+import createBaseMessage from "../utils/createBaseMessage";
+import { readFilesFromFS } from "../services/fsService";
 
 export interface IFile {
   path: string;
@@ -317,28 +319,28 @@ export const loadProjectFileTree =
       const filteredFilePaths = await getFilteredProjectFiles(
         activeProjectPath
       );
-      dispatch(
-        initializeFileTree(
-          filteredFilePaths.map(
-            (path) =>
-              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
-                `${activeProjectPath}/`,
-                ""
-              )}`
-          )
-        )
-      );
-      dispatch(
-        initializeFlatFileTree(
-          filteredFilePaths.map(
-            (path) =>
-              `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
-                `${activeProjectPath}/`,
-                ""
-              )}`
-          )
-        )
-      );
+      // dispatch(
+      //   initializeFileTree(
+      //     filteredFilePaths.map(
+      //       (path) =>
+      //         `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+      //           `${activeProjectPath}/`,
+      //           ""
+      //         )}`
+      //     )
+      //   )
+      // );
+      // dispatch(
+      //   initializeFlatFileTree(
+      //     filteredFilePaths.map(
+      //       (path) =>
+      //         `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
+      //           `${activeProjectPath}/`,
+      //           ""
+      //         )}`
+      //     )
+      //   )
+      // );
       const treeData = getTreeData(filteredFilePaths, activeProjectPath);
       dispatch(setCurrentProjectFileTree(treeData));
     } catch (error) {
@@ -441,23 +443,6 @@ export const handleClickOnFile =
     }
   };
 
-// export const handleClickOnFile2 =
-//   (path: string) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     try {
-//       const openedFiles = getState().currentProject.currentProjectOpenedFiles;
-//       if (openedFiles[path]) return;
-//       await dispatch(saveProjectOpenedFiles({ ...openedFiles, [path]: true }));
-//       dispatch(setShowCodeEditor(true));
-//     } catch (error) {
-//       const errorMessage = `Failed to handle click on file: ${
-//         (error as Error).message
-//       }`;
-//       console.error(errorMessage, error);
-//       dispatch(setCurrentProjectOpenedFilesError(errorMessage));
-//     }
-//   };
-
 export const handleClickOnFolder =
   (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
     try {
@@ -503,24 +488,6 @@ export const saveProjectOpenedFiles =
     }
   };
 
-// export const saveProjectOpenedFiles2 =
-//   (newProjectOpenedFiles: IProjectOpenedFiles) =>
-//   async (dispatch: AppDispatch, getState: () => RootState) => {
-//     try {
-//       const activeProjectPath = getState().projects.activeProjectPath;
-//       // if (!activeProjectPath) return;
-//       dispatch(fetchCurrentProjectOpenedFiles());
-//       await saveProjectOpenedFilesToFile(
-//         activeProjectPath!,
-//         newProjectOpenedFiles
-//       );
-//       dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
-//     } catch (error) {
-//       console.error("Failed to save project opened files:", error);
-//       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
-//     }
-//   };
-
 export const syncProjectStateWithAIUpdates =
   (projectStateUpdates: IProjectState) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -533,7 +500,7 @@ export const syncProjectStateWithAIUpdates =
         projectState!,
         projectStateUpdates
       );
-      dispatch(saveProjectState(mergedState));
+      await dispatch(saveProjectState(mergedState));
     } catch (error) {
       console.error("Error while syncing Project State:", error);
       dispatch(
@@ -544,8 +511,15 @@ export const syncProjectStateWithAIUpdates =
     }
   };
 
-export const requestAIModelWithProjectState =
-  (prompt: string) =>
+export const addMessageToThread =
+  (message: IMessage) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    const messages = getState().currentProject.currentProjectMessages;
+    await dispatch(saveProjectMessages([...messages, message]));
+  };
+
+export const handleSendMessage =
+  (message: IMessage) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       dispatch(setAIModelRequestError(null));
@@ -553,6 +527,15 @@ export const requestAIModelWithProjectState =
 
       const projectSettings = getState().currentProject.currentProjectSettings;
       const projectState = getState().currentProject.currentProjectState;
+      const {
+        instructionsInContext,
+        projectDescriptionInContext,
+        projectRequirementsInContext,
+        projectTasksInContext,
+        projectFilePathsInContext,
+        projectFilesInContext,
+      } = getState().context;
+      const { generalInstructions } = getState().settings.instructions;
 
       if (!projectState || !projectSettings) {
         dispatch(
@@ -563,57 +546,137 @@ export const requestAIModelWithProjectState =
       }
       const apiKeys = getState().settings.apiKeys;
       const { service, model, temperature, max_tokens } = projectSettings;
-      const { aiResponse } = await getAIResponseWithProjectState(
-        prompt,
-        projectState,
-        service,
-        model,
-        apiKeys[service],
-        temperature,
-        max_tokens
-      );
 
-      await dispatch(addMessageToThread(aiResponse, "assistant"));
-    } catch (error) {
-      const errorMessage = `Error in requestAIModelWithProjectState: ${
-        (error as Error).message
+      const files = Object.keys(projectFilesInContext)
+        .sort((a, b) => a.localeCompare(b))
+        .map((path) => projectFilesInContext[path]);
+      const filePaths =
+        projectFilePathsInContext && Array.isArray(projectState?.files)
+          ? projectState.files
+              .map(({ path }) => {
+                if (projectFilesInContext[path]) {
+                  return {
+                    path,
+                    content: projectFilesInContext[path].content!,
+                  };
+                } else {
+                  return { path };
+                }
+              })
+              ?.filter((file) => (file?.path ? true : false))
+              ?.sort((a, b) => a.path!.localeCompare(b.path!))
+          : [];
+
+      const lightProjectState = {
+        ...projectState,
+        descriptions: projectDescriptionInContext
+          ? projectState?.descriptions
+          : undefined,
+        requirements: projectRequirementsInContext
+          ? projectState?.requirements
+          : undefined,
+        tasks: projectTasksInContext ? projectState?.tasks : undefined,
+        files:
+          filePaths.length > 0
+            ? filePaths
+            : files.length > 0
+            ? files
+            : undefined,
+      };
+      const CURRENT_PROJECT_STATE = `## Current Project State
+The project state has been simplified to show for some files only the paths without content to avoid reaching tokens limit.
+\`\`\`
+${JSON.stringify(lightProjectState, null, 2)}
+\`\`\`
+If the file you need doesn't have 'content' you must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
+`;
+      // const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
+      const systemPrompt = `${
+        instructionsInContext ? `${generalInstructions}\n\n` : ""
+      }${
+        Object.keys(lightProjectState).length > 0
+          ? `${CURRENT_PROJECT_STATE}`
+          : ""
       }`;
-      console.error(errorMessage);
+      let url: API_URL;
+      let options: IRequestOptions;
+      if (service === "openai") {
+        url = OPENAI_API_URL;
+        const body = Body.json({
+          model,
+          tool_choice: "auto",
+          max_tokens: 4095,
+          temperature,
+          frequency_penalty: 0,
+          presence_penalty: 0,
+          messages: [
+            systemPrompt && {
+              role: "system",
+              content: systemPrompt,
+            },
+            { role: "user", content: message?.content },
+          ],
+          tools: createTools(service),
+        });
+
+        options = {
+          method: "POST",
+          timeout: 120,
+          headers: {
+            Authorization: `Bearer ${apiKeys[service]}`,
+            "Content-Type": "application/json",
+          },
+          body,
+        };
+      } else if (service === "anthropic") {
+        url = ANTHROPIC_API_URL;
+
+        const body = Body.json({
+          model,
+          system: systemPrompt,
+          messages: [{ role: "user", content: message?.content }],
+          tools: createTools(service),
+          max_tokens,
+          temperature,
+        });
+
+        options = {
+          method: "POST",
+          timeout: 120,
+          headers: {
+            "x-api-key": apiKeys[service],
+            "Content-Type": "application/json",
+            "anthropic-version": "2023-06-01",
+          },
+          body,
+        };
+      } else {
+        throw new Error("Invalid AI service selected");
+      }
+      const systemMessage = createBaseMessage(systemPrompt, "system");
+      await dispatch(addMessageToThread(systemMessage));
+
+      await dispatch(addMessageToThread(message));
+      const response = await callAIModelAPI(url, options);
+      const now = Date.now();
+      await dispatch(
+        addMessageToThread({
+          ...response,
+          context: message,
+          service,
+          createdAt: now,
+          updatedAt: now,
+        })
+      );
+    } catch (error) {
+      const errorMessage = `Error in handleSendMessage: ${
+        typeof error === "string" ? error : (error as Error).message
+      }`;
+      console.error(error);
       dispatch(setAIModelRequestError(errorMessage));
     } finally {
       dispatch(setAIModelRequestInProgress(false));
     }
-  };
-
-export const addMessageToThread =
-  (
-    content: MessageContent | string,
-    role: "app" | "user" | "assistant" | "system",
-    action?: IMessageAction
-  ) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    const now = Date.now();
-    const message: IMessage = {
-      id: now,
-      content,
-      role,
-      createdAt: now,
-      updatedAt: now,
-      action,
-    };
-    const messages = getState().currentProject.currentProjectMessages;
-    await dispatch(saveProjectMessages([...messages, message]));
-  };
-
-export const handleNewMessageToAIModel =
-  (
-    content: string,
-    role: "app" | "user" | "assistant" | "system",
-    action?: IMessageAction
-  ) =>
-  async (dispatch: AppDispatch) => {
-    await dispatch(addMessageToThread(content, role, action));
-    await dispatch(requestAIModelWithProjectState(content));
   };
 
 export const handleSyncFilesFromFS =
@@ -625,47 +688,18 @@ export const handleSyncFilesFromFS =
         throw new Error("activeProjectPath is not defined");
       }
       dispatch(fetchCurrentProjectState());
-      const files = (await readFilesFromFS(activeProjectPath)) || [];
-      const mergedFiles = mergeFiles(
-        currentProjectState!.files || [],
-        files
-      ).sort((a, b) => a.path.localeCompare(b.path));
+      let files = (await readFilesFromFS(activeProjectPath)) || [];
+      files = files
+        .map(({ path }) => ({ path }))
+        .sort((a, b) => a.path.localeCompare(b.path));
+
       const updatedProjectState = {
         ...currentProjectState!,
-        files: mergedFiles,
+        files: [...files],
       };
       await dispatch(saveProjectState(updatedProjectState));
     } catch (error) {
       const errorMessage = `Error while syncing files from FS: ${
-        (error as Error).message
-      }`;
-      console.error(errorMessage);
-      dispatch(setCurrentProjectStateError(errorMessage));
-    }
-  };
-
-export const updateFileContent =
-  (fileId: number, newContent: string) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const state = getState();
-      const currentProjectState = state.currentProject.currentProjectState;
-      if (!currentProjectState) throw new Error("No active project state");
-      dispatch(fetchCurrentProjectState());
-      const updatedFiles = currentProjectState.files?.map((file) =>
-        file.id === fileId
-          ? { ...file, content: newContent, update: "modify" }
-          : file
-      );
-
-      const updatedProjectState = {
-        ...currentProjectState,
-        files: updatedFiles,
-      };
-
-      await dispatch(saveProjectState(updatedProjectState as IProjectState));
-    } catch (error) {
-      const errorMessage = `Error updating file content:: ${
         (error as Error).message
       }`;
       console.error(errorMessage);

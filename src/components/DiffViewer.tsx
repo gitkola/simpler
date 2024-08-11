@@ -1,18 +1,18 @@
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import Editor from './Editor';
+import { useAppSelector } from '../store';
 
 
 interface DiffViewerProps {
   oldValue: string;
   newValue: string;
   language: string;
-  theme: "light" | "dark";
 }
 
-export default function DiffViewer({ oldValue, newValue, language, theme }: DiffViewerProps) {
-
+export default function DiffViewer({ oldValue, newValue, language }: DiffViewerProps) {
+  const theme = useAppSelector((state) => state.settings.theme);
   const highlightSyntax = (str: string) => (
-    <Editor language={language} value={str} onChange={() => { }} onKeyDown={() => { }} disabled={true} style={{}} theme={theme} />
+    <Editor language={language} value={str} onChange={() => { }} onKeyDown={() => { }} disabled={true} style={{}} />
   );
 
   return (
@@ -22,7 +22,7 @@ export default function DiffViewer({ oldValue, newValue, language, theme }: Diff
       extraLinesSurroundingDiff={0}
       splitView={true}
       compareMethod={DiffMethod.WORDS_WITH_SPACE}
-      disableWordDiff={false}
+      disableWordDiff={true}
       hideLineNumbers={true}
       showDiffOnly={false}
       useDarkTheme={theme === 'dark'}

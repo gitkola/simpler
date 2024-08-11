@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { IProjectSettings } from "../types";
-import Message from "./Message";
+import Message from "./Messages/Message";
 import { ArrowUp, Brain } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
-import { handleNewMessageToAIModel, saveProjectSettings } from "../store/currentProjectSlice";
+import { saveProjectSettings, handleSendMessage } from "../store/currentProjectSlice";
 import { Select } from "./Select";
 import Spinner from "./Spinner";
-import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../constants";
+import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../configs/instructions";
 import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
+import createBaseMessage from "../utils/createBaseMessage";
+import { setInputValue } from "../store/chatSlice";
+import { setInstructionsInContext, setProjectDescriptionInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
+import { FileListButton } from "./FileListButton";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -23,7 +27,8 @@ export const ChatView: React.FC = () => {
   } = useAppSelector((state: RootState) => state.currentProject);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [inputMessage, setInputMessage] = useState("");
+  const { inputValue } = useAppSelector((state: RootState) => state.chat);
+  const { instructionsInContext, projectDescriptionInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = useAppSelector((state: RootState) => state.context);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -48,9 +53,12 @@ export const ChatView: React.FC = () => {
     await dispatch(saveProjectSettings(newSettings as IProjectSettings));
   };
 
-  const handleSendMessage = async () => {
-    setInputMessage("");
-    await dispatch(handleNewMessageToAIModel(inputMessage, "user"));
+  const handleNewMessage = async () => {
+    const content = inputValue.trim();
+    if (!content) return;
+    const message = createBaseMessage(content, "user");
+    dispatch(setInputValue(""));
+    await dispatch(handleSendMessage(message));
   };
 
   return (
@@ -62,10 +70,10 @@ export const ChatView: React.FC = () => {
       {isLoadingCurrentProjectMessages && <ProcessIndicator />}
       {currentProjectMessagesError && <div>{currentProjectMessagesError}</div>}
       <div className="flex flex-col h-full overflow-scroll">
-        <div className="p-2 h-fit space-y-2">
+        <div className="p-2 h-fit space-y-8">
           {currentProjectMessages?.map((message) => (
             <Message
-              key={message.createdAt}
+              key={message.id}
               message={message}
             />
           ))}
@@ -88,7 +96,7 @@ export const ChatView: React.FC = () => {
         <div className="flex py-2 space-x-2 items-center">
           <div>Suggestions:</div>
           <button
-            onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user"))}
+            onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user")))}
             className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
@@ -96,13 +104,62 @@ export const ChatView: React.FC = () => {
             <ArrowUp size={20} />
           </button>
           <button
-            onClick={async () => await dispatch(handleNewMessageToAIModel(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user"))}
+            onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user")))}
             className={`${outlineButton}`}
             disabled={aiModelRequestInProgress}
           >
             <div>Generate File Structure</div>
             <ArrowUp size={20} />
           </button>
+        </div>
+        <div className="flex py-2 space-x-2 items-center">
+          <div>Context:</div>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={instructionsInContext}
+              onChange={(e) => dispatch(setInstructionsInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Instructions
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectDescriptionInContext}
+              onChange={(e) => dispatch(setProjectDescriptionInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Description
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectRequirementsInContext}
+              onChange={(e) => dispatch(setProjectRequirementsInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Requirements
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectTasksInContext}
+              onChange={(e) => dispatch(setProjectTasksInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Tasks
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectFilePathsInContext}
+              onChange={(e) => dispatch(setProjectFilePathsInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            File Paths
+          </label>
+          <FileListButton />
         </div>
         <div className="flex items-end space-x-2">
           <textarea
@@ -112,23 +169,23 @@ export const ChatView: React.FC = () => {
             autoSave="off"
             spellCheck={false}
             ref={inputRef}
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
+            value={inputValue}
+            onChange={(e) => dispatch(setInputValue(e.target.value))}
             onKeyPress={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                handleSendMessage();
+                handleNewMessage();
               }
             }}
             className={`${textInput}`}
             placeholder="Type your message... (Shift+Enter for new line)"
             disabled={aiModelRequestInProgress}
-            rows={5}
+            rows={10}
           />
           <button
-            onClick={handleSendMessage}
-            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:bottom-0.5 hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
-            disabled={aiModelRequestInProgress || !inputMessage}
+            onClick={handleNewMessage}
+            className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
+            disabled={aiModelRequestInProgress || !inputValue}
           >
             {
               aiModelRequestInProgress ? (<Spinner size="sm" color="white" />) : (<ArrowUp size={24} />)

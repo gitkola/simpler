@@ -17,12 +17,11 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
 } from "../constants";
-import { getFolderNameFromPath } from "./pathUtils";
+import { getFolderNameFromPath } from "../utils/pathUtils";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
-import { IProjectOpenedFiles, IFile } from "../store/currentProjectSlice";
-import { getFilteredProjectFiles } from "./getFilteredProjectFiles";
+import { IFile } from "../store/currentProjectSlice";
 
 export const generateInitialProjectState = (
   projectPath: string
@@ -74,16 +73,6 @@ export const loadProjectStateFromFile = async (
 ): Promise<IProjectState | null> => {
   const projectStateFilePath = `${projectPath}/${PROJECT_STATE_FILE_NAME}`;
   try {
-    const fileExists = await invoke("file_exists", {
-      path: projectStateFilePath,
-    });
-    if (!fileExists) {
-      // If the file doesn't exist, create a new empty Project State
-      const newProjectState = generateInitialProjectState(projectPath);
-      await saveProjectStateToFile(projectPath, newProjectState);
-      return newProjectState;
-    }
-
     const result = await invoke("read_file", {
       path: projectStateFilePath,
     });
@@ -94,7 +83,6 @@ export const loadProjectStateFromFile = async (
     return projectState;
   } catch (error) {
     console.error("Error reading Project State file:", error);
-    // If there's any error, return a new empty Project State
     const newProjectState = generateInitialProjectState(projectPath);
     await saveProjectStateToFile(projectPath, newProjectState);
     return newProjectState;
@@ -125,12 +113,6 @@ export const loadProjectMessagesFromFile = async (
 ): Promise<IMessage[]> => {
   const messagesFilePath = `${projectPath}/${PROJECT_MESSAGES_FILE_NAME}`;
   try {
-    const fileExists = await invoke("file_exists", {
-      path: messagesFilePath,
-    });
-    if (!fileExists) {
-      return [];
-    }
     const result = await invoke("read_file", {
       path: messagesFilePath,
     });
@@ -140,7 +122,7 @@ export const loadProjectMessagesFromFile = async (
     const messages: IMessage[] = JSON.parse(result);
     return messages;
   } catch (error) {
-    console.error("Error reading Project State file:", error);
+    console.error("Error reading Project Messages file:", error);
     return [];
   }
 };
@@ -183,28 +165,6 @@ export const saveProjectOpenedFilesToFile = async (
   }
 };
 
-export const saveProjectOpenedFilesToFile2 = async (
-  projectPath: string,
-  projectOpenedFiles: IProjectOpenedFiles = {}
-) => {
-  try {
-    const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
-    const result = await invoke("write_file", {
-      path: openedFilesFilePath,
-      content: JSON.stringify(projectOpenedFiles, null, 2),
-    });
-    if (result !== null) {
-      throw new Error(result as string);
-    }
-  } catch (error) {
-    const errorMessage = `Failed to save Project Opened Files: ${
-      (error as Error).message
-    }`;
-    console.error(errorMessage, error);
-    throw new Error(errorMessage);
-  }
-};
-
 export const loadProjectSettingsFromFile = async (
   projectPath: string
 ): Promise<IProjectSettings | null> => {
@@ -240,38 +200,13 @@ export const loadProjectOpenedFilesFromFile = async (
 ): Promise<IFile[]> => {
   const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
   try {
-    const fileExists = await invoke("file_exists", {
-      path: openedFilesFilePath,
-    });
-    if (!fileExists) {
-      return [];
-    }
-    const result = await invoke("read_file", {
-      path: openedFilesFilePath,
-    });
-    if (typeof result !== "string") {
-      throw new Error("Invalid Project Opened Files file content");
-    }
-    const openedFiles: IFile[] = JSON.parse(result);
-    return openedFiles;
-  } catch (error) {
-    console.error("Error reading Project Opened Files file:", error);
-    return [];
-  }
-};
-
-export const loadProjectOpenedFilesFromFile2 = async (
-  projectPath: string
-): Promise<IProjectOpenedFiles> => {
-  const openedFilesFilePath = `${projectPath}/${PROJECT_OPENED_FILES_FILE_NAME}`;
-  try {
     const result = await invoke("read_file", {
       path: openedFilesFilePath,
     });
     return JSON.parse(result as string);
   } catch (error) {
     console.error("Error reading Project Opened Files file:", error);
-    return {};
+    return [];
   }
 };
 
@@ -324,9 +259,12 @@ export const mergeFiles = (
     mergedFiles.set(file.path, file);
   });
   nextFiles.forEach((file) => {
-    if (file.update === "delete") {
+    if (file.update === "delete" || !file.content) {
       mergedFiles.delete(file.path);
-    } else if (["add", "modify"].includes(file.update as string)) {
+    } else if (
+      ["add", "modify"].includes(file.update as string) ||
+      file.content
+    ) {
       mergedFiles.set(file.path, {
         ...file,
         update: undefined,
@@ -421,43 +359,4 @@ export const mergeDescriptions = (
     }
   });
   return Array.from(mergedDescriptions.values());
-};
-
-export const readFilesFromFS = async (projectPath: string) => {
-  try {
-    if (typeof projectPath !== "string" || !projectPath) return null;
-    const filteredFilePaths = await getFilteredProjectFiles(projectPath, true);
-    const projectFiles: IProjectFile[] = [];
-    for await (const filePath of filteredFilePaths) {
-      try {
-        const fileContent = await invoke<string>("read_file", {
-          path: filePath,
-        });
-        const file: IProjectFile = {
-          id: Date.now(),
-          path: filePath.replace(`${projectPath}/`, ""),
-          content: fileContent as string,
-          update: "add",
-        };
-        projectFiles.push(file);
-      } catch (fileError) {
-        console.warn(
-          `Skipping file ${filePath}: ${JSON.stringify(
-            fileError as Error,
-            null,
-            2
-          )}`
-        );
-        // Optionally, you can still add the file to projectFiles with empty content
-        // projectFiles.push({ id: Date.now() + Math.random(), path: filePath, content: '' });
-      }
-    }
-    return projectFiles;
-  } catch (error) {
-    const errorMessage = `Failed to read files from the selected folder: ${
-      (error as Error).message
-    }`;
-    console.error(errorMessage, error);
-    throw new Error(errorMessage);
-  }
 };

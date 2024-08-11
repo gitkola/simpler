@@ -3,9 +3,9 @@ import { useAppDispatch, useAppSelector } from "../store";
 import {
   getFolderNameFromFilePath,
 } from "../utils/pathUtils";
-import { File, Files } from "./Icons";
+import { File, FolderTree } from "./Icons";
 import SquareButton from "./SquareButton";
-import { openFolder } from "../utils/openFolder";
+import { openFolder } from "../services/fsService";
 import { handleClickOnFile, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
 
@@ -68,8 +68,8 @@ export default function FileTreeView() {
   return (
     <div className="flex flex-col h-screen border-r border-0.5 min-w-[300px] overflow-x-scroll">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <Files className="w-8 h-8" />
-        <h2 className="text-lg font-semibold">Files</h2>
+        <FolderTree className="w-8 h-8" />
+        <h2 className="text-lg font-semibold">File Tree</h2>
       </div>
       {
         isLoadingCurrentProjectFileTree && <ProcessIndicator />

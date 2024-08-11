@@ -2,7 +2,7 @@ import React from "react";
 import SquareButton from "./SquareButton";
 import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
-import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjectInfo, setShowProjectMessages, setShowProjects, setShowProjectState, setShowSettings } from "../store/layoutSlice";
+import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjectInfo, setShowProjectMessages, setShowProjects, setShowProjectState, setShowSettings, setShowProjectFiles } from "../store/layoutSlice";
 import Spinner from './Spinner';
 import { setTheme } from "../store/settingsSlice";
 
@@ -10,14 +10,14 @@ const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector((state) => state.settings);
-  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState, showProjectInfo, showProjectMessages } = useAppSelector((state) => state.layout);
+  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState, showProjectInfo, showProjectMessages, showProjectFiles } = useAppSelector((state) => state.layout);
   const { isLoadingCurrentProjectState, isLoadingCurrentProjectMessages, isLoadingCurrentProjectSettings, isLoadingCurrentProjectOpenedFiles, isLoadingCurrentProjectFileTree } = useAppSelector((state) => state.currentProject);
 
   const toggleView = (value: string) => {
     switch (value) {
       case "projects":
         return dispatch(setShowProjects(!showProjects));
-      case "files":
+      case "file-tree":
         return dispatch(setShowFolderTree(!showFileTree));
       case "settings":
         return dispatch(setShowSettings(!showSettings));
@@ -31,6 +31,8 @@ const SidePanel: React.FC = () => {
         return dispatch(setShowProjectMessages(!showProjectMessages));
       case "ai-chat":
         return dispatch(setShowChat(!showChat));
+      case "project-files":
+        return dispatch(setShowProjectFiles(!showProjectFiles));
       default:
         return false;
     }
@@ -64,9 +66,14 @@ const SidePanel: React.FC = () => {
         isActive={showProjectMessages}
       />
       <SquareButton
-        onClick={() => toggleView("files")}
-        icon="files"
+        onClick={() => toggleView("file-tree")}
+        icon="file-tree"
         isActive={showFileTree}
+      />
+      <SquareButton
+        onClick={() => toggleView("project-files")}
+        icon="files"
+        isActive={showProjectFiles}
       />
       <SquareButton
         onClick={() => toggleView("code-editor")}

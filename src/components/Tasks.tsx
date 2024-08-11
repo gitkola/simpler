@@ -1,9 +1,10 @@
 import React from 'react';
 import { IProjectState, IProjectTask } from '../types';
 import { useAppDispatch, useAppSelector } from '../store';
-import { handleNewMessageToAIModel, saveProjectState } from '../store/currentProjectSlice';
+import { saveProjectState } from '../store/currentProjectSlice';
 import Textarea from './Textarea';
 import { Select } from './Select';
+import { appendToInputValue } from '../store/chatSlice';
 
 
 const Tasks: React.FC = () => {
@@ -42,20 +43,20 @@ const Tasks: React.FC = () => {
     }
   };
 
-  const handleSuggestedNextTask = async (task: IProjectTask) => {
+  const handleExecuteTask = async (task: IProjectTask) => {
     await handleChange({ target: { name: 'status', value: 'in_progress' } } as any, task.id);
-    await dispatch(handleNewMessageToAIModel(task?.task, "user"));
+    await dispatch(appendToInputValue(task?.task));
   };
 
   return (
-    <div className="space-y-1 py-1">
+    <div className="space-y-1 py-1 px-0.5">
       {tasks.map(task => (
         <div key={task.id} className="flex justify-between space-x-1">
           <div className="flex-1">
             <Textarea
               key={task?.id}
               initialValue={task?.task}
-              onSave={(data) => handleChange({ target: { name: 'description', value: data } } as any, task.id)}
+              onSave={(data) => handleChange({ target: { name: 'task', value: data } } as any, task.id)}
               onDelete={() => handleDelete(task.id)}
               placeholder="Enter a task..."
               rows={1}
@@ -73,13 +74,11 @@ const Tasks: React.FC = () => {
             onChange={(e) => handleChange(e, task.id)}
           />
           <button
-            onClick={async () => await handleSuggestedNextTask(task)}
-            className={`h-8 px-2 py-1 rounded-md text-white ${task.suggested_as_next_task ? 'bg-indigo-500 hover:bg-indigo-700 hover:shadow-md' : 'bg-indigo-200'} `}
-            disabled={!task.suggested_as_next_task}
+            onClick={async () => await handleExecuteTask(task)}
+            className={`h-8 px-2 py-1 rounded-md text-white ${task.suggested_as_next_task ? 'bg-indigo-500 hover:bg-indigo-700 hover:shadow-md' : 'bg-indigo-300'} `}
           >
-            Execute
+            To Prompt
           </button>
-          {/* {task?.update && <span className={`px-2 py-1 text-sm`}>{task.update}</span>} */}
         </div>
       ))}
       <Textarea
@@ -98,11 +97,11 @@ export default Tasks;
 const getColorByStatus = (status: string) => {
   switch (status) {
     case 'in_progress':
-      return 'text-blue-600';
+      return 'text-blue-500';
     case 'done':
-      return 'text-green-600';
+      return 'text-green-500';
     case 'todo':
     default:
-      return 'text-gray-800';
+      return 'opacity-80';
   }
 };

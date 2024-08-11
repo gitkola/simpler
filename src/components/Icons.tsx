@@ -421,7 +421,7 @@ export default function AppIcon({
     case "file":
       return <File size={size} color={color} className={className} />;
     case "files":
-      return <FolderTree size={size} color={color} className={className} />;
+      return <Files size={size} color={color} className={className} />;
     case "projects":
       return <Projects size={size} color={color} className={className} />;
     case "project-folder":

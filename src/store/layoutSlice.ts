@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LOCAL_STORAGE_KEY_LAYOUT } from "../constants";
+import { IProjectFile } from "../types";
 
 export interface IView {
   name: "projects" | "file-tree" | "settings";
@@ -11,10 +12,12 @@ export interface ILayoutState {
   showProjectInfo: boolean;
   showProjectState: boolean;
   showProjectMessages: boolean;
+  showProjectFiles: boolean;
   showFileTree: boolean;
   showSettings: boolean;
   showCodeEditor: boolean;
   showChat: boolean;
+  fileInModal?: IProjectFile;
   views: IView[];
 }
 
@@ -23,10 +26,12 @@ const defaultInitialState: ILayoutState = {
   showProjectInfo: true,
   showProjectState: true,
   showProjectMessages: true,
+  showProjectFiles: true,
   showFileTree: true,
   showSettings: false,
   showCodeEditor: false,
   showChat: true,
+  fileInModal: undefined,
   views: [],
 };
 
@@ -54,6 +59,9 @@ const layoutSlice = createSlice({
     setShowProjectMessages: (state, action: PayloadAction<boolean>) => {
       state.showProjectMessages = action.payload;
     },
+    setShowProjectFiles: (state, action: PayloadAction<boolean>) => {
+      state.showProjectFiles = action.payload;
+    },
     setShowFolderTree: (state, action: PayloadAction<boolean>) => {
       state.showFileTree = action.payload;
     },
@@ -69,6 +77,12 @@ const layoutSlice = createSlice({
     setViews: (state, action: PayloadAction<IView[]>) => {
       state.views = action.payload;
     },
+    setFileInModal: (
+      state,
+      action: PayloadAction<IProjectFile | undefined>
+    ) => {
+      state.fileInModal = action.payload;
+    },
   },
 });
 
@@ -77,11 +91,13 @@ export const {
   setShowProjectInfo,
   setShowProjectState,
   setShowProjectMessages,
+  setShowProjectFiles,
   setShowFolderTree,
   setShowSettings,
   setShowCodeEditor,
   setShowChat,
   setViews,
+  setFileInModal,
 } = layoutSlice.actions;
 
 export default layoutSlice.reducer;
