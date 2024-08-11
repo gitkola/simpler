@@ -690,11 +690,14 @@ export const handleSyncFilesFromFS =
         throw new Error("activeProjectPath is not defined");
       }
       dispatch(fetchCurrentProjectState());
-      const files = (await readFilesFromFS(activeProjectPath)) || [];
-      files.sort((a, b) => a.path.localeCompare(b.path));
+      let files = (await readFilesFromFS(activeProjectPath)) || [];
+      files = files
+        .map((file) => ({ path: file.path }))
+        .sort((a, b) => a.path.localeCompare(b.path));
+
       const updatedProjectState = {
         ...currentProjectState!,
-        files,
+        files: [...files],
       };
       await dispatch(saveProjectState(updatedProjectState));
     } catch (error) {

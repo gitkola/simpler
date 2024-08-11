@@ -36,18 +36,16 @@ export const Files = () => {
     }
   };
 
-  const handleSaveFile = async (content: string) => {
-    if (selectedFile) {
-      const updatedFile = { ...selectedFile, content };
-      const updatedFiles = files?.map(f => f.path === updatedFile.path ? updatedFile : f) || [];
-      if (currentProjectState) {
-        const updatedProjectState: IProjectState = {
-          ...currentProjectState,
-          files: updatedFiles,
-        };
-        await dispatch(saveProjectState(updatedProjectState));
-      }
-      await writeFile(content, selectedFile.path);
+  const handleSaveFile = async (file: { content: string; path: string }) => {
+    await writeFile(file.content, file.path);
+    const updatedFile = { path: file.path };
+    const updatedFiles = files?.map(f => f.path === updatedFile.path ? updatedFile : f) || [];
+    if (currentProjectState) {
+      const updatedProjectState: IProjectState = {
+        ...currentProjectState,
+        files: updatedFiles,
+      };
+      await dispatch(saveProjectState(updatedProjectState));
     }
   };
 
@@ -69,13 +67,12 @@ export const Files = () => {
               className={`flex items-center px-2 py-1 border border-gray-300 border-opacity-30 hover:border-gray-300 hover:border-opacity-80 hover:shadow-md rounded-sm cursor-pointer ${!file?.content && 'opacity-50'}`}
               onClick={() => handleFileClick(file)}
             >
-              {/* <File className="text-blue-500" /> */}
               {file?.path && <span className={`text-md`}>{file.path}</span>}
               {file?.content && (
                 <button
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
-                    writeFile(file.content, file.path);
+                    await handleSaveFile({ content: file.content!, path: file.path });
                   }}
                   className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full"
                 >

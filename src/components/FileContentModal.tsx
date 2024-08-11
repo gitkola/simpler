@@ -12,7 +12,7 @@ interface FileContentModalProps {
   content: string;
   language: string;
   isLoading: boolean;
-  onSave: (content: string) => void;
+  onSave: (file: { content: string; path: string }) => Promise<void>;
 }
 
 const FileContentModal: React.FC<FileContentModalProps> = ({
@@ -62,7 +62,7 @@ const FileContentModal: React.FC<FileContentModalProps> = ({
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    onSave(editedContent);
+    await onSave({ content: editedContent, path });
   };
 
   return (
