@@ -3,7 +3,6 @@ import { RootState, useAppSelector } from '../store';
 import Requirements from './Requirements';
 import Accordion from './Accordion';
 import Tasks from './Tasks';
-import { Files } from './Files';
 import Descriptions from './Descriptions';
 import { Info } from './Icons';
 import ProcessIndicator from './ProcessIndicator';
@@ -32,10 +31,6 @@ const ProjectInfoView: React.FC = () => {
         <Accordion
           title={`Tasks (${currentProjectState?.tasks?.length || 0})`}
           content={<Tasks />}
-        />
-        <Accordion
-          title={`Files (${currentProjectState?.files?.length || 0})`}
-          content={<Files />}
         />
       </div>
     </div>

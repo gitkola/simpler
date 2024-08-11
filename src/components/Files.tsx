@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../store";
-import { handleSyncFilesFromFS, saveProjectState } from "../store/currentProjectSlice";
+import { saveProjectState } from "../store/currentProjectSlice";
 import { IProjectFile, IProjectState } from "../types";
 import { writeFile } from "../services/fsService";
 import FileContentModal from './FileContentModal';
@@ -51,14 +51,6 @@ export const Files = () => {
 
   return (
     <div className="space-y-1 py-1 px-0.5">
-      <div className="flex flex-col items-end justify-end">
-        <button
-          className="px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full"
-          onClick={async () => await dispatch(handleSyncFilesFromFS())}
-        >
-          Sync Files from File System
-        </button>
-      </div>
       {Array.isArray(files) && files.length > 0 && (
         <div className="space-y-1">
           {files.map((file) => (

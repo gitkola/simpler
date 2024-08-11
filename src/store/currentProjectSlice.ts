@@ -690,7 +690,7 @@ export const handleSyncFilesFromFS =
       dispatch(fetchCurrentProjectState());
       let files = (await readFilesFromFS(activeProjectPath)) || [];
       files = files
-        .map((file) => ({ path: file.path }))
+        .map(({ path }) => ({ path }))
         .sort((a, b) => a.path.localeCompare(b.path));
 
       const updatedProjectState = {
