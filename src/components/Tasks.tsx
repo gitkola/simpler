@@ -102,6 +102,6 @@ const getColorByStatus = (status: string) => {
       return 'text-green-500';
     case 'todo':
     default:
-      return 'opacity-50';
+      return 'opacity-80';
   }
 };
