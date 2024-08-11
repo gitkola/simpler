@@ -56,7 +56,7 @@ const Tasks: React.FC = () => {
             <Textarea
               key={task?.id}
               initialValue={task?.task}
-              onSave={(data) => handleChange({ target: { name: 'description', value: data } } as any, task.id)}
+              onSave={(data) => handleChange({ target: { name: 'task', value: data } } as any, task.id)}
               onDelete={() => handleDelete(task.id)}
               placeholder="Enter a task..."
               rows={1}

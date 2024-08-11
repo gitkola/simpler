@@ -17,7 +17,7 @@ const SidePanel: React.FC = () => {
     switch (value) {
       case "projects":
         return dispatch(setShowProjects(!showProjects));
-      case "files":
+      case "file-tree":
         return dispatch(setShowFolderTree(!showFileTree));
       case "settings":
         return dispatch(setShowSettings(!showSettings));
@@ -64,8 +64,8 @@ const SidePanel: React.FC = () => {
         isActive={showProjectMessages}
       />
       <SquareButton
-        onClick={() => toggleView("files")}
-        icon="files"
+        onClick={() => toggleView("file-tree")}
+        icon="file-tree"
         isActive={showFileTree}
       />
       <SquareButton

@@ -76,7 +76,7 @@ export const Files = () => {
                   }}
                   className="ml-auto px-3 text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full"
                 >
-                  Write to file
+                  Write to File
                 </button>
               )}
             </div>

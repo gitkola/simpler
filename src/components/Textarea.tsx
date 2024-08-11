@@ -107,7 +107,7 @@ const Textarea = ({ initialValue, onSave, onDelete, onAdd, placeholder, rows, ed
   return (
     <div className={`${className}`}>
       {
-        (editing || isEditMode) ? (
+        (isEditMode) ? (
           <textarea
             autoCapitalize="off"
             autoCorrect="off"
