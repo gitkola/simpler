@@ -73,16 +73,6 @@ export const loadProjectStateFromFile = async (
 ): Promise<IProjectState | null> => {
   const projectStateFilePath = `${projectPath}/${PROJECT_STATE_FILE_NAME}`;
   try {
-    const fileExists = await invoke("file_exists", {
-      path: projectStateFilePath,
-    });
-    if (!fileExists) {
-      // If the file doesn't exist, create a new empty Project State
-      const newProjectState = generateInitialProjectState(projectPath);
-      await saveProjectStateToFile(projectPath, newProjectState);
-      return newProjectState;
-    }
-
     const result = await invoke("read_file", {
       path: projectStateFilePath,
     });
@@ -93,7 +83,6 @@ export const loadProjectStateFromFile = async (
     return projectState;
   } catch (error) {
     console.error("Error reading Project State file:", error);
-    // If there's any error, return a new empty Project State
     const newProjectState = generateInitialProjectState(projectPath);
     await saveProjectStateToFile(projectPath, newProjectState);
     return newProjectState;
