@@ -583,7 +583,7 @@ export const handleSendMessage =
             ? files
             : undefined,
       };
-      const CURRENT_PROJECT_STATE = `#Current Project State
+      const CURRENT_PROJECT_STATE = `## Current Project State
 The project state has been simplified to show for some files only the paths without content to avoid reaching tokens limit.
 \`\`\`
 ${JSON.stringify(lightProjectState, null, 2)}

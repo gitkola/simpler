@@ -1,7 +1,14 @@
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../store";
 import { RootState } from "../store";
-import { resetToDefaultInstructions, setApiKey, setProjectStateInstructions, setResponseGuidelinesInstructions, setResponsibilitiesInstructions, setGeneralInstructions } from "../store/settingsSlice";
+import {
+  resetToDefaultInstructions,
+  setApiKey,
+  setGeneralInstructions,
+  // setProjectStateInstructions,
+  // setResponseGuidelinesInstructions,
+  // setResponsibilitiesInstructions,
+} from "../store/settingsSlice";
 import { textInput } from "../styles/styles";
 import { SettingsIcon } from "./Icons";
 
@@ -13,17 +20,17 @@ const Settings: React.FC = () => {
     dispatch(setApiKey({ service, key }));
   };
 
-  const handleResponsibilitiesInstructionsChange = (value: string) => {
-    dispatch(setResponsibilitiesInstructions(value));
-  };
+  // const handleResponsibilitiesInstructionsChange = (value: string) => {
+  //   dispatch(setResponsibilitiesInstructions(value));
+  // };
 
-  const handleResponseGuidelinesInstructionsChange = (value: string) => {
-    dispatch(setResponseGuidelinesInstructions(value));
-  };
+  // const handleResponseGuidelinesInstructionsChange = (value: string) => {
+  //   dispatch(setResponseGuidelinesInstructions(value));
+  // };
 
-  const handleProjectStateInstructionsChange = (value: string) => {
-    dispatch(setProjectStateInstructions(value));
-  };
+  // const handleProjectStateInstructionsChange = (value: string) => {
+  //   dispatch(setProjectStateInstructions(value));
+  // };
 
   const handleGeneralInstructionsChange = (value: string) => {
     dispatch(setGeneralInstructions(value));
@@ -62,7 +69,7 @@ const Settings: React.FC = () => {
                 />
               </dd>
             </div>
-            <div>
+            {/* <div>
               <dt className="font-medium">AI Responsibilities Instructions</dt>
               <dd className="mt-1">
                 <textarea
@@ -112,7 +119,7 @@ const Settings: React.FC = () => {
                   rows={8}
                 />
               </dd>
-            </div>
+            </div> */}
             <div>
               <dt className="font-medium">AI General Instructions</dt>
               <dd className="mt-1">
@@ -126,7 +133,7 @@ const Settings: React.FC = () => {
                   onChange={(e) => handleGeneralInstructionsChange(e.target.value)}
                   className={`${textInput}`}
                   placeholder="Enter AI General Instructions"
-                  rows={8}
+                  rows={24}
                 />
               </dd>
             </div>
