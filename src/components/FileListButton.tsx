@@ -2,12 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { outlineButton } from '../styles/styles';
 import { RootState, useAppDispatch, useAppSelector } from '../store';
 import { setProjectFilesInContext } from '../store/contextSlice';
+import { readFile } from '../services/fsService';
 
 export const FileListButton: React.FC = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
   const { projectFilesInContext } = useAppSelector((state: RootState) => state.context);
   const files = useAppSelector((state: RootState) => state.currentProject.currentProjectState?.files) || [];
+  const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
   const dispatch = useAppDispatch();
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -42,9 +44,10 @@ export const FileListButton: React.FC = () => {
               files.map((file) => (
                 <button
                   key={file.path}
-                  onClick={() => {
+                  onClick={async () => {
                     const newFiles = { ...projectFilesInContext };
-                    newFiles[file.path] ? delete newFiles[file.path] : newFiles[file.path] = file;
+                    const content = await readFile(`${activeProjectPath}/${file.path}`)
+                    newFiles[file.path] ? delete newFiles[file.path] : newFiles[file.path] = { ...file, content };
                     dispatch(setProjectFilesInContext(newFiles));
                   }}
                   className={`flex items-center w-full px-4 py-2 text-sm text-gray-800 border hover:border-blue-600 ${projectFilesInContext[file.path] ? 'bg-blue-300' : ''}`}
