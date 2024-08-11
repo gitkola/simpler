@@ -75,8 +75,8 @@ export default function FileViewer({ path, showDiff }: FileViewerProps) {
           }}
         /> :
           <DiffViewer
-            oldValue={suggestedContent}
-            newValue={editedContent || ""}
+            newValue={suggestedContent}
+            oldValue={editedContent || ""}
             language={language}
           />
       }

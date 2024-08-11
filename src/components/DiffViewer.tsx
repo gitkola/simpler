@@ -22,7 +22,7 @@ export default function DiffViewer({ oldValue, newValue, language }: DiffViewerP
       extraLinesSurroundingDiff={0}
       splitView={true}
       compareMethod={DiffMethod.WORDS_WITH_SPACE}
-      disableWordDiff={false}
+      disableWordDiff={true}
       hideLineNumbers={true}
       showDiffOnly={false}
       useDarkTheme={theme === 'dark'}
