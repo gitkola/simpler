@@ -102,7 +102,7 @@ export interface IProjectTask {
 
 export interface IProjectFile {
   path: string;
-  content: string | null;
+  content?: string;
   update?: TUpdate;
 }
 

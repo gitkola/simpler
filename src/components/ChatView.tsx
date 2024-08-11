@@ -11,7 +11,9 @@ import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL
 import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
-import { setAddProjectStateToContext, setInputValue } from "../store/chatSlice";
+import { setInputValue } from "../store/chatSlice";
+import { setInstructionsInContext, setProjectDescriptionInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
+import { FileListButton } from "./FileListButton";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -26,7 +28,7 @@ export const ChatView: React.FC = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { inputValue } = useAppSelector((state: RootState) => state.chat);
-  const { addProjectStateToContext } = useAppSelector((state: RootState) => state.chat);
+  const { instructionsInContext, projectDescriptionInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = useAppSelector((state: RootState) => state.context);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -109,15 +111,55 @@ export const ChatView: React.FC = () => {
             <div>Generate File Structure</div>
             <ArrowUp size={20} />
           </button>
+        </div>
+        <div className="flex py-2 space-x-2 items-center">
+          <div>Context:</div>
           <label className={`${outlineButton}`}>
             <input
               type="checkbox"
-              checked={addProjectStateToContext}
-              onChange={(e) => dispatch(setAddProjectStateToContext(e.target.checked))}
-              className="mr-2"
+              checked={instructionsInContext}
+              onChange={(e) => dispatch(setInstructionsInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
             />
-            Add Project State to context
+            Instructions
           </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectDescriptionInContext}
+              onChange={(e) => dispatch(setProjectDescriptionInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Description
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectRequirementsInContext}
+              onChange={(e) => dispatch(setProjectRequirementsInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Requirements
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectTasksInContext}
+              onChange={(e) => dispatch(setProjectTasksInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Tasks
+          </label>
+          <label className={`${outlineButton}`}>
+            <input
+              type="checkbox"
+              checked={projectFilePathsInContext}
+              onChange={(e) => dispatch(setProjectFilePathsInContext(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            File Paths
+          </label>
+          <FileListButton />
         </div>
         <div className="flex items-end space-x-2">
           <textarea

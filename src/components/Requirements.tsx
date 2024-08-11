@@ -54,7 +54,7 @@ const Requirements: React.FC = () => {
           <Textarea
             key={requirement.id}
             initialValue={requirement?.requirement}
-            onSave={(data) => handleChange({ target: { name: 'description', value: data } } as any, requirement.id)}
+            onSave={(data) => handleChange({ target: { name: 'requirement', value: data } } as any, requirement.id)}
             onDelete={() => handleDelete(requirement.id)}
             placeholder="Enter a requirement..."
             rows={1}

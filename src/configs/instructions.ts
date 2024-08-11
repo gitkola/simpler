@@ -31,7 +31,7 @@ interface IProjectTask {
 
 interface IProjectFile {
   path: string;
-  content: string | null;
+  content?: string;
   update?: TUpdate;
 }
 

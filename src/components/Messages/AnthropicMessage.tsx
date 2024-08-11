@@ -20,7 +20,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           <p className="text-lg font-bold">The model requests a call to the function `{block.name}` with arguments:</p>
           <div className="flex flex-col space-y-2">
             {(block.input as { paths: string[] }).paths.map((path, index) => (
-              <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path, content: null })) }}>
+              <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path })) }}>
                 <p key={index}>{path}</p>
               </button>
             ))}
@@ -68,7 +68,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
     };
   };
   return (
-    <div key={message.id} className={`flex flex-col p-2 rounded-md bg-green-600 bg-opacity-50 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start`}>
+    <div key={message.id} className={`flex flex-col p-2 rounded-md bg-green-400 bg-opacity-30 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start`}>
       <div className={`space-y-2`}>
         <h1 className="text-xl font-bold">Anthropic {message?.model} {message?.role}</h1>
         {typeof message?.content === 'string' && <p>{message?.content}</p>}
@@ -82,8 +82,8 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
         <Accordion
           title="Raw message"
           className=""
-          titleClassName="text-xs opacity-50"
-          buttonClassName=""
+          titleClassName="text-xs"
+          buttonClassName="opacity-50"
           content={
             <div
               style={{ whiteSpace: 'pre-wrap' }}

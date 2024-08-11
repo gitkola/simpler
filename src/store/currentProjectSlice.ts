@@ -527,7 +527,14 @@ export const handleSendMessage =
 
       const projectSettings = getState().currentProject.currentProjectSettings;
       const projectState = getState().currentProject.currentProjectState;
-      const { addProjectStateToContext } = getState().chat;
+      const {
+        instructionsInContext,
+        projectDescriptionInContext,
+        projectRequirementsInContext,
+        projectTasksInContext,
+        projectFilePathsInContext,
+        projectFilesInContext,
+      } = getState().context;
       const { generalInstructions } = getState().settings.instructions;
 
       if (!projectState || !projectSettings) {
@@ -540,24 +547,58 @@ export const handleSendMessage =
       const apiKeys = getState().settings.apiKeys;
       const { service, model, temperature, max_tokens } = projectSettings;
 
+      const files = Object.keys(projectFilesInContext)
+        .map((path) => projectFilesInContext[path])
+        .sort((a, b) => a.path.localeCompare(b.path));
+      const filePaths =
+        projectFilePathsInContext && Array.isArray(projectState?.files)
+          ? projectState?.files
+              ?.map(({ path, content }) => {
+                if (projectFilesInContext[path]) {
+                  return {
+                    path,
+                    content: projectFilesInContext[path].content!,
+                  };
+                } else if (content) {
+                  return { path };
+                } else {
+                  return { path: undefined };
+                }
+              })
+              ?.filter((file) => (file?.path ? true : false))
+              ?.sort((a, b) => a.path!.localeCompare(b.path!))
+          : [];
+
       const lightProjectState = {
         ...projectState,
-        files: projectState?.files?.map((file) => {
-          if (file.content) {
-            return { path: file.path };
-          }
-        }),
+        descriptions: projectDescriptionInContext
+          ? projectState?.descriptions
+          : undefined,
+        requirements: projectRequirementsInContext
+          ? projectState?.requirements
+          : undefined,
+        tasks: projectTasksInContext ? projectState?.tasks : undefined,
+        files:
+          filePaths.length > 0
+            ? filePaths
+            : files.length > 0
+            ? files
+            : undefined,
       };
       const CURRENT_PROJECT_STATE = `#Current Project State
-The project state has been simplified to show only the existing file paths without content to avoid reaching tokens limit.
+The project state has been simplified to show for some files only the paths without content to avoid reaching tokens limit.
 \`\`\`
 ${JSON.stringify(lightProjectState, null, 2)}
 \`\`\`
-You must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
+If the file you need doesn't have 'content' you must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
 `;
       // const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
-      const systemPrompt = `${generalInstructions}${
-        addProjectStateToContext && `\n\n${CURRENT_PROJECT_STATE}\n`
+      const systemPrompt = `${
+        instructionsInContext ? `${generalInstructions}\n\n` : ""
+      }${
+        Object.keys(lightProjectState).length > 0
+          ? `${CURRENT_PROJECT_STATE}`
+          : ""
       }`;
       let url: API_URL;
       let options: IRequestOptions;
@@ -571,7 +612,7 @@ You must request only the necessary files for the current task by calling \`read
           frequency_penalty: 0,
           presence_penalty: 0,
           messages: [
-            {
+            systemPrompt && {
               role: "system",
               content: systemPrompt,
             },

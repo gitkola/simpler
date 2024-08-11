@@ -16,7 +16,7 @@ export interface ILayoutState {
   showSettings: boolean;
   showCodeEditor: boolean;
   showChat: boolean;
-  fileInModal: IProjectFile | null;
+  fileInModal?: IProjectFile;
   views: IView[];
 }
 
@@ -29,7 +29,7 @@ const defaultInitialState: ILayoutState = {
   showSettings: false,
   showCodeEditor: false,
   showChat: true,
-  fileInModal: null,
+  fileInModal: undefined,
   views: [],
 };
 
@@ -72,7 +72,10 @@ const layoutSlice = createSlice({
     setViews: (state, action: PayloadAction<IView[]>) => {
       state.views = action.payload;
     },
-    setFileInModal: (state, action: PayloadAction<IProjectFile | null>) => {
+    setFileInModal: (
+      state,
+      action: PayloadAction<IProjectFile | undefined>
+    ) => {
       state.fileInModal = action.payload;
     },
   },

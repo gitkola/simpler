@@ -26,7 +26,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <div className="flex flex-col space-y-2">
                 {JSON.parse(args).paths.map((path: string, index: number) => (
-                  <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path, content: null })) }}>
+                  <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path })) }}>
                     <p key={index}>{path}</p>
                   </button>
                 ))}
@@ -83,7 +83,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
   };
 
   return (
-    <div className="flex flex-col p-2 rounded-md bg-green-600 bg-opacity-50 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start">
+    <div className="flex flex-col p-2 rounded-md bg-green-100 bg-opacity-20 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start">
       <div className='space-y-2'>
         <h2 className='text-lg font-bold'>OpenAI {message.model} {choice?.message?.role}</h2>
         {choice?.message?.content && <p style={{ whiteSpace: 'pre-wrap' }}>{choice.message.content}</p>}
@@ -96,9 +96,9 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
         )}
         <Accordion
           title="Raw message"
-          className="shadow-none max-w-full rounded-md py-0 hover:border-gray-500"
-          titleClassName="text-xs text-gray-500"
-          buttonClassName="shadow-none rounded-md py-0 hover:border-gray-500"
+          className=""
+          titleClassName="text-xs"
+          buttonClassName="opacity-50"
           content={
             <div
               style={{ whiteSpace: 'pre-wrap' }}
