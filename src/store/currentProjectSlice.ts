@@ -548,21 +548,19 @@ export const handleSendMessage =
       const { service, model, temperature, max_tokens } = projectSettings;
 
       const files = Object.keys(projectFilesInContext)
-        .map((path) => projectFilesInContext[path])
-        .sort((a, b) => a.path.localeCompare(b.path));
+        .sort((a, b) => a.localeCompare(b))
+        .map((path) => projectFilesInContext[path]);
       const filePaths =
         projectFilePathsInContext && Array.isArray(projectState?.files)
-          ? projectState?.files
-              ?.map(({ path, content }) => {
+          ? projectState.files
+              .map(({ path }) => {
                 if (projectFilesInContext[path]) {
                   return {
                     path,
                     content: projectFilesInContext[path].content!,
                   };
-                } else if (content) {
-                  return { path };
                 } else {
-                  return { path: undefined };
+                  return { path };
                 }
               })
               ?.filter((file) => (file?.path ? true : false))
