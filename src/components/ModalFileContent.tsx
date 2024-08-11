@@ -34,7 +34,7 @@ const ModalFileContent: React.FC<ModalFileContentProps> = ({
   const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
   const absolutePath = `${activeProjectPath!}/${fileInModal?.path}`;
 
-  const onClose = () => dispatch(setFileInModal(null));
+  const onClose = () => dispatch(setFileInModal(undefined));
 
   const fetchContentFromFS = async (path: string) => {
     setIsLoadingFromDisk(true);
