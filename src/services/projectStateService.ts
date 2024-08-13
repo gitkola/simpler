@@ -3,8 +3,6 @@ import {
   IMessage,
   ProjectPathListItem,
   IProjectState,
-  createTimestamps,
-  updateTimestamp,
   IProjectSettings,
   IProjectFile,
   IProjectTask,
@@ -26,15 +24,12 @@ import { IFile } from "../store/currentProjectSlice";
 export const generateInitialProjectState = (
   projectPath: string
 ): IProjectState => {
-  const { createdAt, updatedAt } = createTimestamps();
   return {
     name: getFolderNameFromPath(projectPath) || "",
     descriptions: [],
     requirements: [],
     files: [],
     tasks: [],
-    createdAt,
-    updatedAt,
   };
 };
 
@@ -54,10 +49,9 @@ export const saveProjectStateToFile = async (
 ): Promise<void> => {
   const projectStateFilePath = `${projectPath}/${PROJECT_STATE_FILE_NAME}`;
   try {
-    const updatedProjectState = updateTimestamp(projectState);
     const result = await invoke("write_file", {
       path: projectStateFilePath,
-      content: JSON.stringify(updatedProjectState, null, 2),
+      content: JSON.stringify(projectState, null, 2),
     });
     if (result !== null) {
       throw new Error(result as string);
@@ -235,7 +229,6 @@ export const mergeProjectStates = (
   if (!nextState) return prevState;
   const mergedState = { ...prevState };
 
-  mergedState.updatedAt = Date.now();
   mergedState.descriptions = mergeDescriptions(
     prevState.descriptions || [],
     nextState.descriptions || []

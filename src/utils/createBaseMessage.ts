@@ -10,8 +10,6 @@ export default function createBaseMessage(
     content,
     role,
     id: `${now}`,
-    createdAt: now,
-    updatedAt: now,
     service: service || "simpler",
   };
 }

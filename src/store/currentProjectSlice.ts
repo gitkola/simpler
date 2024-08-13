@@ -658,14 +658,11 @@ If the file you need doesn't have 'content' you must request only the necessary 
 
       await dispatch(addMessageToThread(message));
       const response = await callAIModelAPI(url, options);
-      const now = Date.now();
       await dispatch(
         addMessageToThread({
           ...response,
           context: message,
           service,
-          createdAt: now,
-          updatedAt: now,
         })
       );
     } catch (error) {

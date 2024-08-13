@@ -10,8 +10,6 @@ export interface IBaseMessage {
   id: string;
   role: IMessageRole;
   content: string;
-  createdAt?: number;
-  updatedAt?: number;
   service?: MessageService;
   model?: string;
   context?: Record<string, any>;
@@ -23,15 +21,6 @@ export type IMessage =
   | (Anthropic.Message & IBaseMessage);
 
 export type Entity = IProjectState | IMessage;
-
-export const createTimestamps = () => {
-  const now = Date.now();
-  return { createdAt: now, updatedAt: now };
-};
-
-export const updateTimestamp = (entity: Entity) => {
-  return { ...entity, updatedAt: Date.now() };
-};
 
 export type MessageContent = ContentItem[];
 
@@ -112,8 +101,6 @@ export interface IProjectState {
   requirements?: IProjectRequirement[];
   files?: IProjectFile[];
   tasks?: IProjectTask[];
-  createdAt: number;
-  updatedAt: number;
   context?: Record<string, any>;
 }
 
