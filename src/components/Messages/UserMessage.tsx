@@ -7,10 +7,6 @@ export default function UserMessage({ message }: { message: IBaseMessage }) {
       <div className={`space-y-2 w-full`}>
         <h1 className="text-xl font-bold">User</h1>
         {typeof message?.content === 'string' && <p>{message?.content}</p>}
-        <div className="text-xs opacity-50 w-full">
-          {new Date((message as IBaseMessage)?.createdAt ?? '').toLocaleString()}
-          {(message?.createdAt !== message?.updatedAt) && " (edited)"}
-        </div>
         <Accordion
           title="Raw message"
           className=""

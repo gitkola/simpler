@@ -9,10 +9,6 @@ export default function SystemMessage({ message }: { message: IBaseMessage }) {
           title="System"
           content={<div style={{ whiteSpace: 'pre-wrap' }}>{message?.content}</div>}
         />
-        <div className="text-xs opacity-50">
-          {new Date((message as IBaseMessage)?.createdAt ?? '').toLocaleString()}
-          {(message?.createdAt !== message?.updatedAt) && " (edited)"}
-        </div>
         <Accordion
           title="Raw message"
           className=""

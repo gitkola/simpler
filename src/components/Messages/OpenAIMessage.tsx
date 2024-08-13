@@ -7,7 +7,6 @@ import { setFileInModal } from '../../store/layoutSlice';
 import { appendToInputValue } from '../../store/chatSlice';
 import { MessageProjectStateUpdates } from "../MessageProjectStateUpdates";
 import { IMessage } from "../../types";
-import { syncProjectStateWithAIUpdates } from "../../store/currentProjectSlice";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
   const dispatch = useAppDispatch();
@@ -20,14 +19,17 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
       const { name, arguments: args } = func;
 
       switch (name) {
-        case 'readFiles':
+        case 'getProjectStateFiles':
+          const argument = JSON.parse(args);
+          if (!Array.isArray(argument?.paths)) { return (<p key={id} className="text-red-500 font-bold">Invalid paths</p>); }
+          const paths = [...argument.paths];
           return (
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <div className="flex flex-col space-y-2">
-                {JSON.parse(args).paths.map((path: string, index: number) => (
+                {paths.map((path: string) => (
                   <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path })) }}>
-                    <p key={index}>{path}</p>
+                    <p>{path}</p>
                   </button>
                 ))}
               </div>
@@ -43,24 +45,39 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               </button>
             </div>
           );
-        case 'updateFiles':
+        case 'getProjectStateDescription':
           return (
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
-              <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
-              <div className="flex flex-col space-y-2">
-                {JSON.parse(args).files.map((file: { path: string; content: string }) => (
-                  <button key={file.path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal(file)) }}>
-                    <p>{file.path}</p>
-                  </button>
-                ))}
-              </div>
+              <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
-                onClick={async () => {
-                  await dispatch(syncProjectStateWithAIUpdates(JSON.parse(args)));
-                }}
-                className='px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full'
+                onClick={() => { console.log(`Call ${name}`); }}
+                className="px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full"
               >
-                Update files in Project State
+                Call {name}
+              </button>
+            </div>
+          );
+        case 'getProjectStateRequirements':
+          return (
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+              <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
+              <button
+                onClick={() => { console.log(`Call ${name}`); }}
+                className="px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full"
+              >
+                Call {name}
+              </button>
+            </div>
+          );
+        case 'getProjectStateTasks':
+          return (
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+              <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
+              <button
+                onClick={() => { console.log(`Call ${name}`); }}
+                className="px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full"
+              >
+                Call {name}
               </button>
             </div>
           );
