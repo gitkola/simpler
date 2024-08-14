@@ -502,10 +502,10 @@ export const syncProjectStateWithAIUpdates =
       );
       await dispatch(saveProjectState(mergedState));
     } catch (error) {
-      console.error("Error while syncing Project State:", error);
+      console.error("Error while syncing ProjectState:", error);
       dispatch(
         setCurrentProjectStateError(
-          `Error while syncing Project State:: ${(error as Error).message}`
+          `Error while syncing ProjectState:: ${(error as Error).message}`
         )
       );
     }
@@ -539,7 +539,7 @@ export const handleSendMessage =
 
       if (!projectState || !projectSettings) {
         dispatch(
-          setAIModelRequestError("Project State or Settings are not loaded")
+          setAIModelRequestError("ProjectState or Settings are not loaded")
         );
         dispatch(setAIModelRequestInProgress(false));
         return;
@@ -583,14 +583,11 @@ export const handleSendMessage =
             ? files
             : undefined,
       };
-      const CURRENT_PROJECT_STATE = `## Current Project State
-The project state has been simplified to show for some files only the paths without content to avoid reaching tokens limit.
-\`\`\`
+      const CURRENT_PROJECT_STATE = `## Current ProjectState
+In order to save tokens, the ProjectState is not complete and contains only the data added by the user:
 ${JSON.stringify(lightProjectState, null, 2)}
-\`\`\`
-If the file you need doesn't have 'content' you must request only the necessary files for the current task by calling \`readFiles\` function with the array of relative file paths.
+If additional data from the ProjectState is needed to complete a task, you should call the appropriate tools, as described in the instructions.
 `;
-      // const systemPrompt = `${AI_INSTRUCTIONS_RESPONSIBILITIES}\n\n${AI_INSTRUCTIONS_PROJECT_STATE}\n\n${CURRENT_PROJECT_STATE}\n`; //\n${AI_INSTRUCTIONS_RESPONSE_GUIDELINES}`,
       const systemPrompt = `${
         instructionsInContext ? `${generalInstructions}\n\n` : ""
       }${
