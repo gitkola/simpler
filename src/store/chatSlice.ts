@@ -1,11 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
 export interface IChatState {
   inputValue: string;
+  messages: Anthropic.Message[] | OpenAI.ChatCompletionMessage[];
 }
 
 const defaultInitialState: IChatState = {
   inputValue: "",
+  messages: [],
 };
 
 const chatSlice = createSlice({
@@ -19,6 +23,9 @@ const chatSlice = createSlice({
       state.inputValue === ""
         ? (state.inputValue += action.payload)
         : (state.inputValue += `\n${action.payload}`);
+    },
+    setMessages: (state, action: PayloadAction<IChatState["messages"]>) => {
+      state.messages = action.payload;
     },
   },
 });
