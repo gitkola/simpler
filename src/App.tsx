@@ -8,7 +8,7 @@ import { RootState, useAppDispatch, useAppSelector } from "./store";
 import { loadProject } from "./store/currentProjectSlice";
 import ProjectListView from "./components/ProjectListView";
 import FileTreeView from "./components/FileTreeView";
-import Settings from "./components/Settings";
+import SettingsView from "./components/SettingsView";
 import { StyleTag } from "./styles/styles";
 import ProjectStateView from "./components/ProjectStateView";
 import ProjectMessagesView from "./components/ProjectMessagesView";
@@ -53,7 +53,7 @@ const App: React.FC = () => {
           {showFileTree && <FileTreeView3 />} */}
           {showCodeEditor && <EditorView />}
           {showChat && <ChatView />}
-          {showSettings && <Settings />}
+          {showSettings && <SettingsView />}
         </div>
       </div>
       {fileInModal && <ModalFileContent />}
@@ -151,7 +151,7 @@ const App: React.FC = () => {
   //             // maxSize={16}
   //             order={6}
   //           >
-  //             <Settings />
+  //             <SettingsView />
   //           </Panel>
   //         )
   //       }

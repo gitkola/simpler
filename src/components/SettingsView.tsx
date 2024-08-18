@@ -12,7 +12,7 @@ import {
 import { textInput } from "../styles/styles";
 import { SettingsIcon } from "./Icons";
 
-const Settings: React.FC = () => {
+const SettingsView: React.FC = () => {
   const settings = useAppSelector((state: RootState) => state.settings);
   const dispatch = useAppDispatch();
 
@@ -150,4 +150,4 @@ const Settings: React.FC = () => {
   );
 };
 
-export default Settings;
+export default SettingsView;
