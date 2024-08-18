@@ -7,7 +7,6 @@ import {
   saveProjectStateToFile,
   saveProjectMessagesToFile,
   saveProjectSettingsToFile,
-  mergeProjectStates,
   loadProjectOpenedFilesFromFile,
   saveProjectOpenedFilesToFile,
 } from "../services/projectStateService";
@@ -486,29 +485,6 @@ export const saveProjectOpenedFiles =
     } catch (error) {
       console.error("Failed to save project opened files:", error);
       dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
-    }
-  };
-
-export const syncProjectStateWithAIUpdates =
-  (projectStateUpdates: IProjectState) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    try {
-      const projectPath = getState().projects.activeProjectPath;
-      if (!projectPath) return;
-      dispatch(fetchCurrentProjectState());
-      const projectState = getState().currentProject.currentProjectState;
-      const mergedState = mergeProjectStates(
-        projectState!,
-        projectStateUpdates
-      );
-      await dispatch(saveProjectState(mergedState));
-    } catch (error) {
-      console.error("Error while syncing ProjectState:", error);
-      dispatch(
-        setCurrentProjectStateError(
-          `Error while syncing ProjectState:: ${(error as Error).message}`
-        )
-      );
     }
   };
 

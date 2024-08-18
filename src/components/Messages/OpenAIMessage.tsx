@@ -1,12 +1,11 @@
 import React from "react";
 import Accordion from "../Accordion";
 import OpenAI from "openai";
-import { readFiles } from '../../services/fsService';
 import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
-import { appendToInputValue } from '../../store/chatSlice';
-import { MessageProjectStateUpdates } from "../MessageProjectStateUpdates";
+import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
 import { IMessage } from "../../types";
+import { getProjectStateDescription, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from "../../store/actions/toolFunctions";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
   const dispatch = useAppDispatch();
@@ -24,7 +23,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           if (!Array.isArray(argument?.paths)) { return (<p key={id} className="text-red-500 font-bold">Invalid paths</p>); }
           const paths = [...argument.paths];
           return (
-            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <div className="flex flex-col space-y-2">
                 {paths.map((path: string) => (
@@ -34,11 +33,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
                 ))}
               </div>
               <button
-                onClick={async () => {
-                  const files = await readFiles(JSON.parse(args).paths);
-                  const userMessage = `${(message as IMessage)?.context?.content}\nHere are the contents of some existing files for more context:\n\`\`\`json\n${JSON.stringify(files, null, 2)}\n\`\`\``;
-                  dispatch(appendToInputValue(userMessage));
-                }}
+                onClick={async () => { await dispatch(getProjectStateFiles(paths, message as IMessage)); }}
                 className='px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full'
               >
                 Add these files to context and run AI model call
@@ -47,11 +42,11 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'getProjectStateDescription':
           return (
-            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
-                onClick={() => { console.log(`Call ${name}`); }}
-                className="px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full"
+                onClick={async () => { await dispatch(getProjectStateDescription(message as IMessage)); }}
+                className="px-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full"
               >
                 Call {name}
               </button>
@@ -59,11 +54,11 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'getProjectStateRequirements':
           return (
-            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
-                onClick={() => { console.log(`Call ${name}`); }}
-                className="px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full"
+                onClick={async () => { await dispatch(getProjectStateRequirements(message as IMessage)); }}
+                className="px-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full"
               >
                 Call {name}
               </button>
@@ -71,11 +66,11 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'getProjectStateTasks':
           return (
-            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
-                onClick={() => { console.log(`Call ${name}`); }}
-                className="px-3 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-full"
+                onClick={async () => { await dispatch(getProjectStateTasks(message as IMessage)); }}
+                className="px-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full"
               >
                 Call {name}
               </button>
@@ -83,14 +78,14 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'updateProjectState':
           return (
-            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).project_state_updates} />
             </div>
           );
         default:
           return (
-            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">Unknown tool call: {name}</p>
               <pre className="whitespace-pre-wrap">{JSON.stringify(func, null, 2)}</pre>
             </div>

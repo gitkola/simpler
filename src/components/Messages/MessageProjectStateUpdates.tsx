@@ -1,8 +1,8 @@
-import { IProjectState } from "../types";
-import { syncProjectStateWithAIUpdates } from '../store/currentProjectSlice';
-import { useAppDispatch } from '../store';
-import Accordion from './Accordion';
-import Editor from './Editor';
+import { IProjectState } from "../../types";
+import { useAppDispatch } from '../../store';
+import Accordion from '../Accordion';
+import Editor from '../Editor';
+import { updateProjectState } from "../../store/actions/toolFunctions";
 
 export interface IMessageProjectStateUpdatesProps {
   projectStateUpdates: IProjectState;
@@ -26,7 +26,7 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
             disabled={true}
           />
           <button
-            onClick={async () => await dispatch(syncProjectStateWithAIUpdates(projectStateUpdates))}
+            onClick={async () => await dispatch(updateProjectState(projectStateUpdates))}
             className="bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-yellow-600"
           >
             Sync to ProjectState
