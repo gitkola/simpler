@@ -12,15 +12,18 @@ export const ProjectState = React.memo(() => {
 
   if (!currentProjectState) return null;
   return (
-    <Editor
-      value={stringifiedState}
-      language={'json'}
-      minHeight={24}
-      style={{
-        marginLeft: 25,
-        lineHeight: 1.6,
-      }}
-      disabled={true}
-    />
+    <div className="p-2">
+      <Editor
+        value={stringifiedState}
+        language={'json'}
+        minHeight={24}
+        style={{
+          // marginLeft: 25,
+          // lineHeight: 1.6,
+          // overflowY: 'scroll',
+        }}
+        disabled={true}
+      />
+    </div>
   );
 });

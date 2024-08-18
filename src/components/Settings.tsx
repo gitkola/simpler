@@ -37,13 +37,13 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen border-r border-0.5 min-w-[900px] overflow-x-scroll">
+    <div className="flex flex-col h-screen border-r border-0.5 min-w-[700px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <SettingsIcon className="w-8 h-8" />
         <h2 className="text-lg font-semibold">Settings</h2>
       </div>
-      <div className="flex flex-col h-full overflow-auto">
-        <div className="p-2">
+      <div className="flex flex-col h-full overflow-y-scroll">
+        <div className="pl-2 py-2 pr-0.5">
           <dl className="space-y-6">
             <div>
               <dt className="font-medium">OpenAI API Key</dt>

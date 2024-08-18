@@ -14,25 +14,22 @@ export const MessageProjectStateUpdates: React.FC<IMessageProjectStateUpdatesPro
   return (
     <Accordion
       title="Project State Updates"
-      className="shadow-none max-w-full rounded-md py-0 hover:border-gray-500 bg-opacity-20"
-      buttonClassName="shadow-none rounded-md py-0 hover:border-gray-500"
       content={
-        <div className="flex flex-col px-2 pb-2">
+        <div className="space-y-2">
           <Editor
             value={JSON.stringify(projectStateUpdates, null, 2)}
             language={'json'}
             minHeight={24}
             style={{
-              marginLeft: 25,
               lineHeight: 1.6,
             }}
             disabled={true}
           />
           <button
             onClick={async () => await dispatch(syncProjectStateWithAIUpdates(projectStateUpdates))}
-            className="flex w-fit bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-yellow-700"
+            className="bg-yellow-500 text-white font-bold py-1 px-2 rounded-md text-sm hover:bg-yellow-600"
           >
-            Sync
+            Sync to ProjectState
           </button>
         </div>
       }

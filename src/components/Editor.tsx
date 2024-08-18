@@ -9,7 +9,6 @@ export interface TextareaCodeEditorProps {
   disabled?: boolean;
   padding?: number;
   style?: React.CSSProperties;
-  className?: string;
   dataColorMode?: 'dark' | 'light';
   minHeight?: number;
 }

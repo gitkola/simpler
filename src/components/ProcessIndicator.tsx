@@ -43,9 +43,9 @@ const StyleTag = () => <style>{style}</style>;
 
 export default function ProcessIndicator() {
   return (
-    <>
+    <div className="relative top-0 left-0 right-0 z-10 h-0">
       <StyleTag />
       <LineProgressIndicator height={4} />
-    </>
+    </div>
   );
 }

@@ -10,7 +10,7 @@ export default function EditorView() {
   const dispatch = useAppDispatch();
   const { currentProjectOpenedFiles, isLoadingCurrentProjectOpenedFiles, currentProjectOpenedFilesError } = useAppSelector((state) => state.currentProject);
   return (
-    <div className="flex flex-col h-screen border-r border-0.5 min-w-[900px] overflow-x-scroll">
+    <div className="flex flex-col h-screen border-r border-0.5 min-w-[900px] max-w-[3200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <button className={`flex space-x-2 items-center justify-start ${!showDiff ? '' : 'opacity-30'}`} onClick={() => dispatch(setShowDiff(false))}>
           <CodeEditor className="w-8 h-8" />

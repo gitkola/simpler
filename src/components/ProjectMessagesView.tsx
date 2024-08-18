@@ -9,14 +9,14 @@ const ProjectMessagesView: React.FC = () => {
   const { isLoadingCurrentProjectState, currentProjectStateError } = useAppSelector((state: RootState) => state?.currentProject);
 
   return (
-    <div className="flex flex-col h-screen border-r border-0.5 min-w-[900px] w-[900px]">
+    <div className="flex flex-col h-screen border-r border-0.5 min-w-[700px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <Messages className="w-8 h-8" />
         <h2 className="text-lg font-semibold">Messages</h2>
       </div>
       {isLoadingCurrentProjectState && <ProcessIndicator />}
       {currentProjectStateError && <div className="mx-auto mt-2 px-2 py-1 rounded-md bg-red-400 text-red-700 z-100">{currentProjectStateError}</div>}
-      <div className="h-full overflow-y-scroll">
+      <div className="overflow-y-scroll overflow-x-hidden">
         <ProjectMessages />
       </div>
     </div>

@@ -20,7 +20,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           const { paths } = input as { paths: string[] };
           if (!Array.isArray(paths)) { return (<p key={id} className="text-red-500 font-bold">Invalid paths</p>); }
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <div className="flex flex-col space-y-2">
                 {paths.map((path: string) => (
@@ -43,7 +43,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           );
         case 'getProjectStateDescription':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
                 onClick={() => { console.log(`Call ${name}`); }}
@@ -55,7 +55,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           );
         case 'getProjectStateRequirements':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
                 onClick={() => { console.log(`Call ${name}`); }}
@@ -67,7 +67,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           );
         case 'getProjectStateTasks':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
                 onClick={() => { console.log(`Call ${name}`); }}
@@ -80,14 +80,14 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
         case 'updateProjectState':
           const { project_state_updates } = input as { project_state_updates: IProjectState };
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <MessageProjectStateUpdates projectStateUpdates={project_state_updates} />
             </div>
           );
         default:
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">Unknown tool call: {name}</p>
               <pre className="whitespace-pre-wrap">{JSON.stringify(block, null, 2)}</pre>
             </div>
@@ -96,7 +96,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
     }
   };
   return (
-    <div key={message.id} className={`flex flex-col p-2 rounded-md bg-green-400 bg-opacity-30 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start`}>
+    <div key={message.id} className={`p-2 w-full rounded-md bg-green-400 bg-opacity-30 select-text`}>
       <div className={`space-y-2`}>
         <h1 className="text-xl font-bold">Anthropic {message?.model} {message?.role}</h1>
         {typeof message?.content === 'string' && <p>{message?.content}</p>}
@@ -105,9 +105,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
         <p className='text-xs opacity-50'>Message id: {message?.id}</p>
         <Accordion
           title="Raw message"
-          className=""
           titleClassName="text-xs"
-          buttonClassName="opacity-50"
           content={
             <div
               style={{ whiteSpace: 'pre-wrap' }}

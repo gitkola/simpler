@@ -149,30 +149,30 @@ export const createTools = (service: "openai" | "anthropic") => {
         },
         required: ["paths"],
       },
-      returns: {
-        type: "object",
-        properties: {
-          files: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                path: {
-                  type: "string",
-                  description: "Relative path of the file.",
-                },
-                contents: {
-                  type: "string",
-                  description: "Contents of the file.",
-                },
-              },
-              required: ["path", "contents"],
-            },
-            description:
-              "Array of objects containing file paths and their contents.",
-          },
-        },
-      },
+      // returns: {
+      //   type: "object",
+      //   properties: {
+      //     files: {
+      //       type: "array",
+      //       items: {
+      //         type: "object",
+      //         properties: {
+      //           path: {
+      //             type: "string",
+      //             description: "Relative path of the file.",
+      //           },
+      //           contents: {
+      //             type: "string",
+      //             description: "Contents of the file.",
+      //           },
+      //         },
+      //         required: ["path", "contents"],
+      //       },
+      //       description:
+      //         "Array of objects containing file paths and their contents.",
+      //     },
+      //   },
+      // },
     };
 
     if (service === "openai") {
@@ -196,30 +196,30 @@ export const createTools = (service: "openai" | "anthropic") => {
         properties: {},
         required: [],
       },
-      returns: {
-        type: "object",
-        properties: {
-          descriptions: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "number",
-                  description: "Unique identifier for the description.",
-                },
-                description: {
-                  type: "string",
-                  description: "The project description text.",
-                },
-              },
-              required: ["id", "description"],
-            },
-            description: "An array of project description objects.",
-          },
-        },
-        required: ["descriptions"],
-      },
+      // returns: {
+      //   type: "object",
+      //   properties: {
+      //     descriptions: {
+      //       type: "array",
+      //       items: {
+      //         type: "object",
+      //         properties: {
+      //           id: {
+      //             type: "number",
+      //             description: "Unique identifier for the description.",
+      //           },
+      //           description: {
+      //             type: "string",
+      //             description: "The project description text.",
+      //           },
+      //         },
+      //         required: ["id", "description"],
+      //       },
+      //       description: "An array of project description objects.",
+      //     },
+      //   },
+      //   required: ["descriptions"],
+      // },
     };
 
     if (service === "openai") {
@@ -243,30 +243,30 @@ export const createTools = (service: "openai" | "anthropic") => {
         properties: {},
         required: [],
       },
-      returns: {
-        type: "object",
-        properties: {
-          requirements: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "number",
-                  description: "Unique identifier for the requirement.",
-                },
-                requirement: {
-                  type: "string",
-                  description: "The requirement text.",
-                },
-              },
-              required: ["id", "requirement"],
-            },
-            description: "An array of project requirement objects.",
-          },
-        },
-        required: ["requirements"],
-      },
+      // returns: {
+      //   type: "object",
+      //   properties: {
+      //     requirements: {
+      //       type: "array",
+      //       items: {
+      //         type: "object",
+      //         properties: {
+      //           id: {
+      //             type: "number",
+      //             description: "Unique identifier for the requirement.",
+      //           },
+      //           requirement: {
+      //             type: "string",
+      //             description: "The requirement text.",
+      //           },
+      //         },
+      //         required: ["id", "requirement"],
+      //       },
+      //       description: "An array of project requirement objects.",
+      //     },
+      //   },
+      //   required: ["requirements"],
+      // },
     };
 
     if (service === "openai") {
@@ -288,33 +288,33 @@ export const createTools = (service: "openai" | "anthropic") => {
         properties: {},
         required: [],
       },
-      returns: {
-        type: "object",
-        properties: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              task: {
-                type: "string",
-                description: "Description of the project task.",
-              },
-              status: {
-                type: "string",
-                description:
-                  "Current status of the task (todo, in_progress, done, hold, or no_need).",
-                enum: ["todo", "in_progress", "done", "hold", "no_need"],
-              },
-            },
-            required: ["task", "status"],
-            description: "A project task with its description and status.",
-          },
-          description:
-            "An array of project tasks, each represented by an object containing a task description and its current status.",
-          minItems: 1,
-        },
-        required: ["tasks"],
-      },
+      // returns: {
+      //   type: "object",
+      //   properties: {
+      //     type: "array",
+      //     items: {
+      //       type: "object",
+      //       properties: {
+      //         task: {
+      //           type: "string",
+      //           description: "Description of the project task.",
+      //         },
+      //         status: {
+      //           type: "string",
+      //           description:
+      //             "Current status of the task (todo, in_progress, done, hold, or no_need).",
+      //           enum: ["todo", "in_progress", "done", "hold", "no_need"],
+      //         },
+      //       },
+      //       required: ["task", "status"],
+      //       description: "A project task with its description and status.",
+      //     },
+      //     description:
+      //       "An array of project tasks, each represented by an object containing a task description and its current status.",
+      //     minItems: 1,
+      //   },
+      //   required: ["tasks"],
+      // },
     };
 
     if (service === "openai") {

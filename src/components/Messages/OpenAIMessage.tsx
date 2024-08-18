@@ -24,7 +24,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           if (!Array.isArray(argument?.paths)) { return (<p key={id} className="text-red-500 font-bold">Invalid paths</p>); }
           const paths = [...argument.paths];
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <div className="flex flex-col space-y-2">
                 {paths.map((path: string) => (
@@ -47,7 +47,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'getProjectStateDescription':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
                 onClick={() => { console.log(`Call ${name}`); }}
@@ -59,7 +59,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'getProjectStateRequirements':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
                 onClick={() => { console.log(`Call ${name}`); }}
@@ -71,7 +71,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'getProjectStateTasks':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
                 onClick={() => { console.log(`Call ${name}`); }}
@@ -83,14 +83,14 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           );
         case 'updateProjectState':
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
               <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).project_state_updates} />
             </div>
           );
         default:
           return (
-            <div key={id} className="space-y-2 p-2 rounded-md bg-gray-300 bg-opacity-20">
+            <div key={id} className="sspace-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">Unknown tool call: {name}</p>
               <pre className="whitespace-pre-wrap">{JSON.stringify(func, null, 2)}</pre>
             </div>
@@ -100,7 +100,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
   };
 
   return (
-    <div className="flex flex-col p-2 rounded-md bg-green-100 bg-opacity-20 hover:shadow-md items-center min-w-[600px] max-w-max select-text justify-start">
+    <div className="p-2 w-full rounded-md bg-green-400 bg-opacity-30 select-text">
       <div className='space-y-2'>
         <h2 className='text-lg font-bold'>OpenAI {message.model} {choice?.message?.role}</h2>
         {choice?.message?.content && <p style={{ whiteSpace: 'pre-wrap' }}>{choice.message.content}</p>}

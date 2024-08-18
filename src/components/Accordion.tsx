@@ -25,7 +25,7 @@ const Accordion = ({ title, content, className, buttonClassName, titleClassName,
     <div className={`${className}`}>
       {/* <div className={`rounded-sm shadow-md hover:shadow-md ${className}`}> */}
       <button
-        className={`flex w-full justify-between items-center hover:shadow-md ${buttonClassName}`}
+        className={`flex w-full justify-between items-center border border-transparent hover:border-b focus:outline-none ${buttonClassName}`}
         // className={`pl-2 pr-1 py-1 flex w-full justify-between items-center rounded-sm border-b border-transparent hover:shadow-md hover:border-b hover:border-opacity-30 hover:border-blue-500 ${buttonClassName}`}
         onClick={() => setIsOpen(!isOpen)}
       >

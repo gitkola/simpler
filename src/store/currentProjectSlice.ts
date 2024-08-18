@@ -33,6 +33,7 @@ import { Body } from "@tauri-apps/api/http";
 import { createTools } from "../utils/createTools";
 import createBaseMessage from "../utils/createBaseMessage";
 import { readFilesFromFS } from "../services/fsService";
+import { IContextState } from "./contextSlice";
 
 export interface IFile {
   path: string;
@@ -518,6 +519,65 @@ export const addMessageToThread =
     await dispatch(saveProjectMessages([...messages, message]));
   };
 
+export const createSystemPrompt = (
+  context: IContextState,
+  projectState: IProjectState,
+  generalInstructions: string
+) => {
+  const {
+    instructionsInContext,
+    projectDescriptionInContext,
+    projectRequirementsInContext,
+    projectTasksInContext,
+    projectFilePathsInContext,
+    projectFilesInContext,
+  } = context;
+
+  const files = Object.keys(projectFilesInContext)
+    .sort((a, b) => a.localeCompare(b))
+    .map((path) => projectFilesInContext[path]);
+  const filePaths =
+    projectFilePathsInContext && Array.isArray(projectState?.files)
+      ? projectState.files
+          .map(({ path }) => {
+            if (projectFilesInContext[path]) {
+              return {
+                path,
+                content: projectFilesInContext[path].content!,
+              };
+            } else {
+              return { path };
+            }
+          })
+          ?.filter((file) => (file?.path ? true : false))
+          ?.sort((a, b) => a.path!.localeCompare(b.path!))
+      : [];
+  const lightProjectState = {
+    ...projectState,
+    descriptions: projectDescriptionInContext
+      ? projectState?.descriptions
+      : undefined,
+    requirements: projectRequirementsInContext
+      ? projectState?.requirements
+      : undefined,
+    tasks: projectTasksInContext ? projectState?.tasks : undefined,
+    files:
+      filePaths.length > 0 ? filePaths : files.length > 0 ? files : undefined,
+  };
+
+  const CURRENT_PROJECT_STATE = `## Current ProjectState
+    In order to save tokens, the ProjectState is not complete and contains only the data added by the user:
+    ${JSON.stringify(lightProjectState, null, 2)}
+    If additional data from the ProjectState is needed to complete a task, you should call the appropriate tools, as described in the instructions.
+    `;
+  const systemPrompt = `${
+    instructionsInContext ? `${generalInstructions}\n\n` : ""
+  }${
+    Object.keys(lightProjectState).length > 0 ? `${CURRENT_PROJECT_STATE}` : ""
+  }`;
+  return systemPrompt;
+};
+
 export const handleSendMessage =
   (message: IMessage) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -527,14 +587,8 @@ export const handleSendMessage =
 
       const projectSettings = getState().currentProject.currentProjectSettings;
       const projectState = getState().currentProject.currentProjectState;
-      const {
-        instructionsInContext,
-        projectDescriptionInContext,
-        projectRequirementsInContext,
-        projectTasksInContext,
-        projectFilePathsInContext,
-        projectFilesInContext,
-      } = getState().context;
+
+      const context = getState().context;
       const { generalInstructions } = getState().settings.instructions;
 
       if (!projectState || !projectSettings) {
@@ -547,73 +601,28 @@ export const handleSendMessage =
       const apiKeys = getState().settings.apiKeys;
       const { service, model, temperature, max_tokens } = projectSettings;
 
-      const files = Object.keys(projectFilesInContext)
-        .sort((a, b) => a.localeCompare(b))
-        .map((path) => projectFilesInContext[path]);
-      const filePaths =
-        projectFilePathsInContext && Array.isArray(projectState?.files)
-          ? projectState.files
-              .map(({ path }) => {
-                if (projectFilesInContext[path]) {
-                  return {
-                    path,
-                    content: projectFilesInContext[path].content!,
-                  };
-                } else {
-                  return { path };
-                }
-              })
-              ?.filter((file) => (file?.path ? true : false))
-              ?.sort((a, b) => a.path!.localeCompare(b.path!))
-          : [];
-
-      const lightProjectState = {
-        ...projectState,
-        descriptions: projectDescriptionInContext
-          ? projectState?.descriptions
-          : undefined,
-        requirements: projectRequirementsInContext
-          ? projectState?.requirements
-          : undefined,
-        tasks: projectTasksInContext ? projectState?.tasks : undefined,
-        files:
-          filePaths.length > 0
-            ? filePaths
-            : files.length > 0
-            ? files
-            : undefined,
-      };
-      const CURRENT_PROJECT_STATE = `## Current ProjectState
-In order to save tokens, the ProjectState is not complete and contains only the data added by the user:
-${JSON.stringify(lightProjectState, null, 2)}
-If additional data from the ProjectState is needed to complete a task, you should call the appropriate tools, as described in the instructions.
-`;
-      const systemPrompt = `${
-        instructionsInContext ? `${generalInstructions}\n\n` : ""
-      }${
-        Object.keys(lightProjectState).length > 0
-          ? `${CURRENT_PROJECT_STATE}`
-          : ""
-      }`;
       let url: API_URL;
       let options: IRequestOptions;
+      const tools = createTools(service);
+      let messages = [];
+      const systemPrompt = createSystemPrompt(
+        context,
+        projectState,
+        generalInstructions
+      );
+      if (systemPrompt)
+        messages.push({ role: "system", content: systemPrompt });
+      messages.push({ role: "user", content: message?.content });
       if (service === "openai") {
         url = OPENAI_API_URL;
         const body = Body.json({
           model,
-          tool_choice: "auto",
-          max_tokens: 4095,
+          max_tokens,
           temperature,
           frequency_penalty: 0,
           presence_penalty: 0,
-          messages: [
-            systemPrompt && {
-              role: "system",
-              content: systemPrompt,
-            },
-            { role: "user", content: message?.content },
-          ],
-          tools: createTools(service),
+          messages,
+          tools,
         });
 
         options = {
@@ -627,12 +636,11 @@ If additional data from the ProjectState is needed to complete a task, you shoul
         };
       } else if (service === "anthropic") {
         url = ANTHROPIC_API_URL;
-
         const body = Body.json({
           model,
           system: systemPrompt,
           messages: [{ role: "user", content: message?.content }],
-          tools: createTools(service),
+          tools,
           max_tokens,
           temperature,
         });

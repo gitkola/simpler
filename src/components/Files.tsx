@@ -50,16 +50,16 @@ export const Files = () => {
   };
 
   return (
-    <div className="space-y-1 py-1 px-0.5">
+    <div className="pl-2">
       {Array.isArray(files) && files.length > 0 && (
-        <div className="space-y-1">
+        <div className="">
           {files.map((file) => (
             <div
               key={file.path}
-              className={`flex items-center px-2 py-1 border border-gray-300 border-opacity-30 hover:border-gray-300 hover:border-opacity-80 hover:shadow-md rounded-sm cursor-pointer ${!file?.content && 'opacity-50'}`}
+              className={`flex items-center py-1 border border-transparent hover:border-b cursor-pointer ${!file?.content && 'opacity-50'}`}
               onClick={() => handleFileClick(file)}
             >
-              {file?.path && <span className={`text-md`}>{file.path}</span>}
+              {file?.path && <span className={``}>{file.path}</span>}
               {file?.content && (
                 <button
                   onClick={async (e) => {
