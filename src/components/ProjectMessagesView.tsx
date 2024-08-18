@@ -9,7 +9,7 @@ const ProjectMessagesView: React.FC = () => {
   const { isLoadingCurrentProjectState, currentProjectStateError } = useAppSelector((state: RootState) => state?.currentProject);
 
   return (
-    <div className="flex flex-col h-screen border-r border-0.5 min-w-[700px] max-w-[1200px]">
+    <div className="flex flex-col border-r border-0.5 min-w-[700px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <Messages className="w-8 h-8" />
         <h2 className="text-lg font-semibold">Messages</h2>

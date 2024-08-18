@@ -41,8 +41,8 @@ const App: React.FC = () => {
     <div className="flex h-screen">
       <StyleTag />
       <SidePanel />
-      <div className="flex overflow-x-scroll overflow-y-hidden h-screen">
-        <div className="flex h-screen top-2">
+      <div className="flex overflow-x-scroll overflow-y-hidden">
+        <div className="flex">
           {showProjects && <ProjectListView />}
           {showProjectInfo && <ProjectInfoView />}
           {showProjectState && <ProjectStateView />}

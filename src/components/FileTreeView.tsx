@@ -66,7 +66,7 @@ export default function FileTreeView() {
   );
 
   return (
-    <div className="flex flex-col h-screen border-r border-0.5 min-w-[400px] max-w-[1200px]">
+    <div className="flex flex-col border-r border-0.5 min-w-[400px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <FolderTree className="w-8 h-8" />
         <h2 className="text-lg font-semibold">File Tree</h2>
