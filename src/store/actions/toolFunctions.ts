@@ -31,7 +31,9 @@ export const getProjectStateFiles =
 
     const userMessage = `${
       (message as IMessage)?.context?.content
-    }\nProjectState contains 'files' for more detailed information.`;
+    }\nProjectState.files contains content for files with paths: ${JSON.stringify(
+      paths
+    )}.`;
     dispatch(appendToInputValue(userMessage));
   };
 
