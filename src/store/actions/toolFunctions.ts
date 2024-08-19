@@ -1,8 +1,14 @@
 import { AppDispatch, RootState } from "..";
-import { readFiles } from "../../services/fsService";
+import { readFile } from "../../services/fsService";
 import { mergeProjectStates } from "../../services/projectStateService";
 import { IMessage, IProjectState } from "../../types";
 import { appendToInputValue } from "../chatSlice";
+import {
+  setProjectDescriptionsInContext,
+  setProjectFilesInContext,
+  setProjectRequirementsInContext,
+  setProjectTasksInContext,
+} from "../contextSlice";
 import {
   fetchCurrentProjectState,
   saveProjectState,
@@ -10,59 +16,49 @@ import {
 } from "../currentProjectSlice";
 
 export const getProjectStateFiles =
-  (paths: string[], message: IMessage) => async (dispatch: AppDispatch) => {
-    const files = await readFiles(paths);
+  (paths: string[], message: IMessage) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    const activeProjectPath = getState().projects.activeProjectPath;
+    const projectFilesInContext = getState().context.projectFilesInContext;
+    const newFiles = { ...projectFilesInContext };
+
+    for await (const path of paths) {
+      const content = await readFile(`${activeProjectPath}/${path}`);
+      newFiles[path] = { path, content };
+    }
+
+    dispatch(setProjectFilesInContext(newFiles));
+
     const userMessage = `${
       (message as IMessage)?.context?.content
-    }\nHere are the contents of some existing files from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      { ProjectState: { files } },
-      null,
-      2
-    )}\n\`\`\``;
+    }\nProjectState contains 'files' for more detailed information.`;
     dispatch(appendToInputValue(userMessage));
   };
 
 export const getProjectStateDescriptions =
-  (message: IMessage) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    const descriptions =
-      getState().currentProject?.currentProjectState?.descriptions;
+  (message: IMessage) => async (dispatch: AppDispatch) => {
+    dispatch(setProjectDescriptionsInContext(true));
     const userMessage = `${
       (message as IMessage)?.context?.content
-    }\nHere are the descriptions from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      { ProjectState: { descriptions } },
-      null,
-      2
-    )}\n\`\`\``;
+    }\nProjectState contains 'descriptions' for more detailed information.`;
     dispatch(appendToInputValue(userMessage));
   };
 
 export const getProjectStateRequirements =
-  (message: IMessage) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    const requirements =
-      getState().currentProject?.currentProjectState?.requirements;
+  (message: IMessage) => async (dispatch: AppDispatch) => {
+    dispatch(setProjectRequirementsInContext(true));
     const userMessage = `${
       (message as IMessage)?.context?.content
-    }\nHere are the requirements from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      { ProjectState: { requirements } },
-      null,
-      2
-    )}\n\`\`\``;
+    }\nProjectState contains 'requirements' for more detailed information.`;
     dispatch(appendToInputValue(userMessage));
   };
 
 export const getProjectStateTasks =
-  (message: IMessage) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
-    const tasks = getState().currentProject?.currentProjectState?.tasks;
+  (message: IMessage) => async (dispatch: AppDispatch) => {
+    dispatch(setProjectTasksInContext(true));
     const userMessage = `${
       (message as IMessage)?.context?.content
-    }\nHere are the tasks from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      { ProjectState: { tasks } },
-      null,
-      2
-    )}\n\`\`\``;
+    }\nProjectState contains 'tasks' for more detailed information.`;
     dispatch(appendToInputValue(userMessage));
   };
 

@@ -32,9 +32,9 @@ export const FileListButton: React.FC = () => {
           e.nativeEvent.preventDefault();
           setIsPopoverOpen(!isPopoverOpen)
         }}
-        className={outlineButton}
+        className={`${outlineButton} pl-0`}
       >
-        <div>{Object.keys(projectFilesInContext).length}</div>
+        <div className={`flex items-center justify-center px-2 border-white border font-bold text-white rounded-full ${Object.keys(projectFilesInContext).length > 0 ? 'bg-orange-500' : 'bg-gray-500'}`}>{Object.keys(projectFilesInContext).length}</div>
         <div>Files</div>
       </button>
       {isPopoverOpen && (
@@ -46,8 +46,12 @@ export const FileListButton: React.FC = () => {
                   key={file.path}
                   onClick={async () => {
                     const newFiles = { ...projectFilesInContext };
-                    const content = await readFile(`${activeProjectPath}/${file.path}`)
-                    newFiles[file.path] ? delete newFiles[file.path] : newFiles[file.path] = { ...file, content };
+                    if (newFiles[file.path]) {
+                      delete newFiles[file.path];
+                    } else {
+                      const content = await readFile(`${activeProjectPath}/${file.path}`);
+                      newFiles[file.path] = { ...file, content };
+                    }
                     dispatch(setProjectFilesInContext(newFiles));
                   }}
                   className={`flex items-center w-full px-4 py-2 text-sm text-gray-800 border hover:border-blue-600 ${projectFilesInContext[file.path] ? 'bg-blue-300' : ''}`}

@@ -12,7 +12,7 @@ import { outlineButton, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
 import { setInputValue } from "../store/chatSlice";
-import { setInstructionsInContext, setProjectDescriptionInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
+import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
 
 export const ChatView: React.FC = () => {
@@ -28,7 +28,7 @@ export const ChatView: React.FC = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { inputValue } = useAppSelector((state: RootState) => state.chat);
-  const { instructionsInContext, projectDescriptionInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = useAppSelector((state: RootState) => state.context);
+  const { instructionsInContext, projectDescriptionsInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = useAppSelector((state: RootState) => state.context);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -128,8 +128,8 @@ export const ChatView: React.FC = () => {
               <label className={`${outlineButton}`}>
                 <input
                   type="checkbox"
-                  checked={projectDescriptionInContext}
-                  onChange={(e) => dispatch(setProjectDescriptionInContext(e.target.checked))}
+                  checked={projectDescriptionsInContext}
+                  onChange={(e) => dispatch(setProjectDescriptionsInContext(e.target.checked))}
                   className="h-4 w-4 mr-2"
                 />
                 Description

@@ -3,16 +3,16 @@ import { IProjectFile } from "../types";
 
 export interface IContextState {
   instructionsInContext: boolean;
-  projectDescriptionInContext: boolean;
+  projectDescriptionsInContext: boolean;
   projectRequirementsInContext: boolean;
   projectTasksInContext: boolean;
   projectFilePathsInContext: boolean;
-  projectFilesInContext: { [key: string]: IProjectFile };
+  projectFilesInContext: { [path: string]: IProjectFile };
 }
 
 const defaultInitialState: IContextState = {
   instructionsInContext: true,
-  projectDescriptionInContext: true,
+  projectDescriptionsInContext: true,
   projectRequirementsInContext: true,
   projectTasksInContext: true,
   projectFilePathsInContext: true,
@@ -26,8 +26,11 @@ const contextSlice = createSlice({
     setInstructionsInContext: (state, action: PayloadAction<boolean>) => {
       state.instructionsInContext = action.payload;
     },
-    setProjectDescriptionInContext: (state, action: PayloadAction<boolean>) => {
-      state.projectDescriptionInContext = action.payload;
+    setProjectDescriptionsInContext: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.projectDescriptionsInContext = action.payload;
     },
     setProjectRequirementsInContext: (
       state,
@@ -52,7 +55,7 @@ const contextSlice = createSlice({
 
 export const {
   setInstructionsInContext,
-  setProjectDescriptionInContext,
+  setProjectDescriptionsInContext,
   setProjectRequirementsInContext,
   setProjectTasksInContext,
   setProjectFilePathsInContext,

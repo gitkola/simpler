@@ -502,7 +502,7 @@ export const createSystemPrompt = (
 ) => {
   const {
     instructionsInContext,
-    projectDescriptionInContext,
+    projectDescriptionsInContext,
     projectRequirementsInContext,
     projectTasksInContext,
     projectFilePathsInContext,
@@ -529,7 +529,7 @@ export const createSystemPrompt = (
           ?.sort((a, b) => a.path!.localeCompare(b.path!))
       : [];
   const ProjectState = {
-    descriptions: projectDescriptionInContext
+    descriptions: projectDescriptionsInContext
       ? projectState?.descriptions
       : "request descriptions by calling the 'getProjectStateDescriptions' tool",
     requirements: projectRequirementsInContext
