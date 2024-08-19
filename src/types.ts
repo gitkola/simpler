@@ -29,7 +29,7 @@ export type ContentItem =
   | { text: string; id: number }
   | { code: CodeTuple; id: number }
   | { link: LinkTuple; id: number }
-  | { project_state_updates: IProjectState; id?: number }
+  | { ProjectStateUpdates: IProjectState; id?: number }
   | { error: ErrorTuple; id: number };
 
 export type CodeTuple = [
@@ -64,8 +64,8 @@ export const isLink = (
 ): item is { link: LinkTuple; id: number } => "link" in item;
 export const isUpdatedProjectState = (
   item: ContentItem
-): item is { project_state_updates: IProjectState; id?: number } =>
-  "project_state_updates" in item;
+): item is { ProjectStateUpdates: IProjectState; id?: number } =>
+  "ProjectStateUpdates" in item;
 
 export type TUpdate = "add" | "modify" | "delete";
 
@@ -84,7 +84,7 @@ export interface IProjectRequirement {
 export interface IProjectTask {
   id: number;
   task: string;
-  status: "todo" | "in_progress" | "done" | "hold" | "no_need";
+  status: "todo" | "in_progress" | "completed" | "hold" | "no_need";
   suggested_as_next_task: boolean;
   update?: TUpdate;
 }

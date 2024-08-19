@@ -8,11 +8,11 @@ export const createTools = (service: "openai" | "anthropic") => {
     const definition = {
       name: "updateProjectState",
       description:
-        "Creates, modifies, or deletes ProjectState fields according to provided 'project_state_updates'. The 'project_state_updates' includes only changed fields.",
+        "Creates, modifies, or deletes ProjectState fields according to provided 'ProjectStateUpdates'. The 'ProjectStateUpdates' includes only changed fields.",
       [schemaKey[service]]: {
         type: "object",
         properties: {
-          project_state_updates: {
+          ProjectStateUpdates: {
             type: "object",
             properties: {
               descriptions: {
@@ -75,7 +75,13 @@ export const createTools = (service: "openai" | "anthropic") => {
                     status: {
                       type: "string",
                       description: "Task status.",
-                      enum: ["todo", "in_progress", "done", "hold", "no_need"],
+                      enum: [
+                        "todo",
+                        "in_progress",
+                        "completed",
+                        "hold",
+                        "no_need",
+                      ],
                     },
                     suggested_as_next_task: {
                       type: "boolean",
@@ -117,7 +123,7 @@ export const createTools = (service: "openai" | "anthropic") => {
             required: [],
           },
         },
-        required: ["project_state_updates"],
+        required: ["ProjectStateUpdates"],
       },
     };
     if (service === "openai") {
@@ -188,7 +194,7 @@ export const createTools = (service: "openai" | "anthropic") => {
     service: "openai" | "anthropic"
   ) => {
     const definition = {
-      name: "getProjectStateDescription",
+      name: "getProjectStateDescriptions",
       description:
         "Gets the project descriptions without requiring any input. Returns an array of description objects.",
       [schemaKey[service]]: {
@@ -243,30 +249,6 @@ export const createTools = (service: "openai" | "anthropic") => {
         properties: {},
         required: [],
       },
-      // returns: {
-      //   type: "object",
-      //   properties: {
-      //     requirements: {
-      //       type: "array",
-      //       items: {
-      //         type: "object",
-      //         properties: {
-      //           id: {
-      //             type: "number",
-      //             description: "Unique identifier for the requirement.",
-      //           },
-      //           requirement: {
-      //             type: "string",
-      //             description: "The requirement text.",
-      //           },
-      //         },
-      //         required: ["id", "requirement"],
-      //       },
-      //       description: "An array of project requirement objects.",
-      //     },
-      //   },
-      //   required: ["requirements"],
-      // },
     };
 
     if (service === "openai") {
@@ -288,33 +270,6 @@ export const createTools = (service: "openai" | "anthropic") => {
         properties: {},
         required: [],
       },
-      // returns: {
-      //   type: "object",
-      //   properties: {
-      //     type: "array",
-      //     items: {
-      //       type: "object",
-      //       properties: {
-      //         task: {
-      //           type: "string",
-      //           description: "Description of the project task.",
-      //         },
-      //         status: {
-      //           type: "string",
-      //           description:
-      //             "Current status of the task (todo, in_progress, done, hold, or no_need).",
-      //           enum: ["todo", "in_progress", "done", "hold", "no_need"],
-      //         },
-      //       },
-      //       required: ["task", "status"],
-      //       description: "A project task with its description and status.",
-      //     },
-      //     description:
-      //       "An array of project tasks, each represented by an object containing a task description and its current status.",
-      //     minItems: 1,
-      //   },
-      //   required: ["tasks"],
-      // },
     };
 
     if (service === "openai") {

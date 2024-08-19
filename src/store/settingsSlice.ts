@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  AI_INSTRUCTIONS_PROJECT_STATE,
-  AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
-  AI_INSTRUCTIONS_RESPONSIBILITIES,
+  // AI_INSTRUCTIONS_PROJECT_STATE,
+  // AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
+  // AI_INSTRUCTIONS_RESPONSIBILITIES,
   INSTRUCTIONS,
 } from "../configs/instructions";
 import { LOCAL_STORAGE_KEY_SETTINGS } from "../constants";
@@ -13,9 +13,9 @@ export interface SettingsState {
     anthropic: string;
   };
   instructions: {
-    responsibilitiesInstructions: string;
-    responseGuidelinesInstructions: string;
-    projectStateInstructions: string;
+    // responsibilitiesInstructions: string;
+    // responseGuidelinesInstructions: string;
+    // projectStateInstructions: string;
     generalInstructions: string;
   };
   styles: string;
@@ -29,9 +29,9 @@ const defaultInitialState: SettingsState = {
     anthropic: "",
   },
   instructions: {
-    responsibilitiesInstructions: AI_INSTRUCTIONS_RESPONSIBILITIES,
-    responseGuidelinesInstructions: AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
-    projectStateInstructions: AI_INSTRUCTIONS_PROJECT_STATE,
+    // responsibilitiesInstructions: AI_INSTRUCTIONS_RESPONSIBILITIES,
+    // responseGuidelinesInstructions: AI_INSTRUCTIONS_RESPONSE_GUIDELINES,
+    // projectStateInstructions: AI_INSTRUCTIONS_PROJECT_STATE,
     generalInstructions: INSTRUCTIONS,
   },
   styles: "",
@@ -57,18 +57,18 @@ const settingsSlice = createSlice({
     ) => {
       state.apiKeys[action.payload.service] = action.payload.key;
     },
-    setResponsibilitiesInstructions: (state, action: PayloadAction<string>) => {
-      state.instructions.responsibilitiesInstructions = action.payload;
-    },
-    setResponseGuidelinesInstructions: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.instructions.responseGuidelinesInstructions = action.payload;
-    },
-    setProjectStateInstructions: (state, action: PayloadAction<string>) => {
-      state.instructions.projectStateInstructions = action.payload;
-    },
+    // setResponsibilitiesInstructions: (state, action: PayloadAction<string>) => {
+    //   state.instructions.responsibilitiesInstructions = action.payload;
+    // },
+    // setResponseGuidelinesInstructions: (
+    //   state,
+    //   action: PayloadAction<string>
+    // ) => {
+    //   state.instructions.responseGuidelinesInstructions = action.payload;
+    // },
+    // setProjectStateInstructions: (state, action: PayloadAction<string>) => {
+    //   state.instructions.projectStateInstructions = action.payload;
+    // },
     setGeneralInstructions: (state, action: PayloadAction<string>) => {
       state.instructions.generalInstructions = action.payload;
     },
@@ -89,9 +89,9 @@ const settingsSlice = createSlice({
 
 export const {
   setApiKey,
-  setResponsibilitiesInstructions,
-  setResponseGuidelinesInstructions,
-  setProjectStateInstructions,
+  // setResponsibilitiesInstructions,
+  // setResponseGuidelinesInstructions,
+  // setProjectStateInstructions,
   setGeneralInstructions,
   resetToDefaultInstructions,
   setStyles,

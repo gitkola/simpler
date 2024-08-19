@@ -528,29 +528,34 @@ export const createSystemPrompt = (
           ?.filter((file) => (file?.path ? true : false))
           ?.sort((a, b) => a.path!.localeCompare(b.path!))
       : [];
-  const lightProjectState = {
-    ...projectState,
+  const ProjectState = {
     descriptions: projectDescriptionInContext
       ? projectState?.descriptions
-      : undefined,
+      : "request descriptions by calling the 'getProjectStateDescriptions' tool",
     requirements: projectRequirementsInContext
       ? projectState?.requirements
-      : undefined,
-    tasks: projectTasksInContext ? projectState?.tasks : undefined,
+      : "request requirements by calling the 'getProjectStateRequirements' tool",
+    tasks: projectTasksInContext
+      ? projectState?.tasks
+      : "request tasks by calling the 'getProjectStateTasks' tool",
     files:
-      filePaths.length > 0 ? filePaths : files.length > 0 ? files : undefined,
+      filePaths.length > 0
+        ? filePaths
+        : files.length > 0
+        ? files
+        : "request only files you need to finish task by calling the 'getProjectStateFiles' tool",
   };
 
-  const CURRENT_PROJECT_STATE = `## Current ProjectState
-    In order to save tokens, the ProjectState is not complete and contains only the data added by the user:
-    ${JSON.stringify(lightProjectState, null, 2)}
-    If additional data from the ProjectState is needed to complete a task, you should call the appropriate tools, as described in the instructions.
-    `;
+  const CURRENT_PROJECT_STATE = `## Current ProjectState:
+\`\`\`json
+${JSON.stringify({ ProjectState }, null, 2)}
+\`\`\`
+To reduce the number of tokens, ProjectState may be incomplete and contain only data added by the user.
+If you need additional data from ProjectState to complete a task, you should call the appropriate tools from the API request as described in the instructions.
+`;
   const systemPrompt = `${
     instructionsInContext ? `${generalInstructions}\n\n` : ""
-  }${
-    Object.keys(lightProjectState).length > 0 ? `${CURRENT_PROJECT_STATE}` : ""
-  }`;
+  }${Object.keys(ProjectState).length > 0 ? `${CURRENT_PROJECT_STATE}` : ""}`;
   return systemPrompt;
 };
 

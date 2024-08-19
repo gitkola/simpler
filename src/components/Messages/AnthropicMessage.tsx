@@ -6,7 +6,7 @@ import { ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
 import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
 import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
-import { getProjectStateDescription, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from '../../store/actions/toolFunctions';
+import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from '../../store/actions/toolFunctions';
 
 export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) => {
   const dispatch = useAppDispatch();
@@ -36,12 +36,12 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
             </button>
           </div>
         );
-      case 'getProjectStateDescription':
+      case 'getProjectStateDescriptions':
         return (
           <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
             <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
             <button
-              onClick={async () => { await dispatch(getProjectStateDescription(message)); }}
+              onClick={async () => { await dispatch(getProjectStateDescriptions(message)); }}
               className="px-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full"
             >
               Call {name}
@@ -73,11 +73,11 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
           </div>
         );
       case 'updateProjectState':
-        const { project_state_updates } = input as { project_state_updates: IProjectState };
+        const { ProjectStateUpdates } = input as { ProjectStateUpdates: IProjectState };
         return (
           <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
             <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
-            <MessageProjectStateUpdates projectStateUpdates={project_state_updates} />
+            <MessageProjectStateUpdates projectStateUpdates={ProjectStateUpdates} />
           </div>
         );
       default:

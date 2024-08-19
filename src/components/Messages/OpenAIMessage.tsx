@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
 import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
 import { IMessage } from "../../types";
-import { getProjectStateDescription, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from "../../store/actions/toolFunctions";
+import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from "../../store/actions/toolFunctions";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
   const dispatch = useAppDispatch();
@@ -40,12 +40,12 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               </button>
             </div>
           );
-        case 'getProjectStateDescription':
+        case 'getProjectStateDescriptions':
           return (
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}`</p>
               <button
-                onClick={async () => { await dispatch(getProjectStateDescription(message as IMessage)); }}
+                onClick={async () => { await dispatch(getProjectStateDescriptions(message as IMessage)); }}
                 className="px-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full"
               >
                 Call {name}
@@ -80,7 +80,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           return (
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
-              <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).project_state_updates} />
+              <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).ProjectStateUpdates} />
             </div>
           );
         default:

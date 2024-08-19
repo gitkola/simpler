@@ -15,14 +15,14 @@ export const getProjectStateFiles =
     const userMessage = `${
       (message as IMessage)?.context?.content
     }\nHere are the contents of some existing files from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      files,
+      { ProjectState: { files } },
       null,
       2
     )}\n\`\`\``;
     dispatch(appendToInputValue(userMessage));
   };
 
-export const getProjectStateDescription =
+export const getProjectStateDescriptions =
   (message: IMessage) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     const descriptions =
@@ -30,7 +30,7 @@ export const getProjectStateDescription =
     const userMessage = `${
       (message as IMessage)?.context?.content
     }\nHere are the descriptions from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      descriptions,
+      { ProjectState: { descriptions } },
       null,
       2
     )}\n\`\`\``;
@@ -45,7 +45,7 @@ export const getProjectStateRequirements =
     const userMessage = `${
       (message as IMessage)?.context?.content
     }\nHere are the requirements from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      requirements,
+      { ProjectState: { requirements } },
       null,
       2
     )}\n\`\`\``;
@@ -59,7 +59,7 @@ export const getProjectStateTasks =
     const userMessage = `${
       (message as IMessage)?.context?.content
     }\nHere are the tasks from ProjectState for more context:\n\`\`\`json\n${JSON.stringify(
-      tasks,
+      { ProjectState: { tasks } },
       null,
       2
     )}\n\`\`\``;

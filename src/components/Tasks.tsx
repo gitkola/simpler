@@ -69,7 +69,7 @@ const Tasks: React.FC = () => {
             options={[
               'todo',
               'in_progress',
-              'done',
+              'completed',
             ]}
             onChange={(e) => handleChange(e, task.id)}
           />
@@ -98,7 +98,7 @@ const getColorByStatus = (status: string) => {
   switch (status) {
     case 'in_progress':
       return 'text-blue-500';
-    case 'done':
+    case 'completed':
       return 'text-green-500';
     case 'todo':
     default:
