@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import settingsReducer from "./settingsSlice";
 import projectsReducer from "./projectsSlice";
@@ -6,6 +6,7 @@ import currentProjectReducer from "./currentProjectSlice";
 import layoutReducer from "./layoutSlice";
 import chatReducer from "./chatSlice";
 import contextReducer from "./contextSlice";
+import threadReducer from "./threadSlice";
 // import fileTreeReducer from "../components/FileTree/useFileTree";
 // import flatFileTreeReducer from "../components/FileTree/useFlatFileTree";
 import { persistSettingsMiddleware } from "./persistSettingsMiddleware";
@@ -20,6 +21,7 @@ const store = configureStore({
     layout: layoutReducer,
     chat: chatReducer,
     context: contextReducer,
+    thread: threadReducer,
     // fileTree: fileTreeReducer,
     // flatFileTree: flatFileTreeReducer,
   },
@@ -37,6 +39,7 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>;
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();

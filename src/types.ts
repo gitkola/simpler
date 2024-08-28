@@ -96,12 +96,10 @@ export interface IProjectFile {
 }
 
 export interface IProjectState {
-  name: string;
   descriptions?: IProjectDescription[];
   requirements?: IProjectRequirement[];
-  files?: IProjectFile[];
   tasks?: IProjectTask[];
-  context?: Record<string, any>;
+  files?: IProjectFile[];
 }
 
 export interface IProjectSettings {

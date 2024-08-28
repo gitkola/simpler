@@ -6,6 +6,9 @@ export default {
   },
   plugins: [],
   variants: {
-    scrollbar: ["rounded"]
+    scrollbar: ["rounded"],
+  },
+  corePlugins: {
+    // preflight: false,
   },
 };

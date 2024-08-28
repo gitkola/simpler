@@ -495,13 +495,11 @@ export const addMessageToThread =
     await dispatch(saveProjectMessages([...messages, message]));
   };
 
-export const createSystemPrompt = (
+export const createPartialProjectState = (
   context: IContextState,
-  projectState: IProjectState,
-  generalInstructions: string
+  projectState: IProjectState
 ) => {
   const {
-    instructionsInContext,
     projectDescriptionsInContext,
     projectRequirementsInContext,
     projectTasksInContext,
@@ -546,17 +544,18 @@ export const createSystemPrompt = (
         : "request only files you need to finish task by calling the 'getProjectStateFiles' tool",
   };
 
-  const CURRENT_PROJECT_STATE = `## Current ProjectState:
+  const PARTIAL_PROJECT_STATE = `# Current PartialProjectState:
+
 \`\`\`json
-${JSON.stringify({ ProjectState }, null, 2)}
+${JSON.stringify({ PartialProjectState: { ...ProjectState } }, null, 2)}
 \`\`\`
-To reduce the number of tokens, ProjectState may be incomplete and contain only data added by the user.
-If you need additional data from ProjectState to complete a task, you should call the appropriate tools from the API request as described in the instructions.
 `;
-  const systemPrompt = `${
-    instructionsInContext ? `${generalInstructions}\n\n` : ""
-  }${Object.keys(ProjectState).length > 0 ? `${CURRENT_PROJECT_STATE}` : ""}`;
-  return systemPrompt;
+  // To reduce the number of tokens, ProjectState may be incomplete and contain only data added by the user.
+  // If you need additional data from ProjectState to complete a task, you should call the appropriate tools from the API request as described in the instructions.
+  const partialProjectState = `${
+    Object.keys(ProjectState).length > 0 ? `${PARTIAL_PROJECT_STATE}` : ""
+  }`;
+  return partialProjectState;
 };
 
 export const handleSendMessage =
@@ -586,15 +585,20 @@ export const handleSendMessage =
       let options: IRequestOptions;
       const tools = createTools(service);
       let messages = [];
-      const systemPrompt = createSystemPrompt(
+      const partialProjectState = createPartialProjectState(
         context,
-        projectState,
-        generalInstructions
+        projectState
       );
-      if (systemPrompt)
-        messages.push({ role: "system", content: systemPrompt });
-      messages.push({ role: "user", content: message?.content });
+
+      const systemPrompt = `${
+        context.instructionsInContext ? generalInstructions : ""
+      }\n\n${partialProjectState}`;
+      const userMessage = `${message?.content}`;
+      console.log("userMessage", userMessage);
       if (service === "openai") {
+        if (systemPrompt)
+          messages.push({ role: "system", content: systemPrompt });
+        messages.push({ role: "user", content: userMessage });
         url = OPENAI_API_URL;
         const body = Body.json({
           model,
@@ -616,11 +620,12 @@ export const handleSendMessage =
           body,
         };
       } else if (service === "anthropic") {
+        messages.push({ role: "user", content: userMessage });
         url = ANTHROPIC_API_URL;
         const body = Body.json({
           model,
           system: systemPrompt,
-          messages: [{ role: "user", content: message?.content }],
+          messages,
           tools,
           max_tokens,
           temperature,

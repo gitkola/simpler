@@ -19,7 +19,7 @@ const Tasks: React.FC = () => {
   const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: number) => {
     const { name, value } = e.target;
     const updatedTasks = tasks.map(req =>
-      req.id === id ? { ...req, [name]: value, updatedAt: Date.now() } : req
+      req.id === id ? { ...req, [name]: value } : req
     );
     await onSave(updatedTasks);
   };

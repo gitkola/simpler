@@ -1,6 +1,6 @@
 import { writeFile } from "../services/fsService";
 
-export const logToJSONFile = (data: any, name: string) => {
+export const logToJSONFile = (name: string, data: any) => {
   try {
     const now = Date.now();
     const fileName = `${now}-${name}.json`;

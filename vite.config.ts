@@ -1,9 +1,22 @@
 import { defineConfig } from "vite";
+import { Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+
+function markdownRawPlugin(): Plugin {
+  return {
+    name: "vite-plugin-markdown-raw",
+    transform(code, id) {
+      if (id.endsWith(".md")) {
+        const json = JSON.stringify(code);
+        return { code: `export default ${json};`, map: null };
+      }
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react()],
+  plugins: [react(), markdownRawPlugin()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

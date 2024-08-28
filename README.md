@@ -18,12 +18,14 @@ Simpler is a powerful desktop application designed to streamline software projec
 Follow these steps to set up and run Simpler on your local machine:
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/gitkola/simpler
    cd simpler
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -33,6 +35,7 @@ Follow these steps to set up and run Simpler on your local machine:
    - Enter your OpenAI and Anthropic API keys in the designated fields.
 
 4. **Run the application:**
+
    ```bash
    npm run dev
    ```

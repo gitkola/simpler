@@ -1,12 +1,13 @@
 import { IBaseMessage } from "../../types";
 import Accordion from "../Accordion";
+import Markdown from "../MarkdownWrapper";
 
 export default function UserMessage({ message }: { message: IBaseMessage }) {
   return (
     <div key={message.id} className={`flex flex-col w-full p-2 rounded-md bg-blue-500 bg-opacity-30 select-text space-y-2`}>
       <h1 className="text-xl font-bold">User</h1>
       <div className="flex w-vw">
-        {typeof message?.content === 'string' && <div className="flex flex-col w-fit overflow-visible" style={{ whiteSpace: 'pre-wrap' }}>{message?.content}</div>}
+        {typeof message?.content === 'string' && <Markdown>{message?.content}</Markdown>}
       </div>
       <Accordion
         title="Raw message"

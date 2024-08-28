@@ -22,7 +22,7 @@ const Descriptions: React.FC = () => {
   const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: number) => {
     const { name, value } = e.target;
     const updatedDescriptions = descriptions.map(req =>
-      req.id === id ? { ...req, [name]: value, updatedAt: Date.now() } : req
+      req.id === id ? { ...req, [name]: value } : req
     );
     setDescriptions(updatedDescriptions);
     await onSave(updatedDescriptions);

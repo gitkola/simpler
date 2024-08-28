@@ -28,7 +28,7 @@ export async function callAIModelAPI(
   options: IRequestOptions
 ): Promise<IMessage> {
   const response = await fetch<IMessage>(url, options);
-  logToJSONFile({ options, response }, "callAIModelAPI");
+  logToJSONFile("callAIModelAPI", { url, options, response });
   if (response.ok) {
     return response.data;
   } else {

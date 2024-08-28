@@ -2,7 +2,7 @@ import React from "react";
 import SquareButton from "./SquareButton";
 import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
-import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjectInfo, setShowProjectMessages, setShowProjects, setShowProjectState, setShowSettings, setShowProjectFiles } from "../store/layoutSlice";
+import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjectInfo, setShowProjectMessages, setShowProjects, setShowProjectState, setShowSettings, setShowProjectFiles, setShowThread } from "../store/layoutSlice";
 import Spinner from './Spinner';
 import { setTheme } from "../store/settingsSlice";
 
@@ -10,7 +10,7 @@ const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector((state) => state.settings);
-  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showProjectState, showProjectInfo, showProjectMessages, showProjectFiles } = useAppSelector((state) => state.layout);
+  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showThread, showProjectState, showProjectInfo, showProjectMessages, showProjectFiles } = useAppSelector((state) => state.layout);
   const { isLoadingCurrentProjectState, isLoadingCurrentProjectMessages, isLoadingCurrentProjectSettings, isLoadingCurrentProjectOpenedFiles, isLoadingCurrentProjectFileTree } = useAppSelector((state) => state.currentProject);
 
   const toggleView = (value: string) => {
@@ -31,6 +31,8 @@ const SidePanel: React.FC = () => {
         return dispatch(setShowProjectMessages(!showProjectMessages));
       case "ai-chat":
         return dispatch(setShowChat(!showChat));
+      case "thread":
+        return dispatch(setShowThread(!showThread));
       case "project-files":
         return dispatch(setShowProjectFiles(!showProjectFiles));
       default:
@@ -84,6 +86,11 @@ const SidePanel: React.FC = () => {
         onClick={() => toggleView("ai-chat")}
         icon="ai-chat"
         isActive={showChat}
+      />
+      <SquareButton
+        onClick={() => toggleView("thread")}
+        icon="messages"
+        isActive={showThread}
       />
       <SquareButton
         onClick={() => toggleView("settings")}
