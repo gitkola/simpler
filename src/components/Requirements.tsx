@@ -19,7 +19,7 @@ const Requirements: React.FC = () => {
     await dispatch(saveProjectState({ ...currentProjectState!, requirements: [...updatedRequirements] }));
   };
 
-  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: number) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: string) => {
     const { name, value } = e.target;
     const updatedRequirements = requirements.map(req =>
       req.id === id ? { ...req, [name]: value } : req
@@ -28,7 +28,7 @@ const Requirements: React.FC = () => {
     await onSave(updatedRequirements);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const updatedRequirements = requirements.filter(req => req.id !== id);
     setRequirements(updatedRequirements);
     await onSave(updatedRequirements);
@@ -38,7 +38,7 @@ const Requirements: React.FC = () => {
     if (requirement.trim()) {
       const now = Date.now();
       const newReq: IProjectRequirement = {
-        id: now,
+        id: `${now}`,
         requirement: requirement.trim(),
       };
       const updatedRequirements = [...requirements, newReq];

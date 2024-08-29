@@ -16,7 +16,7 @@ const Tasks: React.FC = () => {
     await dispatch(saveProjectState({ ...currentProjectState!, tasks: [...updatedTasks] }));
   };
 
-  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: number) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: string) => {
     const { name, value } = e.target;
     const updatedTasks = tasks.map(req =>
       req.id === id ? { ...req, [name]: value } : req
@@ -24,7 +24,7 @@ const Tasks: React.FC = () => {
     await onSave(updatedTasks);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const updatedTasks = tasks.filter(req => req.id !== id);
     await onSave(updatedTasks);
   };
@@ -33,7 +33,7 @@ const Tasks: React.FC = () => {
     if (task.trim()) {
       const now = Date.now();
       const newTask: IProjectTask = {
-        id: now,
+        id: `${now}`,
         task: task.trim(),
         status: 'todo',
         suggested_as_next_task: false,

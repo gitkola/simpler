@@ -19,7 +19,7 @@ const Descriptions: React.FC = () => {
     await dispatch(saveProjectState({ ...currentProjectState!, descriptions: [...updatedDescriptions] }));
   };
 
-  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: number) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement>, id: string) => {
     const { name, value } = e.target;
     const updatedDescriptions = descriptions.map(req =>
       req.id === id ? { ...req, [name]: value } : req
@@ -28,7 +28,7 @@ const Descriptions: React.FC = () => {
     await onSave(updatedDescriptions);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const updatedDescriptions = descriptions.filter(req => req.id !== id);
     setDescriptions(updatedDescriptions);
     await onSave(updatedDescriptions);
@@ -38,7 +38,7 @@ const Descriptions: React.FC = () => {
     if (description.trim()) {
       const now = Date.now();
       const newReq: IProjectDescription = {
-        id: now,
+        id: `${now}`,
         description: description.trim(),
       };
       const updatedDescriptions = [...descriptions, newReq];

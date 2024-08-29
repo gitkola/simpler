@@ -15,17 +15,13 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
 } from "../constants";
-import { getFolderNameFromPath } from "../utils/pathUtils";
 import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
 import { IFile } from "../store/currentProjectSlice";
 
-export const generateInitialProjectState = (
-  projectPath: string
-): IProjectState => {
+export const generateInitialProjectState = (): IProjectState => {
   return {
-    name: getFolderNameFromPath(projectPath) || "",
     descriptions: [],
     requirements: [],
     files: [],
@@ -77,7 +73,7 @@ export const loadProjectStateFromFile = async (
     return projectState;
   } catch (error) {
     console.error("Error reading Project State file:", error);
-    const newProjectState = generateInitialProjectState(projectPath);
+    const newProjectState = generateInitialProjectState();
     await saveProjectStateToFile(projectPath, newProjectState);
     return newProjectState;
   }
@@ -277,7 +273,7 @@ export const mergeTasks = (
   prevTasks: IProjectTask[],
   nextTasks: IProjectTask[]
 ) => {
-  const mergedTasks = new Map<number, IProjectTask>();
+  const mergedTasks = new Map<string, IProjectTask>();
   prevTasks.forEach((task) => {
     mergedTasks.set(task.id, task);
   });
@@ -304,7 +300,7 @@ export const mergeRequirements = (
   prevRequirements: IProjectRequirement[],
   nextRequirements: IProjectRequirement[]
 ) => {
-  const mergedRequirements = new Map<number, IProjectRequirement>();
+  const mergedRequirements = new Map<string, IProjectRequirement>();
   prevRequirements.forEach((requirement) => {
     mergedRequirements.set(requirement.id, requirement);
   });
@@ -331,7 +327,7 @@ export const mergeDescriptions = (
   prevDescriptions: IProjectDescription[],
   nextDescriptions: IProjectDescription[]
 ) => {
-  const mergedDescriptions = new Map<number, IProjectDescription>();
+  const mergedDescriptions = new Map<string, IProjectDescription>();
   prevDescriptions.forEach((description) => {
     mergedDescriptions.set(description.id, description);
   });

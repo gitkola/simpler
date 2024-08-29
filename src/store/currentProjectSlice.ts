@@ -29,10 +29,19 @@ import {
   OPENAI_API_URL,
 } from "../api/apiAIModels";
 import { Body } from "@tauri-apps/api/http";
-import { createTools } from "../utils/createTools";
+import { createTools, defineTools } from "../tools/createTools";
 import createBaseMessage from "../utils/createBaseMessage";
 import { readFilesFromFS } from "../services/fsService";
 import { IContextState } from "./contextSlice";
+import { CoreMessage, CoreTool, GenerateTextResult } from "ai";
+import { callAIsdk, createModel, ICallAISDKOptions } from "../api/apiAIsdk";
+import {
+  getProjectStateDescriptionsTool,
+  getProjectStateFilesTool,
+  getProjectStateRequirementsTool,
+  getProjectStateTasksTool,
+  updateProjectState,
+} from "./actions/toolFunctions";
 
 export interface IFile {
   path: string;
@@ -66,6 +75,10 @@ export interface ICurrentProject {
   isLoadingCurrentProjectMessages: boolean;
   currentProjectMessagesError?: string | null;
 
+  currentProjectConversation: CoreMessage[];
+  isLoadingCurrentProjectConversation: boolean;
+  currentProjectConversationError?: string | null;
+
   currentProjectSettings: IProjectSettings | null;
   isLoadingCurrentProjectSettings: boolean;
   currentProjectSettingsError?: string | null;
@@ -91,6 +104,10 @@ const defaultInitialState: ICurrentProject = {
   currentProjectMessages: [],
   isLoadingCurrentProjectMessages: false,
   currentProjectMessagesError: null,
+
+  currentProjectConversation: [],
+  isLoadingCurrentProjectConversation: false,
+  currentProjectConversationError: null,
 
   currentProjectSettings: null,
   isLoadingCurrentProjectSettings: false,
@@ -152,6 +169,26 @@ const currentProjectSlice = createSlice({
     ) => {
       state.isLoadingCurrentProjectMessages = false;
       state.currentProjectMessagesError = action.payload;
+    },
+
+    fetchCurrentProjectConversation: (state) => {
+      state.isLoadingCurrentProjectConversation = true;
+      state.currentProjectConversationError = null;
+    },
+    setCurrentProjectConversation: (
+      state,
+      action: PayloadAction<CoreMessage[]>
+    ) => {
+      state.currentProjectConversation = action.payload;
+      state.isLoadingCurrentProjectConversation = false;
+      state.currentProjectConversationError = null;
+    },
+    setCurrentProjectConversationError: (
+      state,
+      action: PayloadAction<string | null>
+    ) => {
+      state.isLoadingCurrentProjectConversation = false;
+      state.currentProjectConversationError = action.payload;
     },
 
     fetchCurrentProjectSettings: (state) => {
@@ -226,6 +263,10 @@ export const {
   fetchCurrentProjectMessages,
   setCurrentProjectMessages,
   setCurrentProjectMessagesError,
+
+  fetchCurrentProjectConversation,
+  setCurrentProjectConversation,
+  setCurrentProjectConversationError,
 
   fetchCurrentProjectSettings,
   setCurrentProjectSettings,
@@ -667,10 +708,108 @@ export const handleSendMessage =
     }
   };
 
+export const handleSendMessageWithAISDK =
+  (message: CoreMessage) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      dispatch(setAIModelRequestError(null));
+      dispatch(setAIModelRequestInProgress(true));
+
+      const {
+        currentProjectSettings,
+        currentProjectState,
+        currentProjectConversation,
+      } = getState().currentProject;
+
+      if (!currentProjectState || !currentProjectSettings) {
+        dispatch(
+          setAIModelRequestError("ProjectState or Settings are not loaded")
+        );
+        dispatch(setAIModelRequestInProgress(false));
+        return;
+      }
+
+      const context = getState().context;
+      const { generalInstructions } = getState().settings.instructions;
+      const apiKeys = getState().settings.apiKeys;
+      const {
+        service,
+        model: modelName,
+        temperature,
+        max_tokens,
+      } = currentProjectSettings;
+      const model = createModel({
+        service,
+        model: modelName,
+        apiKey: apiKeys[service],
+      });
+      if (!model) throw new Error("Model is not defined");
+      let messages: CoreMessage[] = [
+        ...currentProjectConversation,
+        {
+          role: message?.role,
+          content: message?.content,
+        } as CoreMessage,
+      ];
+
+      dispatch(setCurrentProjectConversation(messages as CoreMessage[]));
+      const partialProjectState = createPartialProjectState(
+        context,
+        currentProjectState
+      );
+
+      const systemPrompt = `${
+        context.instructionsInContext ? generalInstructions : ""
+      }
+      
+${partialProjectState}`;
+
+      const options: ICallAISDKOptions = {
+        model,
+        messages,
+        system: systemPrompt,
+        tools: defineTools({
+          updateProjectState: async ({ ProjectStateUpdates }) => {
+            await dispatch(updateProjectState(ProjectStateUpdates));
+          },
+          getProjectStateFiles: async ({ paths }) => {
+            return await dispatch(getProjectStateFilesTool({ paths }));
+          },
+          getProjectStateDescriptions: async () => {
+            return await dispatch(getProjectStateDescriptionsTool());
+          },
+          getProjectStateRequirements: async () => {
+            return await dispatch(getProjectStateRequirementsTool());
+          },
+          getProjectStateTasks: async () => {
+            return await dispatch(getProjectStateTasksTool());
+          },
+        }),
+        toolChoice: "auto",
+        temperature,
+        maxTokens: max_tokens,
+      };
+
+      const {
+        responseMessages,
+      }: GenerateTextResult<Record<string, CoreTool<any, any>>> =
+        await callAIsdk(options);
+      dispatch(setCurrentProjectConversation(responseMessages));
+    } catch (error) {
+      const errorMessage = `Error in handleSendMessage: ${
+        typeof error === "string" ? error : (error as Error).message
+      }`;
+      console.error(error);
+      dispatch(setAIModelRequestError(errorMessage));
+    } finally {
+      dispatch(setAIModelRequestInProgress(false));
+    }
+  };
+
 export const handleSyncFilesFromFS =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
-      const currentProjectState = getState().currentProject.currentProjectState;
+      const { currentProjectState } = getState().currentProject;
       const activeProjectPath = getState().projects.activeProjectPath;
       if (!activeProjectPath) {
         throw new Error("activeProjectPath is not defined");

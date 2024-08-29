@@ -1,3 +1,56 @@
+import {
+  IProjectDescription,
+  IProjectState,
+  IProjectRequirement,
+  IProjectTask,
+  IProjectFile,
+} from "../types";
+import { defineGetProjectStateFiles } from "./defineGetProjectStateFiles";
+import { defineUpdateProjectState } from "./defineUpdateProjectState";
+import { defineGetProjectStateDescriptions } from "./defineGetProjectStateDescriptions";
+import { defineGetProjectStateRequirements } from "./defineGetProjectStateRequirements";
+import { defineGetProjectStateTasks } from "./defineGetProjectStateTasks";
+
+export interface IDefineToolsParams {
+  updateProjectState: ({
+    ProjectStateUpdates,
+  }: {
+    ProjectStateUpdates: IProjectState;
+  }) => Promise<void>;
+  getProjectStateFiles: ({
+    paths,
+  }: {
+    paths: string[];
+  }) => Promise<{ files: IProjectFile[] }>;
+  getProjectStateDescriptions: () => Promise<{
+    descriptions: IProjectDescription[];
+  }>;
+  getProjectStateRequirements: () => Promise<{
+    requirements: IProjectRequirement[];
+  }>;
+  getProjectStateTasks: () => Promise<{
+    tasks: IProjectTask[];
+  }>;
+}
+
+export const defineTools = ({
+  updateProjectState,
+  getProjectStateFiles,
+  getProjectStateDescriptions,
+  getProjectStateRequirements,
+  getProjectStateTasks,
+}: IDefineToolsParams) => ({
+  updateProjectState: defineUpdateProjectState(updateProjectState),
+  getProjectStateFiles: defineGetProjectStateFiles(getProjectStateFiles),
+  getProjectStateDescriptions: defineGetProjectStateDescriptions(
+    getProjectStateDescriptions
+  ),
+  getProjectStateRequirements: defineGetProjectStateRequirements(
+    getProjectStateRequirements
+  ),
+  getProjectStateTasks: defineGetProjectStateTasks(getProjectStateTasks),
+});
+
 export const createTools = (service: "openai" | "anthropic") => {
   const schemaKey = {
     openai: "parameters",
@@ -155,30 +208,6 @@ export const createTools = (service: "openai" | "anthropic") => {
         },
         required: ["paths"],
       },
-      // returns: {
-      //   type: "object",
-      //   properties: {
-      //     files: {
-      //       type: "array",
-      //       items: {
-      //         type: "object",
-      //         properties: {
-      //           path: {
-      //             type: "string",
-      //             description: "Relative path of the file.",
-      //           },
-      //           contents: {
-      //             type: "string",
-      //             description: "Contents of the file.",
-      //           },
-      //         },
-      //         required: ["path", "contents"],
-      //       },
-      //       description:
-      //         "Array of objects containing file paths and their contents.",
-      //     },
-      //   },
-      // },
     };
 
     if (service === "openai") {
@@ -202,30 +231,6 @@ export const createTools = (service: "openai" | "anthropic") => {
         properties: {},
         required: [],
       },
-      // returns: {
-      //   type: "object",
-      //   properties: {
-      //     descriptions: {
-      //       type: "array",
-      //       items: {
-      //         type: "object",
-      //         properties: {
-      //           id: {
-      //             type: "number",
-      //             description: "Unique identifier for the description.",
-      //           },
-      //           description: {
-      //             type: "string",
-      //             description: "The project description text.",
-      //           },
-      //         },
-      //         required: ["id", "description"],
-      //       },
-      //       description: "An array of project description objects.",
-      //     },
-      //   },
-      //   required: ["descriptions"],
-      // },
     };
 
     if (service === "openai") {

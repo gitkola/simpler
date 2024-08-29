@@ -37,6 +37,18 @@ export const getProjectStateFiles =
     dispatch(appendToInputValue(userMessage));
   };
 
+export const getProjectStateFilesTool =
+  ({ paths }: { paths: string[] }) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    const { activeProjectPath } = getState().projects;
+    const newFiles = [];
+    for await (const path of paths) {
+      const content = await readFile(`${activeProjectPath}/${path}`);
+      newFiles.push({ path, content });
+    }
+    return { files: newFiles };
+  };
+
 export const getProjectStateDescriptions =
   (message: IMessage) => async (dispatch: AppDispatch) => {
     dispatch(setProjectDescriptionsInContext(true));
@@ -44,6 +56,13 @@ export const getProjectStateDescriptions =
       (message as IMessage)?.context?.content
     }\nProjectState contains 'descriptions' for more detailed information.`;
     dispatch(appendToInputValue(userMessage));
+  };
+
+export const getProjectStateDescriptionsTool =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const descriptions =
+      getState().currentProject.currentProjectState?.descriptions || [];
+    return { descriptions };
   };
 
 export const getProjectStateRequirements =
@@ -55,6 +74,13 @@ export const getProjectStateRequirements =
     dispatch(appendToInputValue(userMessage));
   };
 
+export const getProjectStateRequirementsTool =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const requirements =
+      getState().currentProject.currentProjectState?.requirements || [];
+    return { requirements };
+  };
+
 export const getProjectStateTasks =
   (message: IMessage) => async (dispatch: AppDispatch) => {
     dispatch(setProjectTasksInContext(true));
@@ -62,6 +88,12 @@ export const getProjectStateTasks =
       (message as IMessage)?.context?.content
     }\nProjectState contains 'tasks' for more detailed information.`;
     dispatch(appendToInputValue(userMessage));
+  };
+
+export const getProjectStateTasksTool =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    const tasks = getState().currentProject.currentProjectState?.tasks || [];
+    return { tasks };
   };
 
 export const updateProjectState =
