@@ -39,7 +39,7 @@ export const getProjectStateFiles =
 
 export const getProjectStateFilesTool =
   ({ paths }: { paths: string[] }) =>
-  async (dispatch: AppDispatch, getState: () => RootState) => {
+  async (_dispatch: AppDispatch, getState: () => RootState) => {
     const { activeProjectPath } = getState().projects;
     const newFiles = [];
     for await (const path of paths) {
@@ -59,7 +59,7 @@ export const getProjectStateDescriptions =
   };
 
 export const getProjectStateDescriptionsTool =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+  () => async (_dispatch: AppDispatch, getState: () => RootState) => {
     const descriptions =
       getState().currentProject.currentProjectState?.descriptions || [];
     return { descriptions };
@@ -75,7 +75,7 @@ export const getProjectStateRequirements =
   };
 
 export const getProjectStateRequirementsTool =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+  () => async (_dispatch: AppDispatch, getState: () => RootState) => {
     const requirements =
       getState().currentProject.currentProjectState?.requirements || [];
     return { requirements };
@@ -91,7 +91,7 @@ export const getProjectStateTasks =
   };
 
 export const getProjectStateTasksTool =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+  () => async (_dispatch: AppDispatch, getState: () => RootState) => {
     const tasks = getState().currentProject.currentProjectState?.tasks || [];
     return { tasks };
   };
