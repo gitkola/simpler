@@ -597,10 +597,9 @@ export const handleSendMessage =
       );
 
       const systemPrompt = `${
-        context.instructionsInContext ? generalInstructions : ""
-      }\n\n${partialProjectState}`;
+        context.instructionsInContext ? generalInstructions + "\n\n" : ""
+      }${partialProjectState}`;
       const userMessage = `${message?.content}`;
-      console.log("userMessage", userMessage);
       if (service === "openai") {
         if (systemPrompt)
           messages.push({ role: "system", content: systemPrompt });
@@ -709,14 +708,13 @@ export const handleSendMessageWithAISDK =
         apiKey: apiKeys[service],
       });
       if (!model) throw new Error("Model is not defined");
-      let messages: CoreMessage[] = [
-        ...currentProjectConversation,
-        {
-          role: message?.role,
-          content: message?.content,
-        } as CoreMessage,
-      ];
-
+      let messages: CoreMessage[] = [...currentProjectConversation];
+      if (message?.content) {
+        messages.push({
+          role: "user",
+          content: message.content,
+        } as CoreMessage);
+      }
       const partialProjectState = createPartialProjectState(
         context,
         currentProjectState
@@ -730,6 +728,7 @@ export const handleSendMessageWithAISDK =
       const tools = defineTools({
         updateProjectState: async ({ ProjectStateUpdates }) => {
           await dispatch(updateProjectState(ProjectStateUpdates));
+          return;
         },
         getProjectStateFiles: async ({ paths }) => {
           return await dispatch(getProjectStateFilesTool({ paths }));
