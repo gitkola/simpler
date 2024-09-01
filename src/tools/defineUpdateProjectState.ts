@@ -60,6 +60,7 @@ export const defineUpdateProjectState = (
                     .describe("Task status."),
                   suggested_as_next_task: z
                     .boolean()
+                    .optional()
                     .describe("If task suggested as next task."),
                   update: z
                     .enum(["add", "modify", "delete"])

@@ -75,14 +75,8 @@ export const createModel = ({
 export async function callAIsdk(
   options: ICallAISDKOptions
 ): Promise<GenerateTextResult<Record<string, CoreTool>>> {
-  try {
-    const result = await generateText(options);
-    console.log({ res: result });
-    return result;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const result = await generateText(options);
+  return result;
 }
 
 // Allow streaming responses up to 60 seconds

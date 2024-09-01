@@ -543,36 +543,25 @@ export const createPartialProjectState = (
           ?.filter((file) => (file?.path ? true : false))
           ?.sort((a, b) => a.path!.localeCompare(b.path!))
       : [];
-  const ProjectState = {
+  const PartialProjectState: IProjectState = {
     descriptions: projectDescriptionsInContext
       ? projectState?.descriptions
-      : "request descriptions by calling the 'getProjectStateDescriptions' tool",
+      : [],
     requirements: projectRequirementsInContext
       ? projectState?.requirements
-      : "request requirements by calling the 'getProjectStateRequirements' tool",
-    tasks: projectTasksInContext
-      ? projectState?.tasks
-      : "request tasks by calling the 'getProjectStateTasks' tool",
-    files:
-      filePaths.length > 0
-        ? filePaths
-        : files.length > 0
-        ? files
-        : "request only files you need to finish task by calling the 'getProjectStateFiles' tool",
+      : [],
+    tasks: projectTasksInContext ? projectState?.tasks : [],
+    files: filePaths.length > 0 ? filePaths : files.length > 0 ? files : [],
   };
 
-  const PARTIAL_PROJECT_STATE = `# Current PartialProjectState:
+  const PARTIAL_PROJECT_STATE = `## Current PartialProjectState:
 
 \`\`\`json
-${JSON.stringify({ PartialProjectState: { ...ProjectState } }, null, 2)}
+${JSON.stringify({ PartialProjectState }, null, 2)}
 \`\`\`
 `;
-  // To reduce the number of tokens, ProjectState may be incomplete and contain only data added by the user.
-  // If you need additional data from ProjectState to complete a task, you should call the appropriate tools from the API request as described in the instructions.
-  const partialProjectState = `${
-    Object.keys(ProjectState).length > 0 ? `${PARTIAL_PROJECT_STATE}` : ""
-  }`;
-  return partialProjectState;
+
+  return PARTIAL_PROJECT_STATE;
 };
 
 export const handleSendMessage =
@@ -734,16 +723,10 @@ export const handleSendMessageWithAISDK =
       );
 
       const systemPrompt = `${
-        context.instructionsInContext ? generalInstructions : ""
-      }
-      
-      ${partialProjectState}`;
-      dispatch(
-        setCurrentProjectConversation([
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ])
-      );
+        context.instructionsInContext ? generalInstructions + "\n\n" : ""
+      }${partialProjectState}`;
+
+      dispatch(setCurrentProjectConversation([...messages]));
       const tools = defineTools({
         updateProjectState: async ({ ProjectStateUpdates }) => {
           await dispatch(updateProjectState(ProjectStateUpdates));
@@ -778,11 +761,7 @@ export const handleSendMessageWithAISDK =
 
       const { responseMessages } = response;
       dispatch(
-        setCurrentProjectConversation([
-          { role: "system", content: systemPrompt },
-          ...messages,
-          ...responseMessages,
-        ])
+        setCurrentProjectConversation([...messages, ...responseMessages])
       );
     } catch (error) {
       const errorMessage = `Error in handleSendMessageWithAISDK: ${
