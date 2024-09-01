@@ -22,18 +22,14 @@ export type IMessage =
 
 export type Entity = IProjectState | IMessage;
 
-export type TUpdate = "add" | "modify" | "delete";
-
 export interface IProjectDescription {
   id: string;
   description: string;
-  update?: TUpdate;
 }
 
 export interface IProjectRequirement {
   id: string;
   requirement: string;
-  update?: TUpdate;
 }
 
 export interface IProjectTask {
@@ -41,13 +37,11 @@ export interface IProjectTask {
   task: string;
   status: "todo" | "in_progress" | "completed" | "hold" | "no_need";
   suggested_as_next_task?: boolean;
-  update?: TUpdate;
 }
 
 export interface IProjectFile {
   path: string;
-  content?: string;
-  update?: TUpdate;
+  content?: string | null;
 }
 
 export interface IProjectState {

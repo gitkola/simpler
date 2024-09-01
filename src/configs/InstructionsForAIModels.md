@@ -43,7 +43,6 @@ When interacting with the model, the system message may include a `PartialProjec
 3. **Structured Updates**:
    - Use the `updateProjectState` function for any proposed updates.
    - Include only changed fields in the `ProjectStateUpdates` object.
-   - Specify the `update` operation ('add', 'modify', 'delete') for each change.
 
 ### Detailed Guidelines for Function Calling (Tool Use)
 

@@ -21,9 +21,6 @@ export const defineUpdateProjectState = (
                 .object({
                   id: z.string().describe("Description id."),
                   description: z.string().describe("Description text."),
-                  update: z
-                    .enum(["add", "modify", "delete"])
-                    .describe("Update operation."),
                 })
                 .describe("Description object.")
             )
@@ -35,9 +32,6 @@ export const defineUpdateProjectState = (
                 .object({
                   id: z.string().describe("Requirement id."),
                   requirement: z.string().describe("Requirement text."),
-                  update: z
-                    .enum(["add", "modify", "delete"])
-                    .describe("Update operation."),
                 })
                 .describe("Requirement object.")
             )
@@ -62,9 +56,6 @@ export const defineUpdateProjectState = (
                     .boolean()
                     .optional()
                     .describe("If task suggested as next task."),
-                  update: z
-                    .enum(["add", "modify", "delete"])
-                    .describe("Update operation"),
                 })
                 .describe("Task object.")
             )
@@ -75,10 +66,10 @@ export const defineUpdateProjectState = (
               z
                 .object({
                   path: z.string().describe("Relative file path."),
-                  content: z.string().nullable().describe("File content"),
-                  update: z
-                    .enum(["add", "modify", "delete"])
-                    .describe("Update operation"),
+                  content: z
+                    .string()
+                    .nullable()
+                    .describe("File content. null means delete file"),
                 })
                 .describe("File object.")
             )

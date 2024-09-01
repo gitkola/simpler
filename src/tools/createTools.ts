@@ -10,6 +10,7 @@ import { defineUpdateProjectState } from "./defineUpdateProjectState";
 import { defineGetProjectStateDescriptions } from "./defineGetProjectStateDescriptions";
 import { defineGetProjectStateRequirements } from "./defineGetProjectStateRequirements";
 import { defineGetProjectStateTasks } from "./defineGetProjectStateTasks";
+import { defineGetProjectStateAnswers } from "./defineGetProjectStateAnswers";
 
 export interface IDefineToolsParams {
   updateProjectState: ({
@@ -49,6 +50,7 @@ export const defineTools = ({
     getProjectStateRequirements
   ),
   getProjectStateTasks: defineGetProjectStateTasks(getProjectStateTasks),
+  getProjectStateAnswers: defineGetProjectStateAnswers(),
 });
 
 export const createTools = (service: "openai" | "anthropic") => {
@@ -81,13 +83,8 @@ export const createTools = (service: "openai" | "anthropic") => {
                       type: "string",
                       description: "Description text.",
                     },
-                    update: {
-                      type: "string",
-                      description: "Update operation.",
-                      enum: ["add", "modify", "delete"],
-                    },
                   },
-                  required: ["id", "description", "update"],
+                  required: ["id", "description"],
                 },
               },
               requirements: {
@@ -103,13 +100,8 @@ export const createTools = (service: "openai" | "anthropic") => {
                       type: "string",
                       description: "Requirement text.",
                     },
-                    update: {
-                      type: "string",
-                      description: "Update operation.",
-                      enum: ["add", "modify", "delete"],
-                    },
                   },
-                  required: ["id", "requirement", "update"],
+                  required: ["id", "requirement"],
                 },
               },
               tasks: {
@@ -140,13 +132,8 @@ export const createTools = (service: "openai" | "anthropic") => {
                       type: "boolean",
                       description: "If task suggested as next task.",
                     },
-                    update: {
-                      type: "string",
-                      description: "Update operation",
-                      enum: ["add", "modify", "delete"],
-                    },
                   },
-                  required: ["id", "task", "status", "update"],
+                  required: ["id", "task", "status"],
                 },
               },
               files: {
@@ -163,13 +150,8 @@ export const createTools = (service: "openai" | "anthropic") => {
                       description: "File content",
                       nullable: true,
                     },
-                    update: {
-                      type: "string",
-                      description: "Update operation",
-                      enum: ["add", "modify", "delete"],
-                    },
                   },
-                  required: ["path", "content", "update"],
+                  required: ["path", "content"],
                 },
               },
             },
@@ -286,11 +268,43 @@ export const createTools = (service: "openai" | "anthropic") => {
     return definition;
   };
 
+  const getProjectStateAnswersDefinition = (
+    service: "openai" | "anthropic"
+  ) => {
+    const definition = {
+      name: "getProjectStateAnswers",
+      description:
+        "Gets the array of questions about the task or project. Returns an array of answers.",
+      [schemaKey[service]]: {
+        type: "object",
+        properties: {
+          questions: {
+            type: "array",
+            items: {
+              type: "string",
+              description: "Question about the task or project.",
+            },
+          },
+        },
+        required: ["questions"],
+      },
+    };
+
+    if (service === "openai") {
+      return {
+        type: "function",
+        function: definition,
+      };
+    }
+    return definition;
+  };
+
   return [
     getProjectStateFilesDefinition(service),
     getProjectStateDescriptionDefinition(service),
     getProjectStateRequirementsDefinition(service),
     getProjectStateTasksDefinition(service),
+    getProjectStateAnswersDefinition(service),
     updateProjectStateDefinition(service),
   ];
 };

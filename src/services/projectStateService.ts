@@ -248,22 +248,14 @@ export const mergeFiles = (
     mergedFiles.set(file.path, file);
   });
   nextFiles.forEach((file) => {
-    if (file.update === "delete" || !file.content) {
+    if (file.path && !file.content) {
       mergedFiles.delete(file.path);
-    } else if (
-      ["add", "modify"].includes(file.update as string) ||
-      file.content
-    ) {
+    } else if (file.path && file.content) {
       mergedFiles.set(file.path, {
         ...file,
-        update: undefined,
       });
     } else {
-      //TODO: Handle case when update is undefined
-      mergedFiles.set(file.path, {
-        ...file,
-        update: undefined,
-      });
+      //TODO: Handle case when file.path is undefined
     }
   });
   return Array.from(mergedFiles.values());
@@ -278,18 +270,17 @@ export const mergeTasks = (
     mergedTasks.set(task.id, task);
   });
   nextTasks.forEach((task) => {
-    if (task.update === "delete") {
-      mergedTasks.delete(task.id);
-    } else if (["add", "modify"].includes(task.update as string)) {
+    if (task.id && task.task) {
       mergedTasks.set(task.id, {
         ...task,
-        update: undefined,
       });
-    } else {
-      //TODO: Handle case when update is undefined
-      mergedTasks.set(task.id, {
+    } else if (task.id && !task.task) {
+      mergedTasks.delete(task.id);
+    } else if (!task.id && task.task) {
+      const now = Date.now();
+      mergedTasks.set(`${now}}`, {
         ...task,
-        update: undefined,
+        id: `${now}`,
       });
     }
   });
@@ -305,18 +296,17 @@ export const mergeRequirements = (
     mergedRequirements.set(requirement.id, requirement);
   });
   nextRequirements.forEach((requirement) => {
-    if (requirement.update === "delete") {
+    if (requirement.id && !requirement.requirement) {
       mergedRequirements.delete(requirement.id);
-    } else if (["add", "modify"].includes(requirement.update as string)) {
+    } else if (requirement.id && requirement.requirement) {
       mergedRequirements.set(requirement.id, {
         ...requirement,
-        update: undefined,
       });
-    } else {
-      //TODO: Handle case when update is undefined
-      mergedRequirements.set(requirement.id, {
+    } else if (!requirement.id && requirement.requirement) {
+      const now = Date.now();
+      mergedRequirements.set(`${now}`, {
         ...requirement,
-        update: undefined,
+        id: `${now}`,
       });
     }
   });
@@ -332,18 +322,17 @@ export const mergeDescriptions = (
     mergedDescriptions.set(description.id, description);
   });
   nextDescriptions.forEach((description) => {
-    if (description.update === "delete") {
+    if (description.id && !description.description) {
       mergedDescriptions.delete(description.id);
-    } else if (["add", "modify"].includes(description.update as string)) {
+    } else if (description.id && description.description) {
       mergedDescriptions.set(description.id, {
         ...description,
-        update: undefined,
       });
-    } else {
-      //TODO: Handle case when update is undefined
-      mergedDescriptions.set(description.id, {
+    } else if (!description.id && description.description) {
+      const now = Date.now();
+      mergedDescriptions.set(`${now}`, {
         ...description,
-        update: undefined,
+        id: `${now}`,
       });
     }
   });

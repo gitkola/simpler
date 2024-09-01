@@ -11,6 +11,7 @@ import {
 } from "../contextSlice";
 import {
   fetchCurrentProjectState,
+  handleSendMessageWithAISDK,
   saveProjectState,
   setCurrentProjectStateError,
 } from "../currentProjectSlice";
@@ -94,6 +95,22 @@ export const getProjectStateTasksTool =
   () => async (_dispatch: AppDispatch, getState: () => RootState) => {
     const tasks = getState().currentProject.currentProjectState?.tasks || [];
     return { tasks };
+  };
+
+export const getProjectStateAnswersTool =
+  ({ answers, toolCallId }: { answers: string[]; toolCallId: string }) =>
+  async (dispatch: AppDispatch) => {
+    dispatch(
+      handleSendMessageWithAISDK({
+        role: "tool",
+        content: answers.map((answer) => ({
+          type: "tool-result",
+          toolCallId,
+          toolName: "getProjectStateAnswers",
+          result: answer,
+        })),
+      })
+    );
   };
 
 export const updateProjectState =

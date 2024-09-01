@@ -126,7 +126,6 @@ export const readFilesFromFS = async (projectPath: string) => {
         const file: IProjectFile = {
           path: filePath.replace(`${projectPath}/`, ""),
           content: fileContent as string,
-          // update: "add",
         };
         projectFiles.push(file);
       } catch (fileError) {
