@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { IProjectSettings } from "../types";
 import Message from "./Messages/Message";
 import { ArrowUp, Brain } from "./Icons";
@@ -14,6 +14,7 @@ import createBaseMessage from "../utils/createBaseMessage";
 import { setInputValue } from "../store/chatSlice";
 import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
+import { debounce } from "../utils/debounce";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -59,6 +60,24 @@ export const ChatView: React.FC = () => {
     const message = createBaseMessage(content, "user");
     dispatch(setInputValue(""));
     await dispatch(handleSendMessage(message));
+  };
+
+  const debouncedSetInputValue = useCallback(
+    debounce((value: string) => dispatch(setInputValue(value)), 300),
+    []
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    debouncedSetInputValue(e.target.value);
+  };
+
+  const debouncedSetContext = useCallback(
+    debounce((action: any, value: boolean) => dispatch(action(value)), 300),
+    []
+  );
+
+  const handleContextChange = (action: any) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedSetContext(action, e.target.checked);
   };
 
   return (
@@ -120,7 +139,7 @@ export const ChatView: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={instructionsInContext}
-                  onChange={(e) => dispatch(setInstructionsInContext(e.target.checked))}
+                  onChange={handleContextChange(setInstructionsInContext)}
                   className="h-4 w-4 mr-2"
                 />
                 Instructions
@@ -129,7 +148,7 @@ export const ChatView: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={projectDescriptionsInContext}
-                  onChange={(e) => dispatch(setProjectDescriptionsInContext(e.target.checked))}
+                  onChange={handleContextChange(setProjectDescriptionsInContext)}
                   className="h-4 w-4 mr-2"
                 />
                 Description
@@ -138,7 +157,7 @@ export const ChatView: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={projectRequirementsInContext}
-                  onChange={(e) => dispatch(setProjectRequirementsInContext(e.target.checked))}
+                  onChange={handleContextChange(setProjectRequirementsInContext)}
                   className="h-4 w-4 mr-2"
                 />
                 Requirements
@@ -147,7 +166,7 @@ export const ChatView: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={projectTasksInContext}
-                  onChange={(e) => dispatch(setProjectTasksInContext(e.target.checked))}
+                  onChange={handleContextChange(setProjectTasksInContext)}
                   className="h-4 w-4 mr-2"
                 />
                 Tasks
@@ -156,7 +175,7 @@ export const ChatView: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={projectFilePathsInContext}
-                  onChange={(e) => dispatch(setProjectFilePathsInContext(e.target.checked))}
+                  onChange={handleContextChange(setProjectFilePathsInContext)}
                   className="h-4 w-4 mr-2"
                 />
                 File Paths
@@ -172,7 +191,7 @@ export const ChatView: React.FC = () => {
                 spellCheck={false}
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => dispatch(setInputValue(e.target.value))}
+                onChange={handleInputChange}
                 onKeyPress={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
