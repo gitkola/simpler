@@ -175,11 +175,12 @@ const currentProjectSlice = createSlice({
     setCurrentProjectConversation: (
       state,
       action: PayloadAction<CoreMessage[]>
-    ) => {
-      state.currentProjectConversation = action.payload;
-      state.isLoadingCurrentProjectConversation = false;
-      state.currentProjectConversationError = null;
-    },
+    ) => ({
+      ...state,
+      currentProjectConversation: action.payload,
+      isLoadingCurrentProjectConversation: false,
+      currentProjectConversationError: null,
+    }),
     setCurrentProjectConversationError: (
       state,
       action: PayloadAction<string | null>
