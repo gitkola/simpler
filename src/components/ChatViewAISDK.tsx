@@ -66,7 +66,7 @@ export const ChatViewAISDK: React.FC = () => {
     <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
         <Brain className="w-8 h-8" />
-        <h2 className="text-lg font-semibold">AI Chat</h2>
+        <h2 className="text-lg font-semibold">AI Chat Vercel SDK</h2>
       </div>
       <div className="flex-1 flex flex-col justify-between overflow-hidden">
         {isLoadingCurrentProjectConversation && <ProcessIndicator />}
@@ -85,7 +85,7 @@ export const ChatViewAISDK: React.FC = () => {
               </div>
             )}
             {aiModelRequestError && (
-              <div className="flex justify-center">
+              <div className="flex-wrap justify-center">
                 <div className="bg-red-100 text-red-800 px-2 py-2 rounded-md">
                   {aiModelRequestError}
                 </div>
@@ -183,7 +183,7 @@ export const ChatViewAISDK: React.FC = () => {
                 className={`${textInput}`}
                 placeholder="Type your message... (Shift+Enter for new line)"
                 disabled={aiModelRequestInProgress}
-                rows={10}
+                rows={4}
               />
               <button
                 onClick={handleNewMessage}

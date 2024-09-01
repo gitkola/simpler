@@ -14,7 +14,8 @@ import ProjectStateView from "./components/ProjectStateView";
 import ProjectMessagesView from "./components/ProjectMessagesView";
 import ModalFileContent from "./components/ModalFileContent";
 import ProjectFilesView from "./components/ProjectFilesView";
-import { ThreadView } from "./components/ThreadView";
+// import { ThreadView } from "./components/ThreadView";
+import { ChatViewAISDK } from "./components/ChatViewAISDK";
 // import FileTreeView2 from "./components/FileTreeView2";
 // import FileTreeView3 from "./components/FileTreeView3";
 // import { resizeHandle } from "./styles/styles";
@@ -54,7 +55,7 @@ const App: React.FC = () => {
           {showFileTree && <FileTreeView3 />} */}
           {showCodeEditor && <EditorView />}
           {showChat && <ChatView />}
-          {showThread && <ThreadView />}
+          {showThread && <ChatViewAISDK />}
           {showSettings && <SettingsView />}
         </div>
       </div>

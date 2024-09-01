@@ -10,6 +10,6 @@ export const defineGetProjectStateRequirements = (
   tool({
     description:
       "Retrieves the project requirements without requiring any input. Returns an array of requirement objects.",
-    parameters: z.undefined(),
+    parameters: z.object({}),
     execute: getProjectStateRequirements,
   });

@@ -97,7 +97,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
   return (
     <div className="p-2 w-full rounded-md bg-green-400 bg-opacity-30 select-text">
       <div className='space-y-2'>
-        <h2 className='text-lg font-bold'>OpenAI {message.model} {choice?.message?.role}</h2>
+        <h2 className='font-bold'>OpenAI {message.model} {choice?.message?.role}</h2>
         {choice?.message?.content && <p style={{ whiteSpace: 'pre-wrap' }}>{choice.message.content}</p>}
         {choice?.message?.tool_calls && renderToolCalls(choice.message.tool_calls)}
         <p className='text-xs opacity-50 flex items-center justify-start'>Usage: {message?.usage?.prompt_tokens}/{message?.usage?.completion_tokens}</p>

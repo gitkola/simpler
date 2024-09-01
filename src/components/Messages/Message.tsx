@@ -5,23 +5,32 @@ import UserMessage from './UserMessage';
 import SystemMessage from './SystemMessage';
 import { OpenAIMessage } from './OpenAIMessage';
 import OpenAI from 'openai';
+import Markdown from 'react-markdown';
+import AssistantMessage from './AssistantMessage';
+import ToolMessage from './ToolMessage';
 
 interface MessageProps {
   message: IMessage;
 }
 
 const Message: React.FC<MessageProps> = ({ message }) => {
+  console.log('message', message);
+
   const renderCustomMessage = () => {
-    if (message?.service === 'openai') {
-      return <OpenAIMessage key={message?.id} message={(message as OpenAI.ChatCompletion)} />;
-    } else if (message?.service === 'anthropic') {
-      return <AnthropicMessage key={message?.id} message={message} />;
+    if (message?.role === 'user') {
+      return <UserMessage message={message} />;
     } else if (message?.role === 'system') {
-      return <SystemMessage key={message?.id} message={message} />;
-    } else if (message?.role === 'user') {
-      return <UserMessage key={message?.id} message={message} />;
+      return <SystemMessage message={message} />;
+    } else if (message?.role === 'assistant') {
+      return <AssistantMessage message={message} />;
+    } else if (message?.role === 'tool') {
+      return <ToolMessage message={message} />;
+    } else if (message?.service === 'openai') {
+      return <OpenAIMessage message={(message as OpenAI.ChatCompletion)} />;
+    } else if (message?.service === 'anthropic') {
+      return <AnthropicMessage message={message} />;
     } else {
-      return <div>{JSON.stringify(message, null, 2)}</div>;
+      return <Markdown>{JSON.stringify(message, null, 2)}</Markdown>;
     }
   };
   return (<div className={`flex overflow-hidden ${message?.role === 'user' ? 'justify-end' : ''}`}>{renderCustomMessage()}</div>);

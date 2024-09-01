@@ -8,6 +8,6 @@ export const defineGetProjectStateTasks = (
   tool({
     description:
       "Retrieves the project tasks without requiring any input. Returns the project tasks as an array of objects, each containing a task description and its current status.",
-    parameters: z.undefined(),
+    parameters: z.object({}),
     execute: getProjectStateTasks,
   });

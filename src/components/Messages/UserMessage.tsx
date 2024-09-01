@@ -4,11 +4,20 @@ import Markdown from "../MarkdownWrapper";
 
 export default function UserMessage({ message }: { message: IBaseMessage }) {
   return (
-    <div key={message.id} className={`flex flex-col w-full p-2 rounded-md bg-blue-500 bg-opacity-30 select-text space-y-2`}>
-      <h1 className="text-xl font-bold">User</h1>
-      <div className="flex w-vw">
-        {typeof message?.content === 'string' && <Markdown>{message?.content}</Markdown>}
-      </div>
+    <div className={`flex flex-col w-full p-2 rounded-md bg-blue-500 bg-opacity-30 select-text space-y-2`}>
+      <h1 className="text-2xl font-bold">{message.role}</h1>
+      {typeof message?.content === 'string' && <Markdown>{message?.content}</Markdown>}
+      {Array.isArray(message?.content) && <>
+        {message.content.map((contentItem, index) => {
+          if (contentItem.type === 'text') {
+            return <Markdown key={index}>{contentItem.text}</Markdown>;
+          } else if (contentItem.type === 'image') {
+            return <img key={index} src={contentItem.url} alt={contentItem.alt} className="max-w-full h-auto" />;
+          } else {
+            return <Markdown key={index}>{JSON.stringify(contentItem, null, 2)}</Markdown>;
+          }
+        })}
+      </>}
       <Accordion
         title="Raw message"
         titleClassName="text-xs"

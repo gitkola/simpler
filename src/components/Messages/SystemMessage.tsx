@@ -4,10 +4,11 @@ import Markdown from "../MarkdownWrapper";
 
 export default function SystemMessage({ message }: { message: IBaseMessage }) {
   return (
-    <div key={message.id} className={`flex flex-col w-full p-2 rounded-md bg-gray-500 bg-opacity-30 select-text`}>
+    <div className={`flex flex-col w-full p-2 rounded-md bg-gray-500 bg-opacity-30 select-text`}>
       <div className={`space-y-2 w-full`}>
         <Accordion
-          title="System"
+          title={message?.role}
+          titleClassName="text-2xl font-bold"
           content={<Markdown >{message?.content}</Markdown>}
         />
       </div>

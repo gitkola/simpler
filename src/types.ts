@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 export type ProjectPathListItem = string;
 
-export type IMessageRole = "user" | "assistant" | "system" | "app";
+export type IMessageRole = "user" | "assistant" | "system" | "app" | "tool";
 export type MessageService = "openai" | "anthropic" | "simpler";
 
 export interface IBaseMessage {

@@ -18,9 +18,6 @@ import {
 import { cloneDeep } from "lodash";
 import { setShowCodeEditor } from "./layoutSlice";
 import { IFileTreeState } from "../components/FileTree/fileTreeInterfaces";
-// import { initializeFileTree } from "../components/FileTree/useFileTree";
-// import { getFolderNameFromPath } from "../utils/pathUtils";
-// import { initializeFlatFileTree } from "../components/FileTree/useFlatFileTree";
 import {
   ANTHROPIC_API_URL,
   API_URL,
@@ -360,28 +357,6 @@ export const loadProjectFileTree =
       const filteredFilePaths = await getFilteredProjectFiles(
         activeProjectPath
       );
-      // dispatch(
-      //   initializeFileTree(
-      //     filteredFilePaths.map(
-      //       (path) =>
-      //         `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
-      //           `${activeProjectPath}/`,
-      //           ""
-      //         )}`
-      //     )
-      //   )
-      // );
-      // dispatch(
-      //   initializeFlatFileTree(
-      //     filteredFilePaths.map(
-      //       (path) =>
-      //         `${getFolderNameFromPath(activeProjectPath)}/${path.replace(
-      //           `${activeProjectPath}/`,
-      //           ""
-      //         )}`
-      //     )
-      //   )
-      // );
       const treeData = getTreeData(filteredFilePaths, activeProjectPath);
       dispatch(setCurrentProjectFileTree(treeData));
     } catch (error) {
@@ -752,7 +727,6 @@ export const handleSendMessageWithAISDK =
         } as CoreMessage,
       ];
 
-      dispatch(setCurrentProjectConversation(messages as CoreMessage[]));
       const partialProjectState = createPartialProjectState(
         context,
         currentProjectState
@@ -762,41 +736,55 @@ export const handleSendMessageWithAISDK =
         context.instructionsInContext ? generalInstructions : ""
       }
       
-${partialProjectState}`;
+      ${partialProjectState}`;
+      dispatch(
+        setCurrentProjectConversation([
+          { role: "system", content: systemPrompt },
+          ...messages,
+        ])
+      );
+      const tools = defineTools({
+        updateProjectState: async ({ ProjectStateUpdates }) => {
+          await dispatch(updateProjectState(ProjectStateUpdates));
+        },
+        getProjectStateFiles: async ({ paths }) => {
+          return await dispatch(getProjectStateFilesTool({ paths }));
+        },
+        getProjectStateDescriptions: async () => {
+          return await dispatch(getProjectStateDescriptionsTool());
+        },
+        getProjectStateRequirements: async () => {
+          return await dispatch(getProjectStateRequirementsTool());
+        },
+        getProjectStateTasks: async () => {
+          return await dispatch(getProjectStateTasksTool());
+        },
+      });
 
       const options: ICallAISDKOptions = {
         model,
         messages,
         system: systemPrompt,
-        tools: defineTools({
-          updateProjectState: async ({ ProjectStateUpdates }) => {
-            await dispatch(updateProjectState(ProjectStateUpdates));
-          },
-          getProjectStateFiles: async ({ paths }) => {
-            return await dispatch(getProjectStateFilesTool({ paths }));
-          },
-          getProjectStateDescriptions: async () => {
-            return await dispatch(getProjectStateDescriptionsTool());
-          },
-          getProjectStateRequirements: async () => {
-            return await dispatch(getProjectStateRequirementsTool());
-          },
-          getProjectStateTasks: async () => {
-            return await dispatch(getProjectStateTasksTool());
-          },
-        }),
+        tools,
+        maxToolRoundtrips: 10,
         toolChoice: "auto",
         temperature,
         maxTokens: max_tokens,
       };
 
-      const {
-        responseMessages,
-      }: GenerateTextResult<Record<string, CoreTool<any, any>>> =
+      const response: GenerateTextResult<Record<string, CoreTool<any, any>>> =
         await callAIsdk(options);
-      dispatch(setCurrentProjectConversation(responseMessages));
+
+      const { responseMessages } = response;
+      dispatch(
+        setCurrentProjectConversation([
+          { role: "system", content: systemPrompt },
+          ...messages,
+          ...responseMessages,
+        ])
+      );
     } catch (error) {
-      const errorMessage = `Error in handleSendMessage: ${
+      const errorMessage = `Error in handleSendMessageWithAISDK: ${
         typeof error === "string" ? error : (error as Error).message
       }`;
       console.error(error);

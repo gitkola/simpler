@@ -1,34 +1,36 @@
 /* Base styles for the markdown content */
 .markdown-content {
   font-family: ui-monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.6;
-  white-space: pre-line;
+  /* line-height: 1.4; */
+  white-space: pre-wrap;
+  /* margin: 1px; */
+  /* padding: 4px; */
 }
 
 /* Headings */
 .markdown-content h1, .markdown-content h2, .markdown-content h3,
 .markdown-content h4, .markdown-content h5, .markdown-content h6 {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  /* margin-top: 0.5em; */
+  /* margin-bottom: 0.5em; */
   font-weight: 600;
-  line-height: 1.25;
+  /* line-height: 1.6; */
 }
 
-.markdown-content h1 { font-size: 2em; }
-.markdown-content h2 { font-size: 1.5em; }
-.markdown-content h3 { font-size: 1.25em; }
-.markdown-content h4 { font-size: 1em; }
+.markdown-content h1 { font-size: 1.5em; }
+.markdown-content h2 { font-size: 1.25em; }
+.markdown-content h3 { font-size: 1.1em; }
+.markdown-content h4 { font-size: 1.0em; }
 .markdown-content h5 { font-size: 0.875em; }
 .markdown-content h6 { font-size: 0.85em; }
 
 /* Paragraphs */
 .markdown-content p {
-  margin-bottom: 1em;
+  margin: 0.0em;
 }
 
 /* Lists */
 .markdown-content ul, .markdown-content ol {
-  margin-bottom: 1em;
+  /* margin-bottom: 0.5em; */
   padding-left: 2em;
 }
 
@@ -36,8 +38,8 @@
 .markdown-content ol { list-style-type: decimal; }
 
 .markdown-content li > ul, .markdown-content li > ol {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0.0em;
+  margin-bottom: 0.0em;
 }
 
 /* Links */
@@ -60,8 +62,8 @@
 
 /* Code */
 .markdown-content code {
-  padding: 0.2em 0.4em;
-  margin: 0;
+  padding: 0.1em 0.2em;
+  margin: 0px;
   font-size: 85%;
   background-color: rgba(33, 170, 211, 0.5);
   border-radius: 3px;
@@ -69,10 +71,10 @@
 }
 
 .markdown-content pre {
-  padding: 16px;
+  padding: 4px;
   overflow: auto;
   font-size: 85%;
-  line-height: 1.45;
+  /* line-height: 1.45; */
   background-color: rgba(33, 170, 211, 0.5);
   border-radius: 3px;
 }
@@ -82,8 +84,8 @@
   padding: 0;
   margin: 0;
   overflow: visible;
-  line-height: inherit;
-  word-wrap: normal;
+  /* line-height: inherit; */
+  /* word-wrap: normal; */
   background-color: rgba(33, 170, 211, 0.5);
   border: 0;
   border-radius: 3px;
@@ -117,7 +119,7 @@
 .markdown-content hr {
   height: 0.1em;
   padding: 0;
-  margin: 24px 0;
+  /* margin: 0px 0px; */
   background-color: #e1e4e8;
   border: 0;
 }

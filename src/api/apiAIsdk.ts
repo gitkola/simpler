@@ -1,4 +1,10 @@
 import {
+  fetch as tauriFetch,
+  FetchOptions,
+  HttpVerb,
+  Body,
+} from "@tauri-apps/api/http";
+import {
   CoreMessage,
   CoreTool,
   generateText,
@@ -13,6 +19,7 @@ export interface ICallAISDKOptions {
   messages: CoreMessage[];
   system: string;
   tools: Record<string, CoreTool>;
+  maxToolRoundtrips: number;
   toolChoice: "auto" | "none" | "required" | { type: "tool"; toolName: string };
   temperature: number;
   maxTokens: number;
@@ -33,18 +40,49 @@ export const createModel = ({
       provider = createOpenAI({ apiKey, compatibility: "strict" });
       break;
     case "anthropic":
-      provider = createAnthropic({ apiKey });
+      provider = createAnthropic({
+        apiKey,
+        headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+        fetch: async (
+          input: RequestInfo | URL,
+          init?: RequestInit
+        ): Promise<Response> => {
+          console.log({ input, init });
+
+          const response = await tauriFetch(input.toString(), {
+            ...init,
+            method: init?.method as HttpVerb,
+            body: init?.body
+              ? Body.json(JSON.parse(init.body as string))
+              : undefined,
+          } as FetchOptions);
+
+          const customHeaders = new Headers();
+          Object.entries(response.headers).forEach(([key, value]) => {
+            customHeaders.append(key, value);
+          });
+
+          return new Response(JSON.stringify(response.data), {
+            status: response.status,
+            headers: customHeaders,
+          });
+        },
+      });
       break;
   }
   return provider ? provider(model) : null;
 };
-
 export async function callAIsdk(
   options: ICallAISDKOptions
 ): Promise<GenerateTextResult<Record<string, CoreTool>>> {
-  const result = await generateText(options);
-
-  return result;
+  try {
+    const result = await generateText(options);
+    console.log({ res: result });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 // Allow streaming responses up to 60 seconds

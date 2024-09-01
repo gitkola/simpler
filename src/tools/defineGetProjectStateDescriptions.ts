@@ -10,6 +10,6 @@ export const defineGetProjectStateDescriptions = (
   tool({
     description:
       "Gets the project descriptions without requiring any input. Returns an array of description objects.",
-    parameters: z.undefined(),
+    parameters: z.object({}),
     execute: getProjectStateDescriptions,
   });

@@ -92,7 +92,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
   return (
     <div key={message.id} className={`p-2 w-full rounded-md bg-green-400 bg-opacity-30 select-text`}>
       <div className={`space-y-2`}>
-        <h1 className="text-xl font-bold">Anthropic {message?.model} {message?.role}</h1>
+        <h1 className="font-bold">Anthropic {message?.model} {message?.role}</h1>
         {typeof message?.content === 'string' && <p>{message?.content}</p>}
         {Array.isArray(message?.content) && message?.content?.map((item, index) => (item.type === 'tool_use' ? renderToolBlock(item) : renderTextBlock(item, index)))}
         <p className='text-xs opacity-50'>Token usage: {(message as Anthropic.Message)?.usage?.input_tokens}/{(message as Anthropic.Message)?.usage?.output_tokens}</p>
