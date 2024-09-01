@@ -19,7 +19,7 @@ export interface ICallAISDKOptions {
   messages: CoreMessage[];
   system: string;
   tools: Record<string, CoreTool>;
-  maxToolRoundtrips: number;
+  // maxToolRoundtrips: number;
   toolChoice: "auto" | "none" | "required" | { type: "tool"; toolName: string };
   temperature: number;
   maxTokens: number;
@@ -75,6 +75,8 @@ export const createModel = ({
 export async function callAIsdk(
   options: ICallAISDKOptions
 ): Promise<GenerateTextResult<Record<string, CoreTool>>> {
+  console.log({ options });
+
   const result = await generateText(options);
   return result;
 }

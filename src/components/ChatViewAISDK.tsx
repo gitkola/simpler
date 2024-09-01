@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { IMessage, IProjectSettings } from "../types";
 import Message from "./Messages/Message";
 import { ArrowUp, Brain } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
-import { saveProjectSettings, handleSendMessageWithAISDK } from "../store/currentProjectSlice";
+import { saveProjectSettings, handleSendMessageWithAISDK, createSystemPrompt } from "../store/currentProjectSlice";
 import { Select } from "./Select";
 import Spinner from "./Spinner";
 import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../configs/instructions";
@@ -14,10 +14,14 @@ import createBaseMessage from "../utils/createBaseMessage";
 import { setInputValue } from "../store/chatSlice";
 import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
-import { CoreMessage } from "ai";
+import { CoreMessage, CoreUserMessage } from "ai";
+import SystemMessage from "./Messages/SystemMessage";
+
 
 export const ChatViewAISDK: React.FC = () => {
-  const { currentProjectConversation,
+  const {
+    currentProjectState,
+    currentProjectConversation,
     isLoadingCurrentProjectConversation,
     currentProjectConversationError,
     currentProjectSettings,
@@ -29,7 +33,9 @@ export const ChatViewAISDK: React.FC = () => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { inputValue } = useAppSelector((state: RootState) => state.chat);
-  const { instructionsInContext, projectDescriptionsInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = useAppSelector((state: RootState) => state.context);
+  const { generalInstructions } = useAppSelector((state: RootState) => state.settings.instructions);
+  const context = useAppSelector((state: RootState) => state.context);
+  const { instructionsInContext, projectDescriptionsInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = context;
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -62,6 +68,8 @@ export const ChatViewAISDK: React.FC = () => {
     await dispatch(handleSendMessageWithAISDK(message as CoreMessage));
   };
 
+  const systemPrompt = useMemo(() => createSystemPrompt(context, generalInstructions, currentProjectState), [context,]);
+
   return (
     <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
@@ -73,6 +81,7 @@ export const ChatViewAISDK: React.FC = () => {
         {currentProjectConversationError && <div className="flex p-4 items-center justify-center bg-red-500">{currentProjectConversationError}</div>}
         <div className="flex-1 overflow-auto">
           <div className="pl-2 pt-2 pr-0.5 space-y-2 h-fit">
+            <SystemMessage message={{ role: "system", content: systemPrompt }} />
             {currentProjectConversation?.map((message, index) => (
               <Message
                 key={index}
@@ -99,7 +108,7 @@ export const ChatViewAISDK: React.FC = () => {
             <div className="flex flex-wrap gap-2 items-center">
               <div>Suggestions:</div>
               <button
-                onClick={async () => await dispatch(handleSendMessageWithAISDK(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user") as CoreMessage))}
+                onClick={async () => await dispatch(handleSendMessageWithAISDK(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user") as CoreUserMessage))}
                 className={`${outlineButton}`}
                 disabled={aiModelRequestInProgress}
               >
@@ -107,7 +116,7 @@ export const ChatViewAISDK: React.FC = () => {
                 <ArrowUp size={20} />
               </button>
               <button
-                onClick={async () => await dispatch(handleSendMessageWithAISDK(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user") as CoreMessage))}
+                onClick={async () => await dispatch(handleSendMessageWithAISDK(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user") as CoreUserMessage))}
                 className={`${outlineButton}`}
                 disabled={aiModelRequestInProgress}
               >

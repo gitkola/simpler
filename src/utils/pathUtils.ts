@@ -14,3 +14,8 @@ export const getFileNameFromPath = (filePath: string | null): string => {
   if (!filePath) return "";
   return filePath.split("/").pop() || "";
 };
+
+export const getFileExtension = (filePath: string | null): string => {
+  if (!filePath) return "";
+  return filePath.split(".").pop() || "";
+};

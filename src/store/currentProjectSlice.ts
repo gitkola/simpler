@@ -37,8 +37,8 @@ import {
   getProjectStateFilesTool,
   getProjectStateRequirementsTool,
   getProjectStateTasksTool,
-  updateProjectState,
-} from "./actions/toolFunctions";
+  updateProjectStateTool,
+} from "../tools/toolFunctions";
 
 export interface IFile {
   path: string;
@@ -512,9 +512,10 @@ export const addMessageToThread =
     await dispatch(saveProjectMessages([...messages, message]));
   };
 
-export const createPartialProjectState = (
+export const createSystemPrompt = (
   context: IContextState,
-  projectState: IProjectState
+  generalInstructions: string,
+  projectState: IProjectState | null
 ) => {
   const {
     projectDescriptionsInContext,
@@ -554,14 +555,18 @@ export const createPartialProjectState = (
     files: filePaths.length > 0 ? filePaths : files.length > 0 ? files : [],
   };
 
-  const PARTIAL_PROJECT_STATE = `## Current PartialProjectState:
-
+  const PARTIAL_PROJECT_STATE = `## Current \`PartialProjectState\`:
 \`\`\`json
 ${JSON.stringify({ PartialProjectState }, null, 2)}
 \`\`\`
-`;
 
-  return PARTIAL_PROJECT_STATE;
+---`;
+
+  const systemPrompt = `${
+    context.instructionsInContext ? generalInstructions + "\n\n" : ""
+  }${PARTIAL_PROJECT_STATE}`;
+
+  return systemPrompt;
 };
 
 export const handleSendMessage =
@@ -572,12 +577,12 @@ export const handleSendMessage =
       dispatch(setAIModelRequestInProgress(true));
 
       const projectSettings = getState().currentProject.currentProjectSettings;
-      const projectState = getState().currentProject.currentProjectState;
+      const currentProjectState = getState().currentProject.currentProjectState;
 
       const context = getState().context;
       const { generalInstructions } = getState().settings.instructions;
 
-      if (!projectState || !projectSettings) {
+      if (!currentProjectState || !projectSettings) {
         dispatch(
           setAIModelRequestError("ProjectState or Settings are not loaded")
         );
@@ -591,14 +596,12 @@ export const handleSendMessage =
       let options: IRequestOptions;
       const tools = createTools(service);
       let messages = [];
-      const partialProjectState = createPartialProjectState(
+      const systemPrompt = createSystemPrompt(
         context,
-        projectState
+        generalInstructions,
+        currentProjectState
       );
 
-      const systemPrompt = `${
-        context.instructionsInContext ? generalInstructions + "\n\n" : ""
-      }${partialProjectState}`;
       const userMessage = `${message?.content}`;
       if (service === "openai") {
         if (systemPrompt)
@@ -673,7 +676,7 @@ export const handleSendMessage =
   };
 
 export const handleSendMessageWithAISDK =
-  (message: CoreMessage) =>
+  (message?: CoreMessage) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       dispatch(setAIModelRequestError(null));
@@ -710,24 +713,18 @@ export const handleSendMessageWithAISDK =
       if (!model) throw new Error("Model is not defined");
       let messages: CoreMessage[] = [...currentProjectConversation];
       if (message?.content) {
-        messages.push({
-          role: "user",
-          content: message.content,
-        } as CoreMessage);
+        messages.push(message);
       }
-      const partialProjectState = createPartialProjectState(
+      const systemPrompt = createSystemPrompt(
         context,
+        generalInstructions,
         currentProjectState
       );
-
-      const systemPrompt = `${
-        context.instructionsInContext ? generalInstructions + "\n\n" : ""
-      }${partialProjectState}`;
 
       dispatch(setCurrentProjectConversation([...messages]));
       const tools = defineTools({
         updateProjectState: async ({ ProjectStateUpdates }) => {
-          await dispatch(updateProjectState(ProjectStateUpdates));
+          await dispatch(updateProjectStateTool(ProjectStateUpdates));
           return;
         },
         getProjectStateFiles: async ({ paths }) => {
@@ -749,7 +746,7 @@ export const handleSendMessageWithAISDK =
         messages,
         system: systemPrompt,
         tools,
-        maxToolRoundtrips: 10,
+        // maxToolRoundtrips: 10,
         toolChoice: "auto",
         temperature,
         maxTokens: max_tokens,

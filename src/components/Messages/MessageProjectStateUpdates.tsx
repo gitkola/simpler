@@ -2,7 +2,7 @@ import { IProjectState } from "../../types";
 import { useAppDispatch } from '../../store';
 import Accordion from '../Accordion';
 import Editor from '../Editor';
-import { updateProjectState } from "../../store/actions/toolFunctions";
+import { updateProjectState } from "../../tools/toolFunctions";
 
 export interface IMessageProjectStateUpdatesProps {
   projectStateUpdates: IProjectState;

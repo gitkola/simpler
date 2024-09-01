@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
 import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
 import { IMessage } from "../../types";
-import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from "../../store/actions/toolFunctions";
+import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from "../../tools/toolFunctions";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
   const dispatch = useAppDispatch();

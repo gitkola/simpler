@@ -1,20 +1,20 @@
-import { AppDispatch, RootState } from "..";
-import { readFile } from "../../services/fsService";
-import { mergeProjectStates } from "../../services/projectStateService";
-import { IMessage, IProjectState } from "../../types";
-import { appendToInputValue } from "../chatSlice";
+import { AppDispatch, RootState } from "../store";
+import { readFile } from "../services/fsService";
+import { mergeProjectStates } from "../services/projectStateService";
+import { IMessage, IProjectState } from "../types";
+import { appendToInputValue } from "../store/chatSlice";
 import {
   setProjectDescriptionsInContext,
   setProjectFilesInContext,
   setProjectRequirementsInContext,
   setProjectTasksInContext,
-} from "../contextSlice";
+} from "../store/contextSlice";
 import {
   fetchCurrentProjectState,
   handleSendMessageWithAISDK,
   saveProjectState,
   setCurrentProjectStateError,
-} from "../currentProjectSlice";
+} from "../store/currentProjectSlice";
 
 export const getProjectStateFiles =
   (paths: string[], message: IMessage) =>
@@ -46,7 +46,13 @@ export const getProjectStateFilesTool =
     for await (const path of paths) {
       const content = await readFile(`${activeProjectPath}/${path}`);
       newFiles.push({ path, content });
+      console.log({ content });
     }
+    console.log(
+      "getProjectStateFilesTool",
+      JSON.stringify({ files: newFiles }, null, 2)
+    );
+
     return { files: newFiles };
   };
 
@@ -94,6 +100,8 @@ export const getProjectStateTasks =
 export const getProjectStateTasksTool =
   () => async (_dispatch: AppDispatch, getState: () => RootState) => {
     const tasks = getState().currentProject.currentProjectState?.tasks || [];
+    console.log("getProjectStateTasksTool", JSON.stringify({ tasks }, null, 2));
+
     return { tasks };
   };
 
@@ -116,6 +124,34 @@ export const getProjectStateAnswersTool =
 export const updateProjectState =
   (projectStateUpdates: IProjectState) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const projectPath = getState().projects.activeProjectPath;
+      if (!projectPath) return;
+      dispatch(fetchCurrentProjectState());
+      const projectState = getState().currentProject.currentProjectState;
+      const mergedState = mergeProjectStates(
+        projectState!,
+        projectStateUpdates
+      );
+      await dispatch(saveProjectState(mergedState));
+    } catch (error) {
+      console.error("Error while syncing ProjectState:", error);
+      dispatch(
+        setCurrentProjectStateError(
+          `Error while syncing ProjectState:: ${(error as Error).message}`
+        )
+      );
+    }
+  };
+
+export const updateProjectStateTool =
+  (projectStateUpdates: IProjectState) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    console.log(
+      "updateProjectStateTool",
+      JSON.stringify(projectStateUpdates, null, 2)
+    );
+
     try {
       const projectPath = getState().projects.activeProjectPath;
       if (!projectPath) return;

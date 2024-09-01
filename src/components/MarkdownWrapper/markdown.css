@@ -1,10 +1,12 @@
 /* Base styles for the markdown content */
 .markdown-content {
-  font-family: ui-monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: ui-monospace, Menlo, Monaco, sans-serif, 'Helvetica Neue', 'Droid Sans', 'Fira Sans', 'Cantarell', 'Ubuntu', 'Oxygen', 'Roboto', 'Segoe UI', ui-monospace,  -apple-system, BlinkMacSystemFont;
   /* line-height: 1.4; */
-  white-space: pre-wrap;
+  white-space: pre-line;
+  /* white-space: pre-wrap; */
   /* margin: 1px; */
   /* padding: 4px; */
+  --markdown-code-bg-color: rgb(0, 118, 187);
 }
 
 /* Headings */
@@ -64,19 +66,24 @@
 .markdown-content code {
   padding: 0.1em 0.2em;
   margin: 0px;
-  font-size: 85%;
-  background-color: rgba(33, 170, 211, 0.5);
+  /* font-size: 85%; */
+  background-color: var(--markdown-code-bg-color);
+  /* background-color: rgb(17, 161, 205); */
   border-radius: 3px;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-family: "monospace, SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 .markdown-content pre {
-  padding: 4px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 3px;
+  padding-bottom: 3px;
   overflow: auto;
-  font-size: 85%;
-  /* line-height: 1.45; */
-  background-color: rgba(33, 170, 211, 0.5);
+  /* font-size: 85%; */
+  /* line-height: 1.6; */
+  background-color: var(--markdown-code-bg-color);
   border-radius: 3px;
+  white-space: pre-wrap;
 }
 
 .markdown-content pre code {
@@ -86,7 +93,7 @@
   overflow: visible;
   /* line-height: inherit; */
   /* word-wrap: normal; */
-  background-color: rgba(33, 170, 211, 0.5);
+  background-color: var(--markdown-code-bg-color);;
   border: 0;
   border-radius: 3px;
   white-space: pre-wrap;

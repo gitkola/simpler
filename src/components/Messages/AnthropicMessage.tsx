@@ -6,7 +6,7 @@ import { ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
 import { useAppDispatch } from '../../store';
 import { setFileInModal } from '../../store/layoutSlice';
 import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
-import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from '../../store/actions/toolFunctions';
+import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from '../../tools/toolFunctions';
 
 export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) => {
   const dispatch = useAppDispatch();
