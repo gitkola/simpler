@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-// import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import React, { useEffect, useMemo, useCallback } from "react";
 import SidePanel from "./components/SidePanel";
 import EditorView from "./components/EditorView";
 import ProjectInfoView from "./components/ProjectInfoView";
@@ -14,154 +13,54 @@ import ProjectStateView from "./components/ProjectStateView";
 import ProjectMessagesView from "./components/ProjectMessagesView";
 import ModalFileContent from "./components/ModalFileContent";
 import ProjectFilesView from "./components/ProjectFilesView";
-// import { ThreadView } from "./components/ThreadView";
 import { ChatViewAISDK } from "./components/ChatViewAISDK";
-// import FileTreeView2 from "./components/FileTreeView2";
-// import FileTreeView3 from "./components/FileTreeView3";
-// import { resizeHandle } from "./styles/styles";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const App: React.FC = () => {
   const activeProjectPath = useAppSelector((state: RootState) => state.projects.activeProjectPath);
   const { fileInModal } = useAppSelector((state: RootState) => state.layout);
+  const layoutState = useAppSelector((state: RootState) => state.layout);
   const dispatch = useAppDispatch();
 
-  const loadProjectData = async () => {
+  const loadProjectData = useCallback(async () => {
     await dispatch(loadProject());
-  };
+  }, []);
 
   useEffect(() => {
-    if (!activeProjectPath) return;
-    loadProjectData();
+    if (activeProjectPath) {
+      loadProjectData();
+    }
   }, [activeProjectPath]);
-  const { showProjects, showProjectFiles, showFileTree, showSettings, showCodeEditor, showChat, showThread, showProjectState, showProjectInfo, showProjectMessages } = useAppSelector((state) => state.layout);
-  // const fileTree = useAppSelector((state) => state.fileTree);
-  // const flatFileTree = useAppSelector((state) => state.flatFileTree);
-  // console.log({ fileTree, flatFileTree });
 
+  const viewComponents = useMemo(() => [
+    { condition: layoutState.showProjects, component: <ProjectListView /> },
+    { condition: layoutState.showProjectInfo, component: <ProjectInfoView /> },
+    { condition: layoutState.showProjectState, component: <ProjectStateView /> },
+    { condition: layoutState.showProjectMessages, component: <ProjectMessagesView /> },
+    { condition: layoutState.showProjectFiles, component: <ProjectFilesView /> },
+    { condition: layoutState.showFileTree, component: <FileTreeView /> },
+    { condition: layoutState.showCodeEditor, component: <EditorView /> },
+    { condition: layoutState.showChat, component: <ChatView /> },
+    { condition: layoutState.showThread, component: <ChatViewAISDK /> },
+    { condition: layoutState.showSettings, component: <SettingsView /> }
+  ], [layoutState]);
 
   return (
-    <div className="flex h-screen">
-      <StyleTag />
-      <SidePanel />
-      <div className="flex overflow-x-scroll overflow-y-hidden">
-        <div className="flex">
-          {showProjects && <ProjectListView />}
-          {showProjectInfo && <ProjectInfoView />}
-          {showProjectState && <ProjectStateView />}
-          {showProjectMessages && <ProjectMessagesView />}
-          {showProjectFiles && <ProjectFilesView />}
-          {showFileTree && <FileTreeView />}
-          {/* {showFileTree && <FileTreeView2 />}
-          {showFileTree && <FileTreeView3 />} */}
-          {showCodeEditor && <EditorView />}
-          {showChat && <ChatView />}
-          {showThread && <ChatViewAISDK />}
-          {showSettings && <SettingsView />}
+    <ErrorBoundary>
+      <div className="flex h-screen" role="application">
+        <StyleTag />
+        <SidePanel />
+        <div className="flex overflow-x-scroll overflow-y-hidden">
+          <div className="flex">
+            {viewComponents.map((view, index) =>
+              view.condition && <React.Fragment key={index}>{view.component}</React.Fragment>
+            )}
+          </div>
         </div>
+        {fileInModal && <ModalFileContent />}
       </div>
-      {fileInModal && <ModalFileContent />}
-    </div>
+    </ErrorBoundary>
   );
-
-  // return (
-  //   <div className="flex h-screen w-screen">
-  //     <SidePanel />
-  //     <PanelGroup
-  //       // autoSaveId="conditional"
-  //       direction="horizontal"
-  //     // className="h-screen w-screen overflow-auto"
-  //     >
-  //       {
-  //         showProjects && (
-  //           <>
-  //             <Panel
-  //               id="projects"
-  //               // minSize={12}
-  //               // maxSize={16}
-  //               order={1}
-  //             >
-  //               <ProjectListView />
-  //             </Panel>
-  //             <PanelResizeHandle className={`${resizeHandle}`} />
-  //           </>
-  //         )
-  //       }
-  //       {
-  //         showProjectState && (
-  //           <>
-  //             <Panel
-  //               id="project-info"
-  //               // minSize={16}
-  //               // maxSize={24}
-  //               order={2}
-  //             >
-  //               <ProjectInfoView />
-  //             </Panel>
-  //             <PanelResizeHandle className={`${resizeHandle}`} />
-  //           </>
-  //         )
-  //       }
-  //       {
-  //         showFileTree && (
-  //           <>
-  //             <Panel
-  //               id="file-tree"
-  //               // minSize={12}
-  //               // maxSize={32}
-  //               order={3}
-  //             >
-  //               <FileTreeView />
-  //             </Panel>
-  //             <PanelResizeHandle className={`${resizeHandle}`} />
-  //           </>
-  //         )
-  //       }
-  //       {
-  //         showCodeEditor && (
-  //           <>
-  //             <Panel
-  //               id="code-editor"
-  //               // minSize={24}
-  //               // maxSize={32}
-  //               order={4}
-  //             >
-  //               <EditorView />
-  //             </Panel>
-  //             <PanelResizeHandle className={`${resizeHandle}`} />
-  //           </>
-  //         )
-  //       }
-  //       {
-  //         showChat && (
-  //           <>
-  //             <Panel
-  //               id="messages"
-  //               // minSize={24}
-  //               // maxSize={32}
-  //               order={5}
-  //             >
-  //               <ChatView />
-  //             </Panel>
-  //             <PanelResizeHandle className={`${resizeHandle}`} />
-  //           </>
-  //         )
-  //       }
-  //       {
-  //         showSettings && (
-  //           <Panel
-  //             id="settings"
-  //             // minSize={16}
-  //             // maxSize={16}
-  //             order={6}
-  //           >
-  //             <SettingsView />
-  //           </Panel>
-  //         )
-  //       }
-  //     </PanelGroup>
-  //   </div>
-  // );
 };
 
-export default App;
-
+export default React.memo(App);
