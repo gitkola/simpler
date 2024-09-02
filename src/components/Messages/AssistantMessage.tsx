@@ -20,7 +20,7 @@ export default function AssistantMessage({ message }: { message: CoreAssistantMe
                     <Markdown>
                       {`**${contentItem.type}:** \`${contentItem.toolName}\` toolCallId: ${contentItem.toolCallId}`}
                     </Markdown>
-                    <Editor language="json" value={JSON.stringify(contentItem.args, null, 2)} disabled style={{ padding: 8 }} />
+                    <Editor language="json" value={JSON.stringify(contentItem.args, null, 2)} disabled style={{ paddingLeft: 8, paddingRight: 8, paddingBottom: 4, paddingTop: 4, borderRadius: 3 }} />
                   </div>
                 );
               } else {

@@ -15,8 +15,6 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({ message }) => {
-  console.log('message', message);
-
   const renderCustomMessage = () => {
     if (message?.role === 'user') {
       return <UserMessage message={message as CoreUserMessage} />;
@@ -34,7 +32,12 @@ const Message: React.FC<MessageProps> = ({ message }) => {
       return <Markdown>{JSON.stringify(message, null, 2)}</Markdown>;
     }
   };
-  return (<div className={`flex overflow-hidden ${message?.role === 'user' ? 'justify-end' : ''}`}>{renderCustomMessage()}</div>);
+
+  return (
+    <div className={`flex flex-col overflow-hidden ${message?.role === 'user' ? 'justify-end' : ''}`}>
+      {renderCustomMessage()}
+    </div>
+  );
 };
 
 export default Message;

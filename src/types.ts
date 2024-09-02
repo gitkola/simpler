@@ -24,18 +24,18 @@ export type Entity = IProjectState | IMessage;
 
 export interface IProjectDescription {
   id: string;
-  description: string;
+  description?: string;
 }
 
 export interface IProjectRequirement {
   id: string;
-  requirement: string;
+  requirement?: string;
 }
 
 export interface IProjectTask {
   id: string;
-  task: string;
-  status: "todo" | "in_progress" | "completed" | "hold" | "no_need";
+  task?: string;
+  status?: "todo" | "in_progress" | "completed" | "hold" | "no_need";
   suggested_as_next_task?: boolean;
 }
 

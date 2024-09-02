@@ -7,7 +7,9 @@ export interface IUpdateProjectStateParams {
 }
 
 export const defineUpdateProjectState = (
-  updateProjectState: (params: IUpdateProjectStateParams) => Promise<void>
+  updateProjectState: (
+    params: IUpdateProjectStateParams
+  ) => Promise<{ ProjectStateUpdatesResult: IProjectState }>
 ) =>
   tool({
     description:
@@ -78,14 +80,15 @@ export const defineUpdateProjectState = (
         })
         .describe("Object containing changed ProjectState fields."),
     }),
-    execute: async ({ ProjectStateUpdates }) =>
-      await updateProjectState({
-        ProjectStateUpdates: {
-          ...ProjectStateUpdates,
-          files: ProjectStateUpdates.files?.map((file) => ({
-            ...file,
-            content: file.content === null ? undefined : file.content,
-          })),
-        },
-      }),
+    // execute: async ({ ProjectStateUpdates }) =>
+    //   await updateProjectState({
+    //     ProjectStateUpdates: {
+    //       ...ProjectStateUpdates,
+    //       files: ProjectStateUpdates.files?.map((file) => ({
+    //         ...file,
+    //         content: file.content === null ? undefined : file.content,
+    //       })),
+    //     },
+    //   }),
+    execute: updateProjectState,
   });

@@ -17,7 +17,7 @@ export interface IDefineToolsParams {
     ProjectStateUpdates,
   }: {
     ProjectStateUpdates: IProjectState;
-  }) => Promise<void>;
+  }) => Promise<{ ProjectStateUpdatesResult: IProjectState }>;
   getProjectStateFiles: ({
     paths,
   }: {

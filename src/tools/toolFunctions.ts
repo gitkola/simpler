@@ -147,27 +147,28 @@ export const updateProjectState =
 export const updateProjectStateTool =
   (projectStateUpdates: IProjectState) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
-    console.log(
-      "updateProjectStateTool",
-      JSON.stringify(projectStateUpdates, null, 2)
-    );
-
-    try {
-      const projectPath = getState().projects.activeProjectPath;
-      if (!projectPath) return;
-      dispatch(fetchCurrentProjectState());
-      const projectState = getState().currentProject.currentProjectState;
-      const mergedState = mergeProjectStates(
-        projectState!,
-        projectStateUpdates
-      );
-      await dispatch(saveProjectState(mergedState));
-    } catch (error) {
-      console.error("Error while syncing ProjectState:", error);
-      dispatch(
-        setCurrentProjectStateError(
-          `Error while syncing ProjectState:: ${(error as Error).message}`
-        )
+    dispatch(fetchCurrentProjectState());
+    const projectState = getState().currentProject.currentProjectState;
+    const mergedState = mergeProjectStates(projectState!, projectStateUpdates);
+    await dispatch(saveProjectState(mergedState));
+    const ProjectStateUpdatesResult: IProjectState = {};
+    if (projectStateUpdates.descriptions) {
+      ProjectStateUpdatesResult["descriptions"] =
+        projectStateUpdates.descriptions.map(({ id }) => ({ id }));
+    }
+    if (projectStateUpdates.requirements) {
+      ProjectStateUpdatesResult["requirements"] =
+        projectStateUpdates.requirements.map(({ id }) => ({ id }));
+    }
+    if (projectStateUpdates.tasks) {
+      ProjectStateUpdatesResult["tasks"] = projectStateUpdates.tasks.map(
+        ({ id }) => ({ id })
       );
     }
+    if (projectStateUpdates.files) {
+      ProjectStateUpdatesResult["files"] = projectStateUpdates.files.map(
+        ({ path }) => ({ path })
+      );
+    }
+    return { ProjectStateUpdatesResult };
   };

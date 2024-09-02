@@ -15,7 +15,6 @@ import { setInputValue } from "../store/chatSlice";
 import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
 import { CoreMessage, CoreUserMessage } from "ai";
-import SystemMessage from "./Messages/SystemMessage";
 
 
 export const ChatViewAISDK: React.FC = () => {
@@ -79,9 +78,9 @@ export const ChatViewAISDK: React.FC = () => {
       <div className="flex-1 flex flex-col justify-between overflow-hidden">
         {isLoadingCurrentProjectConversation && <ProcessIndicator />}
         {currentProjectConversationError && <div className="flex p-4 items-center justify-center bg-red-500">{currentProjectConversationError}</div>}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-x-auto overflow-y-scroll">
           <div className="pl-2 pt-2 pr-0.5 space-y-2 h-fit">
-            <SystemMessage message={{ role: "system", content: systemPrompt }} />
+            <Message message={{ role: "system", content: systemPrompt }} />
             {currentProjectConversation?.map((message, index) => (
               <Message
                 key={index}

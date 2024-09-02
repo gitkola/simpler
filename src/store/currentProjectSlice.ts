@@ -724,8 +724,7 @@ export const handleSendMessageWithAISDK =
       dispatch(setCurrentProjectConversation([...messages]));
       const tools = defineTools({
         updateProjectState: async ({ ProjectStateUpdates }) => {
-          await dispatch(updateProjectStateTool(ProjectStateUpdates));
-          return;
+          return await dispatch(updateProjectStateTool(ProjectStateUpdates));
         },
         getProjectStateFiles: async ({ paths }) => {
           return await dispatch(getProjectStateFilesTool({ paths }));

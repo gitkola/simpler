@@ -29,7 +29,7 @@ const Accordion = ({ title, content, className, buttonClassName, titleClassName,
         // className={`pl-2 pr-1 py-1 flex w-full justify-between items-center rounded-sm border-b border-transparent hover:shadow-md hover:border-b hover:border-opacity-30 hover:border-blue-500 ${buttonClassName}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className={`font-bold ${titleClassName}`}>{title}</span>
+        <div className={`font-bold ${titleClassName}`}>{title}</div>
         <ChevronRight size={24} className={`transform transition-transform duration-300 ${isOpen ? '-rotate-90' : 'rotate-90'}`} />
       </button>
       <div

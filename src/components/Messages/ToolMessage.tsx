@@ -23,10 +23,9 @@ export default function ToolMessage({ message }: { message: CoreToolMessage }) {
     {
       <Accordion
         title={'PartialProjectState'}
-        titleClassName="text-lg font-bold border-b-2 border-b-blue-500"
-        buttonClassName=""
+        titleClassName="text-lg font-bold border-b-2"
         content={
-          <Editor language={"json"} value={JSON.stringify(result.PartialProjectState!, null, 2)} disabled style={{ padding: 8 }} />
+          <Editor language={"json"} value={JSON.stringify(result?.PartialProjectState!, null, 2)} disabled style={{ paddingLeft: 8, paddingRight: 8, paddingBottom: 4, paddingTop: 4, borderRadius: 3 }} />
         }
       />
     }
@@ -38,10 +37,9 @@ export default function ToolMessage({ message }: { message: CoreToolMessage }) {
           <Accordion
             key={idx}
             title={file.path}
-            titleClassName="text-lg font-bold border-b-2 border-b-blue-500"
-            buttonClassName=""
+            titleClassName="text-lg font-bold border-b-2"
             content={
-              <Editor language={getFileExtension(file.path)} value={file.content!} disabled style={{ padding: 8 }} />
+              <Editor language={getFileExtension(file.path)} value={file.content!} disabled style={{ paddingLeft: 8, paddingRight: 8, paddingBottom: 4, paddingTop: 4, borderRadius: 3 }} />
             }
           />
         );
@@ -51,7 +49,7 @@ export default function ToolMessage({ message }: { message: CoreToolMessage }) {
 
   return (
     <div className={`flex flex-col w-full p-2 rounded-md bg-yellow-500 bg-opacity-50 select-text space-y-2`}>
-      <h1 className="text-2xl font-bold space-x-2 capitalize">{message.role} <button onClick={() => dispatch(handleSendMessageWithAISDK())} className="bg-blue-500 hover:bg-blue-600 text-white pl-3 pr-2 rounded-full"><div className="flex space-x-4"><span>Send Tools Result</span> <AppIcon icon="arrow-up" /></div></button></h1>
+      <h1 className="text-2xl font-bold space-x-2 capitalize">{message.role} <button onClick={() => dispatch(handleSendMessageWithAISDK())} className=" text-lg bg-blue-500 hover:bg-blue-600 text-white pl-3 pr-2 rounded-full"><div className="flex space-x-4"><span>Send Tools Result</span> <AppIcon icon="arrow-up" /></div></button></h1>
       <div className="flex flex-col w-vw">
         <div className="flex flex-col w-vw gap-8">
           {Array.isArray(content) &&
