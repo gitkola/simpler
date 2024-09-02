@@ -6,7 +6,7 @@ import {
 import { File, FolderTree } from "./Icons";
 import SquareButton from "./SquareButton";
 import { openFolder } from "../services/fsService";
-import { handleClickOnFile, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
+import { handleOpenFileInEditor, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
 
 const treeItemIsFile = (tree: ITreeData) => Array.isArray(tree?.children) === false;
@@ -18,7 +18,7 @@ export default function FileTreeView() {
 
   const handleClickTreeItem = async (tree: ITreeData) => {
     if (treeItemIsFile(tree)) {
-      await dispatch(handleClickOnFile(`${activeProjectPath}${tree.path}`));
+      await dispatch(handleOpenFileInEditor(`${activeProjectPath}${tree.path}`));
     } else {
       dispatch(handleClickOnFolder({ ...tree }));
     };

@@ -427,7 +427,7 @@ export const saveProjectSettings =
     }
   };
 
-export const handleClickOnFile =
+export const handleOpenFileInEditor =
   (path: string) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {

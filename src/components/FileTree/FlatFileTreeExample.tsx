@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatFileTree } from './FlatFileTree';
 import { useFlatFileTree } from './useFlatFileTree';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { handleClickOnFile } from '../../store/currentProjectSlice';
+import { handleOpenFileInEditor } from '../../store/currentProjectSlice';
 
 const FlatFileTreeExample: React.FC = () => {
   const {
@@ -19,7 +19,7 @@ const FlatFileTreeExample: React.FC = () => {
     const filePathArray = path?.split("/");
     filePathArray.shift();
     const filePath = filePathArray.join("/");
-    await dispatch(handleClickOnFile(`${activeProjectPath}/${filePath}`));
+    await dispatch(handleOpenFileInEditor(`${activeProjectPath}/${filePath}`));
   };
 
   return (

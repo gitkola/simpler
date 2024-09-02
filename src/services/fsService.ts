@@ -32,12 +32,7 @@ export const writeFile = async (
   path: string | null
 ) => {
   try {
-    const activeProjectPath = store.getState().projects.activeProjectPath;
-    if (!activeProjectPath) throw new Error("No active project path");
-    const fullPath = await join(
-      activeProjectPath,
-      path || `/${generateDefaultFileName()}`
-    );
+    const fullPath = await getFullFilePath(path);
     await invoke("write_file", {
       path: fullPath,
       content: content || "",
@@ -51,6 +46,8 @@ export const readFile = async (path: string | null): Promise<string> => {
   try {
     if (!path) throw new Error("No path to read file from");
     const content: string = await invoke("read_file", { path });
+    console.log("Read file content:", content);
+
     return content || "";
   } catch (error) {
     console.error("Error reading file:", error);
@@ -68,15 +65,9 @@ interface IFile {
 
 export async function readFiles(paths: Path[]): Promise<IFile[]> {
   const files: IFile[] = [];
-  const activeProjectPath = store.getState().projects.activeProjectPath;
-  if (!activeProjectPath) throw new Error("No active project path");
-
   for await (const path of paths) {
     try {
-      const fullPath = await join(
-        activeProjectPath,
-        path || `/${generateDefaultFileName()}`
-      );
+      const fullPath = await getFullFilePath(path);
       const content: string = await readFile(fullPath);
       files.push({ path, content });
     } catch (error) {
@@ -148,4 +139,14 @@ export const readFilesFromFS = async (projectPath: string) => {
     console.error(errorMessage, error);
     throw new Error(errorMessage);
   }
+};
+
+export const getFullFilePath = async (path: string | null) => {
+  const activeProjectPath = store.getState().projects.activeProjectPath;
+  if (!activeProjectPath) throw new Error("No active project path");
+  const fullPath = await join(
+    activeProjectPath,
+    path || `/${generateDefaultFileName()}`
+  );
+  return fullPath;
 };

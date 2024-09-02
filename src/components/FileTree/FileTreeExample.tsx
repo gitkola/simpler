@@ -3,7 +3,7 @@ import { FileTree } from './FileTree';
 import { useFileTree } from './useFileTree';
 import { RootState, useAppDispatch, useAppSelector } from '../../store';
 import { IFileTreeState } from './fileTreeInterfaces';
-import { handleClickOnFile } from '../../store/currentProjectSlice';
+import { handleOpenFileInEditor } from '../../store/currentProjectSlice';
 
 const FileTreeExample: React.FC = () => {
   const { fileTree, handleToggle, handleSelect, getSelectedFiles } = useFileTree();
@@ -15,7 +15,7 @@ const FileTreeExample: React.FC = () => {
       const filePathArray = tree.path?.split("/");
       filePathArray.shift();
       const filePath = filePathArray.join("/");
-      await dispatch(handleClickOnFile(`${activeProjectPath}/${filePath}`));
+      await dispatch(handleOpenFileInEditor(`${activeProjectPath}/${filePath}`));
     } else {
       handleToggle(tree.path);
     };
