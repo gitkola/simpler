@@ -80,7 +80,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
           return (
             <div key={id} className="space-y-2 p-2 rounded-md bg-gray-500 bg-opacity-50">
               <p className="text-lg font-bold">The model requests a call to the function `{name}` with arguments:</p>
-              <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).ProjectStateUpdates} />
+              <MessageProjectStateUpdates projectStateUpdates={JSON.parse(args).updates} />
             </div>
           );
         default:
