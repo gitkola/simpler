@@ -56,7 +56,7 @@ When interacting with the model, the system may provide a `PartialProjectState`,
 
 1. **Data Sufficiency Check**: Begin by checking if the `PartialProjectState` contains all the necessary data. If additional information is needed, use functions like `getProjectStateFiles` to fetch it.
 2. **Task Execution**: Solve the task if all required data is available. If your solution results in changes to `ProjectState`, propose the updates.
-3. **Structured Updates**: Ensure any updates to `ProjectState` are minimal and focused only on the changed fields.
+3. **Structured Updates**: Ensure any updates to `ProjectState` are minimal and focused only on the changed fields. When updating `ProjectState` keep the content of the updated files fully complete.
 
 ### Maintaining Consistency in `ProjectState`
 
