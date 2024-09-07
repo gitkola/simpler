@@ -14,9 +14,9 @@ import { defineGetProjectStateAnswers } from "./defineGetProjectStateAnswers";
 
 export interface IDefineToolsParams {
   updateProjectState: ({
-    updates,
+    ProjectStateUpdates,
   }: {
-    updates: IProjectState;
+    ProjectStateUpdates: IProjectState;
   }) => Promise<{ ProjectStateUpdatesResult: IProjectState }>;
   getProjectStateFiles: ({
     paths,
@@ -63,11 +63,11 @@ export const createTools = (service: "openai" | "anthropic") => {
     const definition = {
       name: "updateProjectState",
       description:
-        "Creates, modifies, or deletes ProjectState fields according to provided 'updates'. The 'updates' includes only changed fields.",
+        "Creates, modifies, or deletes ProjectState fields according to provided 'ProjectStateUpdates' argument field. The 'ProjectStateUpdates' includes only changed fields.",
       [schemaKey[service]]: {
         type: "object",
         properties: {
-          updates: {
+          ProjectStateUpdates: {
             type: "object",
             properties: {
               descriptions: {
@@ -158,7 +158,7 @@ export const createTools = (service: "openai" | "anthropic") => {
             required: [],
           },
         },
-        required: ["updates"],
+        required: ["ProjectStateUpdates"],
       },
     };
     if (service === "openai") {

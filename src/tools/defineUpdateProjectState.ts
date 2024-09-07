@@ -3,7 +3,7 @@ import { tool } from "ai";
 import { IProjectState } from "../types";
 
 export interface IUpdateProjectStateParams {
-  updates: IProjectState;
+  ProjectStateUpdates: IProjectState;
 }
 
 export const defineUpdateProjectState = (
@@ -13,9 +13,9 @@ export const defineUpdateProjectState = (
 ) =>
   tool({
     description:
-      "Creates, modifies, or deletes `ProjectState` fields according to provided `updates`. The `updates` includes only changed fields.",
+      "Creates, modifies, or deletes `ProjectState` fields according to provided `ProjectStateUpdates` argument field. The `ProjectStateUpdates` includes only changed fields.",
     parameters: z.object({
-      updates: z
+      ProjectStateUpdates: z
         .object({
           descriptions: z
             .array(

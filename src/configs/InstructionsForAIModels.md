@@ -43,14 +43,14 @@ When interacting with the model, the system may provide a `PartialProjectState`,
 
 ### Key Functions for `ProjectState` Interaction
 
-| Function                                | Purpose                                    |
-| --------------------------------------- | ------------------------------------------ |
-| `getProjectStateDescriptions()`         | Retrieve project descriptions.             |
-| `getProjectStateRequirements()`         | Fetch project requirements.                |
-| `getProjectStateTasks()`                | Get current project tasks.                 |
-| `getProjectStateFiles({ paths })`       | Request specific file contents.            |
-| `getProjectStateAnswers({ questions })` | Ask questions to clarify the current task. |
-| `updateProjectState({ updates })`       | Propose updates to `ProjectState`.         |
+| Function                                      | Purpose                                    |
+| --------------------------------------------- | ------------------------------------------ |
+| `getProjectStateDescriptions()`               | Retrieve project descriptions.             |
+| `getProjectStateRequirements()`               | Fetch project requirements.                |
+| `getProjectStateTasks()`                      | Get current project tasks.                 |
+| `getProjectStateFiles({ paths })`             | Request specific file contents.            |
+| `getProjectStateAnswers({ questions })`       | Ask questions to clarify the current task. |
+| `updateProjectState({ ProjectStateUpdates })` | Propose updates to `ProjectState`.         |
 
 ### Task Management and Execution Workflow
 
