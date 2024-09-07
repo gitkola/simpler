@@ -8,9 +8,11 @@ const RenderCounter = ({ name = 'Render count' }) => {
   });
 
   return (
-    <div className="text-red-600">
-      <span className="font-semibold">{name} renders: </span>
-      <span className="font-semibold">{renderCount.current}</span>
+    <div className="relative flex text-red-600 justify-end">
+      <div className="absolute top-0 text-red-600">
+        <span className="font-semibold">{name} renders: </span>
+        <span className="font-semibold">{renderCount.current}</span>
+      </div>
     </div>
   );
 };
