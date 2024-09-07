@@ -44,8 +44,10 @@ const Tasks: React.FC = () => {
   };
 
   const handleExecuteTask = async (task: IProjectTask) => {
-    await handleChange({ target: { name: 'status', value: 'in_progress' } } as any, task.id);
-    await dispatch(appendToInputValue(task?.task));
+    if (task?.task) {
+      await handleChange({ target: { name: 'status', value: 'in_progress' } } as any, task.id);
+      dispatch(appendToInputValue(task?.task));
+    }
   };
 
   return (
@@ -55,21 +57,23 @@ const Tasks: React.FC = () => {
           <div className="flex-1">
             <Textarea
               key={task?.id}
-              initialValue={task?.task}
+              initialValue={task?.task || ""}
               onSave={(data) => handleChange({ target: { name: 'task', value: data } } as any, task.id)}
               onDelete={() => handleDelete(task.id)}
               placeholder="Enter a task..."
               rows={1}
-              className={`${getColorByStatus(task.status)}`}
+              className={`${getColorByStatus(task?.status)}`}
             />
           </div>
           <Select
             name="status"
             value={task.status}
             options={[
-              'todo',
-              'in_progress',
-              'completed',
+              "todo",
+              "in_progress",
+              "completed",
+              "hold",
+              "no_need",
             ]}
             onChange={(e) => handleChange(e, task.id)}
           />
@@ -94,8 +98,12 @@ const Tasks: React.FC = () => {
 
 export default Tasks;
 
-const getColorByStatus = (status: string) => {
+const getColorByStatus = (status?: string) => {
   switch (status) {
+    case 'hold':
+      return 'text-yellow-500';
+    case 'no_need':
+      return 'text-gray-500';
     case 'in_progress':
       return 'text-blue-500';
     case 'completed':
