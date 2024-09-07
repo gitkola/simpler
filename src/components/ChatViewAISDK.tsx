@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { IMessage, IProjectSettings } from "../types";
 import Message from "./Messages/Message";
-import { ArrowUp, Brain } from "./Icons";
+import { ArrowUp, Messages } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { saveProjectSettings, handleSendMessageWithAISDK, createSystemPrompt } from "../store/currentProjectSlice";
@@ -11,10 +11,10 @@ import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL
 import { outlineButtonBlue, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
-import { setInputValue } from "../store/chatSlice";
+import { appendToInputValue, setInputValue } from "../store/chatSlice";
 import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
-import { CoreMessage, CoreUserMessage } from "ai";
+import { CoreMessage } from "ai";
 
 
 export const ChatViewAISDK: React.FC = () => {
@@ -72,7 +72,7 @@ export const ChatViewAISDK: React.FC = () => {
   return (
     <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
       <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <Brain className="w-8 h-8" />
+        <Messages className="w-8 h-8" />
         <h2 className="text-lg font-semibold">AI Chat Vercel SDK</h2>
       </div>
       <div className="flex-1 flex flex-col justify-between overflow-hidden">
@@ -107,20 +107,18 @@ export const ChatViewAISDK: React.FC = () => {
             <div className="flex flex-wrap gap-2 items-center">
               <div>Suggestions:</div>
               <button
-                onClick={async () => await dispatch(handleSendMessageWithAISDK(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user") as CoreUserMessage))}
+                onClick={async () => dispatch(appendToInputValue(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST))}
                 className={`${outlineButtonBlue}`}
                 disabled={aiModelRequestInProgress}
               >
                 <div>Generate Tasks</div>
-                <ArrowUp size={20} />
               </button>
               <button
-                onClick={async () => await dispatch(handleSendMessageWithAISDK(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user") as CoreUserMessage))}
+                onClick={async () => dispatch(appendToInputValue(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST))}
                 className={`${outlineButtonBlue}`}
                 disabled={aiModelRequestInProgress}
               >
                 <div>Generate File Structure</div>
-                <ArrowUp size={20} />
               </button>
             </div>
             <div className="flex flex-wrap gap-2 items-center">

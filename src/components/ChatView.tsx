@@ -11,7 +11,7 @@ import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL
 import { outlineButtonBlue, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
-import { setInputValue } from "../store/chatSlice";
+import { appendToInputValue, setInputValue } from "../store/chatSlice";
 import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
 import { debounce } from "../utils/debounce";
@@ -62,13 +62,8 @@ export const ChatView: React.FC = () => {
     await dispatch(handleSendMessage(message));
   };
 
-  const debouncedSetInputValue = useCallback(
-    debounce((value: string) => dispatch(setInputValue(value)), 300),
-    []
-  );
-
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    debouncedSetInputValue(e.target.value);
+    dispatch(setInputValue(e.target.value));
   };
 
   const debouncedSetContext = useCallback(
@@ -117,20 +112,18 @@ export const ChatView: React.FC = () => {
             <div className="flex flex-wrap gap-2 items-center">
               <div>Suggestions:</div>
               <button
-                onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user")))}
+                onClick={async () => dispatch(appendToInputValue(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST))}
                 className={`${outlineButtonBlue}`}
                 disabled={aiModelRequestInProgress}
               >
                 <div>Generate Tasks</div>
-                <ArrowUp size={20} />
               </button>
               <button
-                onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user")))}
+                onClick={async () => dispatch(appendToInputValue(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST))}
                 className={`${outlineButtonBlue}`}
                 disabled={aiModelRequestInProgress}
               >
                 <div>Generate File Structure</div>
-                <ArrowUp size={20} />
               </button>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
