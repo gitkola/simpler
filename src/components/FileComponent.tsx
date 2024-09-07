@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { handleOpenFileInEditor, saveProjectState } from "../store/currentProjectSlice";
 import { IProjectFile, IProjectState } from "../types";
 import { getFullFilePath, readFiles, writeFile } from "../services/fsService";
+import AppIcon from "./Icons";
 
 export function FileComponent({ file }: { file: IProjectFile }) {
   const dispatch = useAppDispatch();
@@ -38,29 +39,30 @@ export function FileComponent({ file }: { file: IProjectFile }) {
   return (
     <div
       key={file.path}
-      className={`flex items-center justify-between py-1 border border-transparent hover:border-b cursor-pointer`}
+      className={`flex items-center justify-between hover:bg-gray-500 hover:bg-opacity-20 cursor-pointer`}
       onClick={async () => await handleFileClick(file)}
     >
-      {file?.path && <span className={`${!file?.content && 'opacity-50'}`}>{file.path}</span>}
-      <div className="flex space-x-2 px-2">
+      {file?.path && <span className={`${!file?.content && 'opacity-50'} pl-2`}>{file.path}</span>}
+      <div className="flex px-2">
         <button
+          aria-label="Read from file"
           onClick={async (e) => {
             e.stopPropagation();
             await handleReadFromFile({ content: file.content!, path: file.path });
           }}
-          className="ml-auto px-2 text-sm bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full"
+          className="ml-auto px-2 py-1 text-sm hover:bg-orange-500 hover:bg-opacity-20 text-orange-500 rounded-sm"
         >
-          Read
+          <AppIcon icon="file-input" size={24} />
         </button>
         <button
           onClick={async (e) => {
             e.stopPropagation();
             await handleWriteToFile({ content: file.content!, path: file.path });
           }}
-          className={`ml-auto px-2 text-sm bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full ${!file?.content && 'opacity-50'}`}
+          className={`ml-auto px-2 py-1 text-sm  hover:bg-blue-500 hover:bg-opacity-20 text-blue-500 rounded-sm ${!file?.content && 'opacity-50'}`}
           disabled={!file?.content}
         >
-          Write
+          <AppIcon icon="file-output" size={24} />
         </button>
       </div>
     </div>

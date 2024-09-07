@@ -8,7 +8,7 @@ import { saveProjectSettings, handleSendMessage } from "../store/currentProjectS
 import { Select } from "./Select";
 import Spinner from "./Spinner";
 import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../configs/instructions";
-import { outlineButton, textInput } from "../styles/styles";
+import { outlineButtonBlue, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
 import { setInputValue } from "../store/chatSlice";
@@ -118,7 +118,7 @@ export const ChatView: React.FC = () => {
               <div>Suggestions:</div>
               <button
                 onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST, "user")))}
-                className={`${outlineButton}`}
+                className={`${outlineButtonBlue}`}
                 disabled={aiModelRequestInProgress}
               >
                 <div>Generate Tasks</div>
@@ -126,7 +126,7 @@ export const ChatView: React.FC = () => {
               </button>
               <button
                 onClick={async () => await dispatch(handleSendMessage(createBaseMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, "user")))}
-                className={`${outlineButton}`}
+                className={`${outlineButtonBlue}`}
                 disabled={aiModelRequestInProgress}
               >
                 <div>Generate File Structure</div>
@@ -135,7 +135,7 @@ export const ChatView: React.FC = () => {
             </div>
             <div className="flex flex-wrap gap-2 items-center">
               <div>Context:</div>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={instructionsInContext}
@@ -144,7 +144,7 @@ export const ChatView: React.FC = () => {
                 />
                 Instructions
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectDescriptionsInContext}
@@ -153,7 +153,7 @@ export const ChatView: React.FC = () => {
                 />
                 Description
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectRequirementsInContext}
@@ -162,7 +162,7 @@ export const ChatView: React.FC = () => {
                 />
                 Requirements
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectTasksInContext}
@@ -171,7 +171,7 @@ export const ChatView: React.FC = () => {
                 />
                 Tasks
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectFilePathsInContext}
@@ -201,7 +201,7 @@ export const ChatView: React.FC = () => {
                 className={`${textInput}`}
                 placeholder="Type your message... (Shift+Enter for new line)"
                 disabled={aiModelRequestInProgress}
-                rows={10}
+                rows={4}
               />
               <button
                 onClick={handleNewMessage}

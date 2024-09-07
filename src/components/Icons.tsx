@@ -36,6 +36,20 @@ export const SVGWrapper: React.FC<SVGWrapperProps> = ({
   </svg>
 );
 
+
+
+export const FileInput: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M12 12v6" /><path d="m15 15-3-3-3 3" />
+  </SVGWrapper>
+);
+
+export const FileOutput: React.FC<IconProps> = (props) => (
+  <SVGWrapper {...props}>
+    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M12 18v-6" /><path d="m9 15 3 3 3-3" />
+  </SVGWrapper>
+);
+
 export const ChevronDown: React.FC<IconProps> = (props) => (
   <SVGWrapper {...props}>
     <polyline points="6 9 12 15 18 9"></polyline>
@@ -337,6 +351,8 @@ export const QuestionMark: React.FC<IconProps> = (props) => (
 );
 
 export type AppIcons =
+  | "file-input"
+  | "file-output"
   | "chevron-down"
   | "chevron-right"
   | "chevron-left"
@@ -384,6 +400,10 @@ export default function AppIcon({
   className,
 }: IAppIconProps) {
   switch (icon) {
+    case "file-input":
+      return <FileInput size={size} color={color} className={className} />;
+    case "file-output":
+      return <FileOutput size={size} color={color} className={className} />;
     case "chevron-down":
       return <ChevronDown size={size} color={color} className={className} />;
     case "chevron-right":
@@ -466,6 +486,8 @@ export default function AppIcon({
 export const AllIcons = () => {
   return (
     <div className="flex flex-col m-auto space-y-2">
+      <AppIcon icon="file-input" />
+      <AppIcon icon="file-output" />
       <AppIcon icon="chevron-down" />
       <AppIcon icon="chevron-right" />
       <AppIcon icon="chevron-left" />

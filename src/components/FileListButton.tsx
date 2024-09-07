@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { outlineButton } from '../styles/styles';
+import { outlineButtonBlue } from '../styles/styles';
 import { RootState, useAppDispatch, useAppSelector } from '../store';
 import { setProjectFilesInContext } from '../store/contextSlice';
 import { readFile } from '../services/fsService';
@@ -32,9 +32,9 @@ export const FileListButton: React.FC = () => {
           e.nativeEvent.preventDefault();
           setIsPopoverOpen(!isPopoverOpen)
         }}
-        className={`${outlineButton} pl-0`}
+        className={`${outlineButtonBlue} pl-0`}
       >
-        <div className={`flex items-center justify-center px-2 border-white border font-bold text-white rounded-full ${Object.keys(projectFilesInContext).length > 0 ? 'bg-orange-500' : 'bg-gray-500'}`}>{Object.keys(projectFilesInContext).length}</div>
+        <div className={`flex items-center justify-center h-5 px-2 ml-0.5 font-bold text-white rounded-full ${Object.keys(projectFilesInContext).length > 0 ? 'bg-orange-500' : 'bg-gray-500'}`}>{Object.keys(projectFilesInContext).length}</div>
         <div>Files</div>
       </button>
       {isPopoverOpen && (

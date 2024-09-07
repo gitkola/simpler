@@ -4,6 +4,7 @@ import { Files } from './Icons';
 import ProcessIndicator from './ProcessIndicator';
 import { Files as FilesComponent } from './Files';
 import { handleSyncFilesFromFS } from '../store/currentProjectSlice';
+import { outlineButtonOrange } from '../styles/styles';
 
 const ProjectFilesView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -18,7 +19,7 @@ const ProjectFilesView: React.FC = () => {
           <span className="text-sm text-gray-500">{`(${currentProjectState?.files?.length || 0})`}</span>
         </div>
         <button
-          className="px-3 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-full"
+          className={`${outlineButtonOrange}`}
           onClick={async () => await dispatch(handleSyncFilesFromFS())}
         >
           Sync Files from Disk

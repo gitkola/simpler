@@ -11,14 +11,12 @@ import SettingsView from "./components/SettingsView";
 import { StyleTag } from "./styles/styles";
 import ProjectStateView from "./components/ProjectStateView";
 import ProjectMessagesView from "./components/ProjectMessagesView";
-import ModalFileContent from "./components/ModalFileContent";
 import ProjectFilesView from "./components/ProjectFilesView";
 import { ChatViewAISDK } from "./components/ChatViewAISDK";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 const App: React.FC = () => {
   const activeProjectPath = useAppSelector((state: RootState) => state.projects.activeProjectPath);
-  const { fileInModal } = useAppSelector((state: RootState) => state.layout);
   const layoutState = useAppSelector((state: RootState) => state.layout);
   const dispatch = useAppDispatch();
 
@@ -57,7 +55,6 @@ const App: React.FC = () => {
             )}
           </div>
         </div>
-        {fileInModal && <ModalFileContent />}
       </div>
     </ErrorBoundary>
   );

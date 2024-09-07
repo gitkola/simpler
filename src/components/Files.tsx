@@ -7,7 +7,7 @@ export const Files = () => {
   const files: IProjectFile[] | undefined = Array.isArray(currentProjectState?.files) ? [...currentProjectState?.files] : [];
 
   return (
-    <div className="pl-2">
+    <div className="">
       {Array.isArray(files) && files.length > 0 && (
         <div className="">
           {files.map((file) => (

@@ -202,7 +202,7 @@ export const ThreadView: React.FC = () => {
               <div>Suggestions:</div>
               <button
                 onClick={async () => await dispatch(handleSendMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST))}
-                className={`${outlineButton}`}
+                className={`${outlineButtonBlue}`}
                 disabled={isLoading}
               >
                 <div>Generate Tasks</div>
@@ -210,7 +210,7 @@ export const ThreadView: React.FC = () => {
               </button>
               <button
                 onClick={async () => await dispatch(handleSendMessage(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST))}
-                className={`${outlineButton}`}
+                className={`${outlineButtonBlue}`}
                 disabled={isLoading}
               >
                 <div>Generate File Structure</div>
@@ -219,7 +219,7 @@ export const ThreadView: React.FC = () => {
             </div> */}
             {/* <div className="flex flex-wrap gap-2 items-center">
               <div>Context:</div>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={instructionsInContext}
@@ -228,7 +228,7 @@ export const ThreadView: React.FC = () => {
                 />
                 Instructions
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectDescriptionsInContext}
@@ -237,7 +237,7 @@ export const ThreadView: React.FC = () => {
                 />
                 Description
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectRequirementsInContext}
@@ -246,7 +246,7 @@ export const ThreadView: React.FC = () => {
                 />
                 Requirements
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectTasksInContext}
@@ -255,7 +255,7 @@ export const ThreadView: React.FC = () => {
                 />
                 Tasks
               </label>
-              <label className={`${outlineButton}`}>
+              <label className={`${outlineButtonBlue}`}>
                 <input
                   type="checkbox"
                   checked={projectFilePathsInContext}
