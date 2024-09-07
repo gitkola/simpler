@@ -13,6 +13,7 @@ import {
 } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
+import { logToJSONFile } from "../utils/logger";
 
 export interface ICallAISDKOptions {
   model: LanguageModel;
@@ -78,5 +79,6 @@ export async function callAIsdk(
   console.log({ options });
 
   const result = await generateText(options);
+  logToJSONFile("callAIsdk", { result, options }); // TODO: remove this line
   return result;
 }
