@@ -49,7 +49,17 @@ export default function ToolMessage({ message }: { message: CoreToolMessage }) {
 
   return (
     <div className={`flex flex-col w-full p-2 rounded-md bg-yellow-500 bg-opacity-50 select-text space-y-2`}>
-      <h1 className="text-2xl font-bold space-x-2 capitalize">{message.role} <button onClick={() => dispatch(handleSendMessageWithAISDK())} className=" text-lg bg-blue-500 hover:bg-blue-600 text-white pl-3 pr-2 rounded-full"><div className="flex space-x-4"><span>Send Tools Result</span> <AppIcon icon="arrow-up" /></div></button></h1>
+      <div className="flex">
+        <h1 className="text-2xl font-bold space-x-2 capitalize">{message.role} </h1>
+        <button
+          onClick={() => dispatch(handleSendMessageWithAISDK())}
+          className="bg-blue-500 hover:bg-blue-600 text-white pl-3 pr-2 rounded-full"
+        >
+          <div className="flex space-x-4 items-center">
+            <span>Send Tools Result</span> <AppIcon icon="arrow-up" size={20} />
+          </div>
+        </button>
+      </div>
       <div className="flex flex-col w-vw">
         <div className="flex flex-col w-vw gap-8">
           {Array.isArray(content) &&
