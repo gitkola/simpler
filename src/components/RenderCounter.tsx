@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 
 const RenderCounter = ({ name = 'Render count' }) => {
+  return null;
   const renderCount = useRef(0);
 
   useEffect(() => {
@@ -8,7 +9,7 @@ const RenderCounter = ({ name = 'Render count' }) => {
   });
 
   return (
-    <div className="relative flex text-red-600 justify-end">
+    <div className="relative flex text-red-600 justify-center">
       <div className="absolute top-0 text-red-600">
         <span className="font-semibold">{name} renders: </span>
         <span className="font-semibold">{renderCount.current}</span>

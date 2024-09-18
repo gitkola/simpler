@@ -120,6 +120,38 @@ fn scan_directory_with_gitignore(root: String) -> Result<Vec<String>, String> {
     Ok(files)
 }
 
+#[tauri::command]
+fn scan_directory(root: String) -> Result<Vec<String>, String> {
+    let root_path = Path::new(&root);
+    let mut files = Vec::new();
+
+    let walker = WalkBuilder::new(root_path)
+        .hidden(false) // Show hidden files
+        .git_ignore(false) // Use .gitignore files
+        .git_global(false) // Use global gitignore file
+        .git_exclude(false) // Use .git/info/exclude file
+        .ignore(false) // Use .ignore files
+        .filter_entry(|entry| {
+            let file_name = entry.file_name().to_str().unwrap_or("");
+            !file_name.eq_ignore_ascii_case(".git") // Ignore .git files and directories
+        })
+        .build();
+
+    for entry in walker {
+        match entry {
+            Ok(entry) => {
+                let path = entry.path();
+                if path.is_file() {
+                    files.push(path.to_string_lossy().into_owned());
+                }
+            }
+            Err(err) => eprintln!("Error: {}", err),
+        }
+    }
+
+    Ok(files)
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -131,7 +163,8 @@ fn main() {
             file_exists,
             run_script,
             read_files_in_directory,
-            scan_directory_with_gitignore
+            scan_directory_with_gitignore,
+            scan_directory
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

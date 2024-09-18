@@ -9,9 +9,12 @@ import {
   saveProjectSettingsToFile,
   loadProjectOpenedFilesFromFile,
   saveProjectOpenedFilesToFile,
+  saveCurrentProjectConversationToFile,
+  loadCurrentProjectConversationFromFile,
 } from "../services/projectStateService";
 import { AppDispatch, RootState } from "./index";
 import {
+  getFilesFromDirectory,
   getFilteredProjectFiles,
   getTreeData,
 } from "../utils/getFilteredProjectFiles";
@@ -39,6 +42,7 @@ import {
   getProjectStateTasksTool,
   updateProjectStateTool,
 } from "../tools/toolFunctions";
+import { getFileNameFromPath } from "../utils/pathUtils";
 
 export interface IFile {
   path: string;
@@ -73,6 +77,7 @@ export interface ICurrentProject {
   currentProjectMessagesError?: string | null;
 
   currentProjectConversation: CoreMessage[];
+  currentProjectConversationName: string | null;
   isLoadingCurrentProjectConversation: boolean;
   currentProjectConversationError?: string | null;
 
@@ -91,6 +96,10 @@ export interface ICurrentProject {
 
   aiModelRequestInProgress: boolean;
   aiModelRequestError: string | null;
+
+  currentProjectConversationsNames: string[];
+  isLoadingCurrentProjectConversationsNames: boolean;
+  currentProjectConversationsNamesError?: string | null;
 }
 
 const defaultInitialState: ICurrentProject = {
@@ -103,6 +112,7 @@ const defaultInitialState: ICurrentProject = {
   currentProjectMessagesError: null,
 
   currentProjectConversation: [],
+  currentProjectConversationName: null,
   isLoadingCurrentProjectConversation: false,
   currentProjectConversationError: null,
 
@@ -121,6 +131,10 @@ const defaultInitialState: ICurrentProject = {
 
   aiModelRequestInProgress: false,
   aiModelRequestError: null,
+
+  currentProjectConversationsNames: [],
+  isLoadingCurrentProjectConversationsNames: false,
+  currentProjectConversationsNamesError: null,
 };
 
 const currentProjectSlice = createSlice({
@@ -189,6 +203,10 @@ const currentProjectSlice = createSlice({
       state.currentProjectConversationError = action.payload;
     },
 
+    setCurrentProjectConversationName: (state, action) => {
+      state.currentProjectConversationName = action.payload;
+    },
+
     fetchCurrentProjectSettings: (state) => {
       state.isLoadingCurrentProjectSettings = true;
       state.currentProjectSettingsError = null;
@@ -249,6 +267,26 @@ const currentProjectSlice = createSlice({
     setAIModelRequestError: (state, action: PayloadAction<any>) => {
       state.aiModelRequestError = action.payload;
     },
+
+    fetchCurrentProjectConversationsNames: (state) => {
+      state.isLoadingCurrentProjectConversationsNames = true;
+      state.currentProjectConversationsNamesError = null;
+    },
+    setCurrentProjectConversationsNames: (
+      state,
+      action: PayloadAction<string[]>
+    ) => {
+      state.currentProjectConversationsNames = action.payload;
+      state.isLoadingCurrentProjectConversationsNames = false;
+      state.currentProjectConversationsNamesError = null;
+    },
+    setCurrentProjectConversationsNamesError: (
+      state,
+      action: PayloadAction<string | null>
+    ) => {
+      state.isLoadingCurrentProjectConversationsNames = false;
+      state.currentProjectConversationsNamesError = action.payload;
+    },
   },
 });
 
@@ -257,29 +295,28 @@ export const {
   fetchCurrentProjectState,
   setCurrentProjectState,
   setCurrentProjectStateError,
-
   fetchCurrentProjectMessages,
   setCurrentProjectMessages,
   setCurrentProjectMessagesError,
-
   fetchCurrentProjectConversation,
   setCurrentProjectConversation,
   setCurrentProjectConversationError,
-
+  setCurrentProjectConversationName,
   fetchCurrentProjectSettings,
   setCurrentProjectSettings,
   setCurrentProjectSettingsError,
-
   fetchCurrentProjectOpenedFiles,
   setCurrentProjectOpenedFiles,
   setCurrentProjectOpenedFilesError,
-
   fetchCurrentProjectFileTree,
   setCurrentProjectFileTree,
   setCurrentProjectFileTreeError,
-
   setAIModelRequestInProgress,
   setAIModelRequestError,
+
+  fetchCurrentProjectConversationsNames,
+  setCurrentProjectConversationsNames,
+  setCurrentProjectConversationsNamesError,
 } = currentProjectSlice.actions;
 
 export default currentProjectSlice.reducer;
@@ -296,6 +333,7 @@ export const loadProject =
         dispatch(loadProjectState()),
         dispatch(loadProjectMessages()),
         dispatch(loadProjectSettings()),
+        dispatch(loadCurrentProjectConversationsNames()),
       ]);
       console.log(`Project loaded in ${Date.now() - start}ms`);
     } catch (error) {
@@ -758,6 +796,11 @@ export const handleSendMessageWithAISDK =
       dispatch(
         setCurrentProjectConversation([...messages, ...responseMessages])
       );
+
+      // Save the conversation after each interaction
+      await dispatch(
+        saveCurrentProjectConversation([...messages, ...responseMessages])
+      );
     } catch (error) {
       const errorMessage = `Error in handleSendMessageWithAISDK: ${
         typeof error === "string" ? error : (error as Error).message
@@ -794,5 +837,78 @@ export const handleSyncFilesFromFS =
       }`;
       console.error(errorMessage);
       dispatch(setCurrentProjectStateError(errorMessage));
+    }
+  };
+
+export const saveCurrentProjectConversation =
+  (conversation: CoreMessage[]) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+
+      const currentDate = new Date();
+      const formattedDate = currentDate
+        .toISOString()
+        .replace(/:/g, "-")
+        .slice(0, 19);
+      const fileName = `${formattedDate}.json`;
+      dispatch(setCurrentProjectConversationName(fileName));
+      await saveCurrentProjectConversationToFile(
+        activeProjectPath,
+        fileName,
+        conversation
+      );
+
+      // Update the list of conversation names
+      dispatch(loadCurrentProjectConversationsNames());
+    } catch (error) {
+      console.error("Failed to save current project conversation:", error);
+      dispatch(setCurrentProjectConversationError((error as Error).message));
+    }
+  };
+
+export const loadCurrentProjectConversation =
+  (fileName: string) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(setCurrentProjectConversationName(fileName));
+      dispatch(fetchCurrentProjectConversation());
+      const conversation = await loadCurrentProjectConversationFromFile(
+        activeProjectPath,
+        fileName
+      );
+      dispatch(setCurrentProjectConversation(conversation));
+    } catch (error) {
+      console.error("Failed to load current project conversation:", error);
+      dispatch(setCurrentProjectConversationError((error as Error).message));
+    }
+  };
+
+export const loadCurrentProjectConversationsNames =
+  () => async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+
+      dispatch(fetchCurrentProjectConversationsNames());
+      const conversationsNames = await getFilesFromDirectory(
+        `${activeProjectPath}/.simpler/conversations`
+      );
+      dispatch(
+        setCurrentProjectConversationsNames(
+          conversationsNames.map((path) => getFileNameFromPath(path))
+        )
+      );
+    } catch (error) {
+      console.error(
+        "Failed to load current project conversations names:",
+        error
+      );
+      dispatch(
+        setCurrentProjectConversationsNamesError((error as Error).message)
+      );
     }
   };

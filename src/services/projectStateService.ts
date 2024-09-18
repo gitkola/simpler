@@ -19,6 +19,7 @@ import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
 import { IFile } from "../store/currentProjectSlice";
+import { CoreMessage } from "ai";
 
 export const generateInitialProjectState = (): IProjectState => {
   return {
@@ -196,6 +197,46 @@ export const loadProjectOpenedFilesFromFile = async (
     return JSON.parse(result as string);
   } catch (error) {
     console.error("Error reading Project Opened Files file:", error);
+    return [];
+  }
+};
+
+export const saveCurrentProjectConversationToFile = async (
+  projectPath: string,
+  fileName: string,
+  conversation: CoreMessage[]
+) => {
+  const conversationFilePath = `${projectPath}/.simpler/conversations/${fileName}`;
+  try {
+    const result = await invoke("write_file", {
+      path: conversationFilePath,
+      content: JSON.stringify(conversation, null, 2),
+    });
+    if (result !== null) {
+      throw new Error(result as string);
+    }
+  } catch (error) {
+    console.error("Failed to save Current Project Conversation:", error);
+    throw new Error("Failed to save Current Project Conversation");
+  }
+};
+
+export const loadCurrentProjectConversationFromFile = async (
+  projectPath: string,
+  fileName: string
+): Promise<CoreMessage[]> => {
+  const conversationFilePath = `${projectPath}/.simpler/conversations/${fileName}`;
+  try {
+    const result = await invoke("read_file", {
+      path: conversationFilePath,
+    });
+    if (typeof result !== "string") {
+      throw new Error("Invalid Current Project Conversation file content");
+    }
+    const conversation: CoreMessage[] = JSON.parse(result);
+    return conversation;
+  } catch (error) {
+    console.error("Error reading Current Project Conversation file:", error);
     return [];
   }
 };

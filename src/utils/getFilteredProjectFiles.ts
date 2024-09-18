@@ -48,16 +48,44 @@ export async function getFilteredProjectFiles(
   try {
     // TODO: work under optimisation.
     const start = Date.now();
-    console.log("Scanning directory:", projectPath);
+    console.log("getFilteredProjectFiles Scanning directory:", projectPath);
     const files = await invoke<string[]>("scan_directory_with_gitignore", {
       root: projectPath,
     });
-    console.log("Scanning directory took:", Date.now() - start, "ms", files);
+    console.log(
+      "getFilteredProjectFiles Scanning directory took:",
+      Date.now() - start,
+      "ms",
+      files
+    );
     if (!useAdditionalFilter) return files.sort((a, b) => a.localeCompare(b));
     const additionalFilter = createAdditionalFilter(initialPatterns);
     return additionalFilter(files).sort((a, b) => a.localeCompare(b));
   } catch (error) {
-    console.error("Error scanning directory:", error);
+    console.error("getFilteredProjectFiles Error scanning directory:", error);
+    throw error;
+  }
+}
+
+export async function getFilesFromDirectory(
+  projectPath: string
+): Promise<string[]> {
+  try {
+    // TODO: work under optimisation.
+    const start = Date.now();
+    console.log("getFilesFromDirectory Scanning directory:", projectPath);
+    const files = await invoke<string[]>("scan_directory", {
+      root: projectPath,
+    });
+    console.log(
+      "getFilesFromDirectory Scanning directory took:",
+      Date.now() - start,
+      "ms",
+      files
+    );
+    return files.sort((a, b) => a.localeCompare(b));
+  } catch (error) {
+    console.error("getFilesFromDirectory Error scanning directory:", error);
     throw error;
   }
 }
