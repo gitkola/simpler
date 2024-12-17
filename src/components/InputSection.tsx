@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
+import { invoke } from "@tauri-apps/api/tauri";
 import { ArrowUp } from "./Icons";
 import { anthropicModels, openaiModels } from "../configs/aiModels";
 import { saveProjectSettings, handleSendMessageWithAISDK } from "../store/currentProjectSlice";
@@ -10,11 +11,19 @@ import { outlineButtonBlue, textInput } from "../styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
 import createBaseMessage from "../utils/createBaseMessage";
 import { appendToInputValue, setInputValue } from "../store/chatSlice";
-import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
+import {
+  setUseSystemMessage,
+  setInstructionsInContext,
+  setProjectDescriptionsInContext,
+  setProjectFilePathsInContext,
+  setProjectRequirementsInContext,
+  setProjectTasksInContext
+} from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
 import { CoreMessage } from "ai";
 import { IProjectSettings } from "../types";
 import RenderCounter from "./RenderCounter";
+import { readFile, selectFile } from "../services/fsService";
 
 const InputSection: React.FC = () => {
   const {
@@ -26,7 +35,8 @@ const InputSection: React.FC = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { inputValue } = useAppSelector((state: RootState) => state.chat);
   const context = useAppSelector((state: RootState) => state.context);
-  const { instructionsInContext, projectDescriptionsInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = context;
+  const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
+  const { useSystemMessage, instructionsInContext, projectDescriptionsInContext, projectRequirementsInContext, projectTasksInContext, projectFilePathsInContext } = context;
   const dispatch = useAppDispatch();
 
   const handleServiceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -72,9 +82,31 @@ const InputSection: React.FC = () => {
           >
             <div>Generate File Structure</div>
           </button>
+          <button
+            onClick={async () => {
+              const path = await selectFile();
+              if (!path) return;
+              const content = await readFile(path);
+              if (!content) return;
+              dispatch(appendToInputValue(content));
+            }}
+            className={`${outlineButtonBlue}`}
+            disabled={aiModelRequestInProgress}
+          >
+            <div>Open Prompt File</div>
+          </button>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           <div>Context:</div>
+          <label className={`${outlineButtonBlue}`}>
+            <input
+              type="checkbox"
+              checked={useSystemMessage}
+              onChange={(e) => dispatch(setUseSystemMessage(e.target.checked))}
+              className="h-4 w-4 mr-2"
+            />
+            Use System Message
+          </label>
           <label className={`${outlineButtonBlue}`}>
             <input
               type="checkbox"

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IProjectFile } from "../types";
 
 export interface IContextState {
+  useSystemMessage: boolean;
   instructionsInContext: boolean;
   projectDescriptionsInContext: boolean;
   projectRequirementsInContext: boolean;
@@ -11,6 +12,7 @@ export interface IContextState {
 }
 
 const defaultInitialState: IContextState = {
+  useSystemMessage: true,
   instructionsInContext: true,
   projectDescriptionsInContext: true,
   projectRequirementsInContext: true,
@@ -23,6 +25,9 @@ const contextSlice = createSlice({
   name: "context",
   initialState: defaultInitialState,
   reducers: {
+    setUseSystemMessage: (state, action: PayloadAction<boolean>) => {
+      state.useSystemMessage = action.payload;
+    },
     setInstructionsInContext: (state, action: PayloadAction<boolean>) => {
       state.instructionsInContext = action.payload;
     },
@@ -54,6 +59,7 @@ const contextSlice = createSlice({
 });
 
 export const {
+  setUseSystemMessage,
   setInstructionsInContext,
   setProjectDescriptionsInContext,
   setProjectRequirementsInContext,

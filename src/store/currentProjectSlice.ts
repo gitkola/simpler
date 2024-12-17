@@ -781,13 +781,16 @@ export const handleSendMessageWithAISDK =
       const options: ICallAISDKOptions = {
         model,
         messages,
-        system: systemPrompt,
         tools,
         // maxToolRoundtrips: 10,
         toolChoice: "auto",
         temperature,
         maxTokens: max_tokens,
       };
+
+      if (context.useSystemMessage) {
+        options.system = systemPrompt;
+      }
 
       const response: GenerateTextResult<Record<string, CoreTool<any, any>>> =
         await callAIsdk(options);

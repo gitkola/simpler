@@ -13,17 +13,31 @@ export const openFolder = async (path: string | null) => {
   }
 };
 
+export const selectFile = async () => {
+  try {
+    const activeProjectPath = store.getState().projects.activeProjectPath;
+    if (!activeProjectPath) throw new Error("No active project path");
+    const selectedFile = await invoke<string>("select_file", {
+      folderPath: activeProjectPath
+    });
+    return selectedFile;
+  } catch (error) {
+    console.error("Failed to select file:", error);
+    return null;
+  }
+};
+
 export const generateDefaultFileName = (fileExtension?: string) => {
   const date = new Date();
   const fileName = `file_${date.getFullYear()}${(date.getMonth() + 1)
     .toString()
     .padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}_${date
-    .getHours()
-    .toString()
-    .padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date
-    .getSeconds()
-    .toString()
-    .padStart(2, "0")}.${fileExtension || "txt"}`;
+      .getHours()
+      .toString()
+      .padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date
+        .getSeconds()
+        .toString()
+        .padStart(2, "0")}.${fileExtension || "txt"}`;
   return fileName;
 };
 
@@ -133,9 +147,8 @@ export const readFilesFromFS = async (projectPath: string) => {
     }
     return projectFiles;
   } catch (error) {
-    const errorMessage = `Failed to read files from the selected folder: ${
-      (error as Error).message
-    }`;
+    const errorMessage = `Failed to read files from the selected folder: ${(error as Error).message
+      }`;
     console.error(errorMessage, error);
     throw new Error(errorMessage);
   }

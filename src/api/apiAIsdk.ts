@@ -18,7 +18,7 @@ import { logToJSONFile } from "../utils/logger";
 export interface ICallAISDKOptions {
   model: LanguageModel;
   messages: CoreMessage[];
-  system: string;
+  system?: string;
   tools: Record<string, CoreTool>;
   // maxToolRoundtrips: number;
   toolChoice: "auto" | "none" | "required" | { type: "tool"; toolName: string };
@@ -76,8 +76,6 @@ export const createModel = ({
 export async function callAIsdk(
   options: ICallAISDKOptions
 ): Promise<GenerateTextResult<Record<string, CoreTool>>> {
-  console.log({ options });
-
   const result = await generateText(options);
   logToJSONFile("callAIsdk", { result, options }); // TODO: remove this line
   return result;

@@ -20,6 +20,17 @@ fn select_folder() -> String {
     }
 }
 
+
+#[tauri::command]
+fn select_file(folder_path: &str) -> String {
+    let result = nfd::open_file_dialog(None, Some(folder_path)).unwrap();
+    match result {
+        nfd::Response::Okay(file_path) => file_path,
+        nfd::Response::OkayMultiple(_) => "Multiple files selected".to_string(),
+        nfd::Response::Cancel => "".to_string(),
+    }
+}
+
 #[tauri::command]
 fn open_folder(path: &str) -> Result<(), String> {
     open::that(path).map_err(|e| e.to_string())
@@ -157,6 +168,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             create_folder,
             select_folder,
+            select_file,
             open_folder,
             write_file,
             read_file,

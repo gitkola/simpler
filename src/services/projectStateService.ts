@@ -15,7 +15,7 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
   PROJECT_STATE_FILE_NAME,
 } from "../constants";
-import { openaiModels } from "../configs/aiModels";
+// import { openaiModels } from "../configs/aiModels";
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
 import { IFile } from "../store/currentProjectSlice";
@@ -31,10 +31,10 @@ export const generateInitialProjectState = (): IProjectState => {
 };
 
 export const generateInitialProjectSettings = (): IProjectSettings => ({
-  service: "openai",
-  model: openaiModels[0],
+  service: "anthropic",
+  model: "claude-3-5-haiku-latest", //openaiModels[0],
   temperature: 0,
-  max_tokens: 4096,
+  max_tokens: 8192,
   indentation: "spaces",
   indentationSize: 2,
   lineEnding: "LF",

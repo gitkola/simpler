@@ -34,7 +34,7 @@ function MessagesThread() {
       {currentProjectConversationError && <div className="flex p-4 items-center justify-center bg-red-500">{currentProjectConversationError}</div>}
       <div className="flex-1 overflow-x-auto overflow-y-scroll">
         <div className="pl-2 pt-2 pr-0.5 space-y-2 h-fit">
-          <Message message={{ role: "system", content: systemPrompt }} />
+          {context.useSystemMessage && <Message message={{ role: "system", content: systemPrompt }} />}
           {currentProjectConversation?.map((message, index) => (
             <Message
               key={index}
