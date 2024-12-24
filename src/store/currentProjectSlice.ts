@@ -790,6 +790,8 @@ export const handleSendMessageWithAISDK =
 
       if (context.useSystemMessage) {
         options.system = systemPrompt;
+      } else {
+        options.messages = [{role: 'user', content: [{type: 'text', text: systemPrompt}]} as CoreMessage, ...messages];
       }
 
       const response: GenerateTextResult<Record<string, CoreTool<any, any>>> =

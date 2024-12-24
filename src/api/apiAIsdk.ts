@@ -19,12 +19,37 @@ export interface ICallAISDKOptions {
   model: LanguageModel;
   messages: CoreMessage[];
   system?: string;
-  tools: Record<string, CoreTool>;
+  tools?: Record<string, CoreTool>;
   // maxToolRoundtrips: number;
-  toolChoice: "auto" | "none" | "required" | { type: "tool"; toolName: string };
-  temperature: number;
-  maxTokens: number;
+  toolChoice?: "auto" | "none" | "required" | { type: "tool"; toolName: string };
+  temperature?: number;
+  maxTokens?: number;
 }
+
+const fetchFunction = async (
+  input: RequestInfo | URL,
+  init?: RequestInit
+): Promise<Response> => {
+  console.log({ input, init });
+
+  const response = await tauriFetch(input.toString(), {
+    ...init,
+    method: init?.method as HttpVerb,
+    body: init?.body
+      ? Body.json(JSON.parse(init.body as string))
+      : undefined,
+  } as FetchOptions);
+
+  const customHeaders = new Headers();
+  Object.entries(response.headers).forEach(([key, value]) => {
+    customHeaders.append(key, value);
+  });
+
+  return new Response(JSON.stringify(response.data), {
+    status: response.status,
+    headers: customHeaders,
+  });
+};
 
 export const createModel = ({
   service,
@@ -38,36 +63,17 @@ export const createModel = ({
   let provider = null;
   switch (service) {
     case "openai":
-      provider = createOpenAI({ apiKey, compatibility: "strict" });
+      provider = createOpenAI({
+        apiKey,
+        compatibility: "strict",
+        fetch: fetchFunction,
+      });
       break;
     case "anthropic":
       provider = createAnthropic({
         apiKey,
         headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-        fetch: async (
-          input: RequestInfo | URL,
-          init?: RequestInit
-        ): Promise<Response> => {
-          console.log({ input, init });
-
-          const response = await tauriFetch(input.toString(), {
-            ...init,
-            method: init?.method as HttpVerb,
-            body: init?.body
-              ? Body.json(JSON.parse(init.body as string))
-              : undefined,
-          } as FetchOptions);
-
-          const customHeaders = new Headers();
-          Object.entries(response.headers).forEach(([key, value]) => {
-            customHeaders.append(key, value);
-          });
-
-          return new Response(JSON.stringify(response.data), {
-            status: response.status,
-            headers: customHeaders,
-          });
-        },
+        fetch: fetchFunction,
       });
       break;
   }
