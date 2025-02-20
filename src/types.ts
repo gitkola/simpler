@@ -1,12 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { Message } from "ai";
 import OpenAI from "openai";
 
 export type ProjectPathListItem = string;
 
-export type IMessageRole = "user" | "assistant" | "system" | "app" | "tool";
+export type IMessageRole = "user" | "assistant" | "system" | "data";
 export type MessageService = "openai" | "anthropic" | "simpler";
 
-export interface IBaseMessage {
+export interface IBaseMessage extends Message {
   id: string;
   role: IMessageRole;
   content: string;
@@ -16,9 +17,10 @@ export interface IBaseMessage {
 }
 
 export type IMessage =
+  | Message
   | IBaseMessage
-  | (OpenAI.ChatCompletion & IBaseMessage)
-  | (Anthropic.Message & IBaseMessage);
+// | (OpenAI.ChatCompletion & IBaseMessage)
+// | (Anthropic.Message & IBaseMessage);
 
 export type Entity = IProjectState | IMessage;
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@radix-ui/themes";
 import { CopyIcon, SaveIcon } from "lucide-react";
-import { getFullFilePath, writeFile } from "../../services/fsService";
+import { getFullFilePath, writeFile } from "@/services/fsService";
 
 export const usePessed = (onPress = Promise.resolve, initialState = false) => {
   const [pressed, setPressed] = React.useState(initialState);

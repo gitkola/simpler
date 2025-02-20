@@ -19,7 +19,7 @@ import {
 import store from "../store";
 import { addProject } from "../store/projectsSlice";
 import { IFile } from "../store/currentProjectSlice";
-import { CoreMessage } from "ai";
+import { Message } from "ai";
 
 export const generateInitialProjectState = (): IProjectState => {
   return {
@@ -204,7 +204,7 @@ export const loadProjectOpenedFilesFromFile = async (
 export const saveCurrentProjectConversationToFile = async (
   projectPath: string,
   fileName: string,
-  conversation: CoreMessage[]
+  conversation: Message[]
 ) => {
   const conversationFilePath = `${projectPath}/.simpler/conversations/${fileName}`;
   try {
@@ -224,7 +224,7 @@ export const saveCurrentProjectConversationToFile = async (
 export const loadCurrentProjectConversationFromFile = async (
   projectPath: string,
   fileName: string
-): Promise<CoreMessage[]> => {
+): Promise<Message[]> => {
   const conversationFilePath = `${projectPath}/.simpler/conversations/${fileName}`;
   try {
     const result = await invoke("read_file", {
@@ -233,7 +233,7 @@ export const loadCurrentProjectConversationFromFile = async (
     if (typeof result !== "string") {
       throw new Error("Invalid Current Project Conversation file content");
     }
-    const conversation: CoreMessage[] = JSON.parse(result);
+    const conversation: Message[] = JSON.parse(result);
     return conversation;
   } catch (error) {
     console.error("Error reading Current Project Conversation file:", error);

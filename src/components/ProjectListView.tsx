@@ -4,6 +4,8 @@ import ProjectItem from "./ProjectItem";
 import { RootState, useAppDispatch, useAppSelector } from "../store";
 import { handleSetActiveProject, deleteProject } from "../store/projectsSlice";
 import { Projects } from "./Icons";
+import SquareButton from "./SquareButton";
+import { setShowProjects } from "../store/layoutSlice";
 
 const ProjectListView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -31,10 +33,13 @@ const ProjectListView: React.FC = () => {
   };
 
   return (
-    <div className={`flex flex-col border-r border-0.5 min-w-[400px] max-w-[1200px]`}>
-      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <Projects className="w-8 h-8" />
-        <h2 className="text-lg font-semibold">Projects</h2>
+    <div className={`flex flex-1 flex-col border-r border-0.5 h-full min-w-[400px] max-w-[1200px]`}>
+      <div className="flex pl-2 items-center justify-between border-b border-0.5">
+        <div className="flex space-x-2 items-center justify-start">
+          <Projects className="w-8 h-8" />
+          <h2 className="text-lg font-semibold">Projects</h2>
+        </div>
+        <SquareButton icon="close" className="" onClick={() => { dispatch(setShowProjects(false)); }} />
       </div>
       <ul className="overflow-y-scroll overflow-x-hidden">
         {list.map((projectPath) => (

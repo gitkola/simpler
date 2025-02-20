@@ -5,23 +5,28 @@ import {
   Body,
 } from "@tauri-apps/api/http";
 import {
-  CoreMessage,
-  CoreTool,
+  Message,
   generateText,
   GenerateTextResult,
   LanguageModel,
+  Tool,
+  ToolSet,
 } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
-import { logToJSONFile } from "../utils/logger";
+import { logToJSONFile } from "@/lib/utils/logger";
 
 export interface ICallAISDKOptions {
   model: LanguageModel;
-  messages: CoreMessage[];
+  messages: Message[];
   system?: string;
-  tools?: Record<string, CoreTool>;
+  tools?: Record<string, Tool>;
   // maxToolRoundtrips: number;
-  toolChoice?: "auto" | "none" | "required" | { type: "tool"; toolName: string };
+  toolChoice?:
+    | "auto"
+    | "none"
+    | "required"
+    | { type: "tool"; toolName: string };
   temperature?: number;
   maxTokens?: number;
 }
@@ -35,9 +40,7 @@ const fetchFunction = async (
   const response = await tauriFetch(input.toString(), {
     ...init,
     method: init?.method as HttpVerb,
-    body: init?.body
-      ? Body.json(JSON.parse(init.body as string))
-      : undefined,
+    body: init?.body ? Body.json(JSON.parse(init.body as string)) : undefined,
   } as FetchOptions);
 
   const customHeaders = new Headers();
@@ -81,7 +84,7 @@ export const createModel = ({
 };
 export async function callAIsdk(
   options: ICallAISDKOptions
-): Promise<GenerateTextResult<Record<string, CoreTool>>> {
+): Promise<GenerateTextResult<ToolSet, never>> {
   const result = await generateText(options);
   logToJSONFile("callAIsdk", { result, options }); // TODO: remove this line
   return result;

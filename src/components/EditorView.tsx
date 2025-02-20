@@ -1,9 +1,11 @@
 import FileViewer from "./FileViewer";
-import { useAppDispatch, useAppSelector } from '../store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import TabsView, { TabContent } from './TabsView';
-import { CodeEditor, Diff } from "./Icons";
+import { Diff, Edit } from "./Icons";
 import ProcessIndicator from "./ProcessIndicator";
-import { setShowDiff } from "../store/settingsSlice";
+import { setShowDiff } from "@/store/settingsSlice";
+import { setShowCodeEditor } from "@/store/layoutSlice";
+import SquareButton from "./SquareButton";
 
 export default function EditorView() {
   const showDiff = useAppSelector((state) => state.settings.showDiff);
@@ -11,15 +13,18 @@ export default function EditorView() {
   const { currentProjectOpenedFiles, isLoadingCurrentProjectOpenedFiles, currentProjectOpenedFilesError } = useAppSelector((state) => state.currentProject);
   return (
     <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[3200px]">
-      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <button className={`flex space-x-2 items-center justify-start ${!showDiff ? '' : 'opacity-30'}`} onClick={() => dispatch(setShowDiff(false))}>
-          <CodeEditor className="w-8 h-8" />
-          <h2 className="text-lg font-semibold">File View</h2>
-        </button>
-        <button className={`flex space-x-2 items-center justify-start ${showDiff ? '' : 'opacity-30'}`} onClick={() => dispatch(setShowDiff(true))}>
-          <Diff className="w-8 h-8" />
-          <h2 className="text-lg font-semibold">Compare View</h2>
-        </button>
+      <div className="flex items-center justify-between border-b border-0.5">
+        <div className="flex items-center px-2 space-x-2">
+          <button className={`flex space-x-2 items-center justify-start ${!showDiff ? '' : 'opacity-30'}`} onClick={() => dispatch(setShowDiff(false))}>
+            <Edit className="w-8 h-8" />
+            <h2 className="text-lg font-semibold">Editor</h2>
+          </button>
+          <button className={`flex space-x-2 items-center justify-start ${showDiff ? '' : 'opacity-30'}`} onClick={() => dispatch(setShowDiff(true))}>
+            <Diff className="w-8 h-8" />
+            <h2 className="text-lg font-semibold">Diff</h2>
+          </button>
+        </div>
+        <SquareButton icon="close" className="" onClick={() => { dispatch(setShowCodeEditor(false)); }} />
       </div>
       {isLoadingCurrentProjectOpenedFiles && <ProcessIndicator />}
       {currentProjectOpenedFilesError && <div className="flex px-2 py-1 mx-auto mt-16 text-red-700 bg-red-300 border border-red-700 rounded-md">{currentProjectOpenedFilesError}</div>}

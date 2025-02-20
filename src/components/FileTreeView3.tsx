@@ -1,4 +1,4 @@
-import { useAppSelector } from "../store";
+import { useAppSelector } from "@/store";
 import { Files } from "./Icons";
 import ProcessIndicator from "./ProcessIndicator";
 import FlatFileTreeExample from "./FileTree/FlatFileTreeExample";

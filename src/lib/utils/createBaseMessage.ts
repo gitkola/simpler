@@ -1,4 +1,4 @@
-import { IBaseMessage, IMessageRole, MessageService } from "../types";
+import { IBaseMessage, IMessageRole, MessageService } from "@/types";
 
 export default function createBaseMessage(
   content: string,

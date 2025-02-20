@@ -25,14 +25,14 @@ export default function SquareButton({
   return (
     <button
       onClick={onClick}
-      className={`w-12 h-12 flex items-center justify-center ${cPrimary(isActive)} ${className}`}
+      className={`w-12 h-12 flex items-center justify-center active:opacity-40 transition-all duration-100  ${cPrimary(isActive)} ${className} group`}
       disabled={disabled}
     >
       <AppIcon
         icon={icon}
         size={iconSize}
         color={iconColor}
-        className={`hover:scale-110 transition-all duration-100 ${iconClassName}`}
+        className={`group-hover:scale-105 group-active:scale-95 opacity-80 group-hover:opacity-100 transition-all duration-100 ${iconClassName}`}
       />
     </button>
   );

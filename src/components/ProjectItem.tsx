@@ -1,6 +1,6 @@
 import React from "react";
 import { ProjectPathListItem } from "../types";
-import { getFolderNameFromPath } from "../utils/pathUtils";
+import { getFolderNameFromPath } from "@/lib/utils/pathUtils";
 import SquareButton from "./SquareButton";
 import { cPrimary } from "../styles/styles";
 

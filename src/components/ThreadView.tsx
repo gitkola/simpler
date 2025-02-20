@@ -37,7 +37,7 @@ const ThreadMessage: React.FC<{ message: Message }> = ({ message }) => {
               }}
               disabled={true}
             />
-            <p>Path: {path}</p>
+            <span>Path: {path}</span>
           </div>
         );
       default:

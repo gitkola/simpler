@@ -1,13 +1,14 @@
 import { TreeView } from "@primer/react";
-import { useAppDispatch, useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   getFolderNameFromFilePath,
-} from "../utils/pathUtils";
+} from "@/lib/utils/pathUtils";
 import { File, FolderTree } from "./Icons";
 import SquareButton from "./SquareButton";
-import { openFolder } from "../services/fsService";
-import { handleOpenFileInEditor, handleClickOnFolder, ITreeData } from "../store/currentProjectSlice";
+import { openFolder } from "@/services/fsService";
+import { handleOpenFileInEditor, handleClickOnFolder, ITreeData, loadProjectFileTree } from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
+import { setShowFolderTree } from "@/store/layoutSlice";
 
 const treeItemIsFile = (tree: ITreeData) => Array.isArray(tree?.children) === false;
 
@@ -52,7 +53,7 @@ export default function FileTreeView() {
                 }`
               );
             }}
-            className="w-5 h-5 ml-auto bg-transparent group  opacity-0 group-hover:opacity-100 hover:bg-transparent"
+            className="w-5 h-5 ml-auto bg-transparent group opacity-0 group-hover:opacity-100 hover:bg-transparent"
             iconSize={20}
           />
         </div>
@@ -67,9 +68,15 @@ export default function FileTreeView() {
 
   return (
     <div className="flex flex-col border-r border-0.5 min-w-[400px] max-w-[1200px]">
-      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <FolderTree className="w-8 h-8" />
-        <h2 className="text-lg font-semibold">File Tree</h2>
+      <div className="flex items-center justify-between border-b border-0.5">
+        <div className="flex items-center ">
+          <div className="flex p-2 space-x-2 items-center justify-start">
+            <FolderTree className="w-8 h-8" />
+            <h2 className="text-lg font-semibold">File Tree</h2>
+          </div>
+          <SquareButton icon="refresh" onClick={() => { dispatch(loadProjectFileTree()); }} />
+        </div>
+        <SquareButton icon="close" className="" onClick={() => { dispatch(setShowFolderTree(false)); }} />
       </div>
       {
         isLoadingCurrentProjectFileTree && <ProcessIndicator />

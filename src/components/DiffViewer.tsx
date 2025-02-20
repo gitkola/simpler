@@ -1,6 +1,7 @@
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
+import { DiffEditor } from '@monaco-editor/react';
 import Editor from './Editor';
-import { useAppSelector } from '../store';
+import { useAppSelector } from '@/store';
 
 
 interface DiffViewerProps {
@@ -14,7 +15,18 @@ export default function DiffViewer({ oldValue, newValue, language }: DiffViewerP
   const highlightSyntax = (str: string) => (
     <Editor language={language} value={str} onChange={() => { }} onKeyDown={() => { }} disabled={true} style={{}} />
   );
-
+  return (
+    <DiffEditor
+      original={oldValue}
+      modified={newValue}
+      language={language}
+      theme={theme === 'dark' ? 'vs-dark' : 'light'}
+      options={{
+        readOnly: true,
+        automaticLayout: true,
+      }}
+    />
+  );
   return (
     <ReactDiffViewer
       oldValue={oldValue}

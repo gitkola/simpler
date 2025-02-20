@@ -1,10 +1,10 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { readFile, writeFile } from '../services/fsService';
+import { readFile, writeFile } from '@/services/fsService';
 import ProcessIndicator from './ProcessIndicator';
-import { useAppDispatch, useAppSelector } from '../store';
-import { IProjectState } from '../types';
-import { saveProjectState } from '../store/currentProjectSlice';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { IProjectState } from '@/types';
+import { saveProjectState } from '@/store/currentProjectSlice';
 import Editor from './Editor';
 import DiffViewer from './DiffViewer';
 
@@ -60,7 +60,7 @@ export default function FileViewer({ path, showDiff }: FileViewerProps) {
   };
 
   return (
-    <div className="">
+    <div className="overflow-y-hidden overflow-x-hidden h-full w-full flex-1">
       {isLoading && <ProcessIndicator />}
       {
         !showDiff ? <Editor

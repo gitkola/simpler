@@ -1,7 +1,7 @@
-import { useAppDispatch, useAppSelector } from "../store";
-import { handleOpenFileInEditor, saveProjectState } from "../store/currentProjectSlice";
-import { IProjectFile, IProjectState } from "../types";
-import { getFullFilePath, readFiles, writeFile } from "../services/fsService";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { handleOpenFileInEditor, saveProjectState } from "@/store/currentProjectSlice";
+import { IProjectFile, IProjectState } from "@/types";
+import { getFullFilePath, readFiles, writeFile } from "@/services/fsService";
 import AppIcon from "./Icons";
 
 export function FileComponent({ file }: { file: IProjectFile }) {
@@ -26,15 +26,15 @@ export function FileComponent({ file }: { file: IProjectFile }) {
 
   const handleWriteToFile = async (file: IProjectFile) => {
     await writeFile(file.content!, file.path);
-    const updatedFile = { path: file.path };
-    const updatedFiles = files?.map(f => f.path === updatedFile.path ? updatedFile : f) || [];
-    if (currentProjectState) {
-      const updatedProjectState: IProjectState = {
-        ...currentProjectState,
-        files: updatedFiles,
-      };
-      await dispatch(saveProjectState(updatedProjectState));
-    }
+    // const updatedFile = { path: file.path };
+    // const updatedFiles = files?.map(f => f.path === updatedFile.path ? updatedFile : f) || [];
+    // if (currentProjectState) {
+    //   const updatedProjectState: IProjectState = {
+    //     ...currentProjectState,
+    //     files: updatedFiles,
+    //   };
+    //   await dispatch(saveProjectState(updatedProjectState));
+    // }
   };
   return (
     <div

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getFileNameFromPath } from '../utils/pathUtils';
+import { getFileNameFromPath } from '@/lib/utils/pathUtils';
 import { Close } from './Icons';
 import { useAppDispatch, useAppSelector } from '../store';
 import { saveProjectOpenedFiles } from '../store/currentProjectSlice';
@@ -71,9 +71,9 @@ const TabsView: React.FC<TabsViewProps> = ({ children }) => {
   const tabContent = React.Children.toArray(children).find((child) => (child as React.ReactElement).props.isActive);
 
   return (
-    <div className="w-full flex flex-col overflow-auto">
+    <div className="w-full flex flex-1 flex-col overflow-auto">
       <div className="flex w-full h-[40px] overflow-x-auto overflow-y-hidden">{tabs}</div>
-      <div className="flex-1 overflow-auto">{tabContent}</div>
+      <div className="flex-1 overflow-hidden">{tabContent}</div>
     </div>
   );
 };

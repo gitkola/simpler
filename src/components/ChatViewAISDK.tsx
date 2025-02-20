@@ -1,15 +1,18 @@
 import React from "react";
-import { Messages, Plus } from "./Icons";
-import MessagesThread from "./Messages/MessagesThread";
+import { Messages, ThreeDotsIcon } from "./Icons";
+// import MessagesThread from "./Messages/MessagesThread";
 import InputSection from "./InputSection";
 import RenderCounter from "./RenderCounter";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "../store";
+import { RootState, AppDispatch } from "@/store";
 import {
   loadCurrentProjectConversation,
   saveCurrentProjectConversation,
-} from "../store/currentProjectSlice";
+} from "@/store/currentProjectSlice";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import SquareButton from "./SquareButton";
+import { setShowThread } from "@/store/layoutSlice";
+import { Thread } from "./ChatUI/Thread";
 
 export const ChatViewAISDK: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,7 +22,6 @@ export const ChatViewAISDK: React.FC = () => {
   const conversationsName = useSelector(
     (state: RootState) => state.currentProject.currentProjectConversationName
   );
-  console.log("ChatViewAISDK", conversationsNames);
 
   const handleNewConversation = () => {
     dispatch(saveCurrentProjectConversation([]));
@@ -33,46 +35,62 @@ export const ChatViewAISDK: React.FC = () => {
     <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
       <StyleTag />
       <RenderCounter name="ChatViewAISDK" />
-      <div className="flex p-2 space-x-2 items-center justify-between border-b border-0.5">
+      <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
         <div className="flex items-center space-x-2">
-          <Messages className="w-8 h-8" />
-          <h2 className="text-lg font-semibold">AI Chat Vercel SDK</h2>
+          <div className="flex items-center space-x-2">
+            <Messages className="w-8 h-8" />
+            <h2 className="text-lg font-semibold">AI Chat Vercel SDK</h2>
+          </div>
+          <div className="flex items-center space-x-2">{conversationsName}</div>
+          <div>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="IconButton" aria-label="Conversations">
+                  <ThreeDotsIcon className="w-6 h-6" />
+                </button>
+              </DropdownMenu.Trigger>
+
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="DropdownMenuContent"
+                  sideOffset={5}
+                >
+                  <DropdownMenu.Item
+                    className="DropdownMenuItem  bg-slate-300 p-2 rounded"
+                    onSelect={handleNewConversation}
+                  >
+                    New Conversation
+                  </DropdownMenu.Item>
+
+                  <DropdownMenu.Separator className="DropdownMenuSeparator" />
+
+                  <div className="ScrollableArea">
+                    {conversationsNames.map((fileName) => (
+                      <DropdownMenu.Item
+                        key={fileName}
+                        className="DropdownMenuItem"
+                        onSelect={() => handleSelectConversation(fileName)}
+                      >
+                        {fileName}
+                      </DropdownMenu.Item>
+                    ))}
+                  </div>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">{conversationsName}</div>
-        <div>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className="IconButton" aria-label="Conversations">
-                <Plus className="w-6 h-6" />
-              </button>
-            </DropdownMenu.Trigger>
-
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="DropdownMenuContent" sideOffset={5}>
-                <DropdownMenu.Item className="DropdownMenuItem  bg-slate-300 p-2 rounded" onSelect={handleNewConversation}>
-                  New Conversation
-                </DropdownMenu.Item>
-
-                <DropdownMenu.Separator className="DropdownMenuSeparator" />
-
-                <div className="ScrollableArea">
-                  {conversationsNames.map((fileName) => (
-                    <DropdownMenu.Item
-                      key={fileName}
-                      className="DropdownMenuItem"
-                      onSelect={() => handleSelectConversation(fileName)}
-                    >
-                      {fileName}
-                    </DropdownMenu.Item>
-                  ))}
-                </div>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-        </div>
+        <SquareButton
+          icon="close"
+          className=""
+          onClick={() => {
+            dispatch(setShowThread(false));
+          }}
+        />
       </div>
-      <div className="flex-1 flex flex-col justify-between overflow-hidden">
-        <MessagesThread />
+      <div className="flex flex-1 h-full w-full flex-col justify-between overflow-hidden">
+        {/* <MessagesThread /> */}
+        <Thread />
         <InputSection />
       </div>
     </div>

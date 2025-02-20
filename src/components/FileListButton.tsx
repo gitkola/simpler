@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { outlineButtonBlue } from '../styles/styles';
-import { RootState, useAppDispatch, useAppSelector } from '../store';
-import { setProjectFilesInContext } from '../store/contextSlice';
-import { readFile } from '../services/fsService';
+import { outlineButtonBlue } from '@/styles/styles';
+import { RootState, useAppDispatch, useAppSelector } from '@/store';
+import { setProjectFilesInContext } from '@/store/contextSlice';
+// import { readFile } from '../services/fsService';
+import SquareButton from './SquareButton';
 
 export const FileListButton: React.FC = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
   const { projectFilesInContext } = useAppSelector((state: RootState) => state.context);
   const files = useAppSelector((state: RootState) => state.currentProject.currentProjectState?.files) || [];
-  const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
+  // const { activeProjectPath } = useAppSelector((state: RootState) => state.projects);
   const dispatch = useAppDispatch();
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -39,27 +40,60 @@ export const FileListButton: React.FC = () => {
       </button>
       {isPopoverOpen && (
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex flex-col items-center justify-center ">
-          <div ref={popoverRef} className="overflow-y-scroll overflow-x-hidden -top-[400px] -left-[600px] bg-white shadow-2xl shadow-gray-800 rounded-md z-10 h-[80%] w-[50%]">
-            {
-              files.map((file) => (
-                <button
-                  key={file.path}
-                  onClick={async () => {
-                    const newFiles = { ...projectFilesInContext };
-                    if (newFiles[file.path]) {
-                      delete newFiles[file.path];
-                    } else {
-                      const content = await readFile(`${activeProjectPath}/${file.path}`);
-                      newFiles[file.path] = { ...file, content };
-                    }
-                    dispatch(setProjectFilesInContext(newFiles));
-                  }}
-                  className={`flex items-center w-full px-4 py-2 text-sm text-gray-800 border hover:border-blue-600 ${projectFilesInContext[file.path] ? 'bg-blue-300' : ''}`}
-                >
-                  {file.path}
-                </button>
-              ))
-            }
+          <div className=' h-[80%] w-[50%] rounded-md'>
+            <div className='flex flex-1 bg-gray-800'>
+              <div className="flex justify-between items-center space-x-2">
+                <div className="flex space-x-2 px-2">
+                  <button
+                    onClick={() => {
+                      const newFiles: Record<string, any> = {};
+                      files.forEach((file) => {
+                        if (typeof file.path === 'string') {
+                          const content = files.find((f) => f.path === file.path)?.content || '';
+                          newFiles[file.path] = { ...file, content };
+                        }
+                      });
+                      dispatch(setProjectFilesInContext(newFiles));
+                    }}
+                    className={`${outlineButtonBlue}`}
+                  >
+                    Select All
+                  </button>
+                  <button
+                    onClick={() => {
+                      dispatch(setProjectFilesInContext({}));
+                    }}
+                    className={`${outlineButtonBlue}`}
+                  >
+                    Select None
+                  </button>
+                </div>
+                <SquareButton icon="close" onClick={() => setIsPopoverOpen(false)} />
+              </div>
+            </div>
+            <div ref={popoverRef} className="overflow-y-scroll overflow-x-hidden -top-[400px] -left-[600px] bg-white shadow-2xl shadow-gray-800 z-10 h-full w-full">
+              {
+                files.map((file) => (
+                  <button
+                    key={file.path}
+                    onClick={async () => {
+                      const newFiles = { ...projectFilesInContext };
+                      if (newFiles[file.path]) {
+                        delete newFiles[file.path];
+                      } else {
+                        // const content = await readFile(`${activeProjectPath}/${file.path}`);
+                        const content = files.find((f) => f.path === file.path)?.content || '';
+                        newFiles[file.path] = { ...file, content };
+                      }
+                      dispatch(setProjectFilesInContext(newFiles));
+                    }}
+                    className={`flex items-center w-full px-4 py-2 text-sm text-gray-800 border hover:border-blue-600 ${projectFilesInContext[file.path] ? 'bg-blue-300' : ''}`}
+                  >
+                    {file.path}
+                  </button>
+                ))
+              }
+            </div>
           </div>
         </div>
       )}

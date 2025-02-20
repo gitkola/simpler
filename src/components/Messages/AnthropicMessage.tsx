@@ -1,12 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk';
 import React from 'react';
-import { IMessage, IProjectState } from '../../types';
+import { IMessage, IProjectState } from '@/types';
 import Accordion from '../Accordion';
-import { ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
-import { useAppDispatch } from '../../store';
-import { setFileInModal } from '../../store/layoutSlice';
+import { useAppDispatch } from '@/store';
+import { setFileInModal } from '@/store/layoutSlice';
 import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
 import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from '../../tools/toolFunctions';
+import { ToolUseBlock } from '@anthropic-ai/sdk/resources/index.mjs';
 
 export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) => {
   const dispatch = useAppDispatch();
@@ -24,7 +24,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
             <div className="flex flex-col space-y-2">
               {paths.map((path: string) => (
                 <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path })) }}>
-                  <p>{path}</p>
+                  <span>{path}</span>
                 </button>
               ))}
             </div>
@@ -93,7 +93,7 @@ export const AnthropicMessage: React.FC<{ message: IMessage }> = ({ message }) =
     <div key={message.id} className={`p-2 w-full rounded-md bg-green-400 bg-opacity-30 select-text`}>
       <div className={`space-y-2`}>
         <h1 className="font-bold">Anthropic {message?.model} {message?.role}</h1>
-        {typeof message?.content === 'string' && <p>{message?.content}</p>}
+        {typeof message?.content === 'string' && <span>{message?.content}</span>}
         {Array.isArray(message?.content) && message?.content?.map((item, index) => (item.type === 'tool_use' ? renderToolBlock(item) : renderTextBlock(item, index)))}
         <p className='text-xs opacity-50'>Token usage: {(message as Anthropic.Message)?.usage?.input_tokens}/{(message as Anthropic.Message)?.usage?.output_tokens}</p>
         <p className='text-xs opacity-50'>Message id: {message?.id}</p>

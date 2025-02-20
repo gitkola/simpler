@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path"
 
 function markdownRawPlugin(): Plugin {
   return {
@@ -24,11 +25,16 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
-    port: 1420,
+    port: 1430,
     strictPort: true,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
+    },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 }));

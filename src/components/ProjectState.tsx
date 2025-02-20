@@ -12,19 +12,10 @@ export const ProjectState = React.memo(() => {
 
   if (!currentProjectState) return null;
   return (
-    <div className="">
       <Editor
         value={stringifiedState}
         language={'json'}
-        minHeight={24}
-        style={{
-          paddingLeft: 8,
-          paddingRight: 8,
-          paddingBottom: 4,
-          paddingTop: 4,
-        }}
         disabled={true}
       />
-    </div>
   );
 });

@@ -1,20 +1,23 @@
 import { useEffect, useRef, useCallback } from "react";
-import { IProjectSettings } from "../types";
+import { IProjectSettings } from "@/types";
 import Message from "./Messages/Message";
 import { ArrowUp, Brain } from "./Icons";
-import { anthropicModels, openaiModels } from "../configs/aiModels";
-import { RootState, useAppDispatch, useAppSelector } from "../store";
-import { saveProjectSettings, handleSendMessage } from "../store/currentProjectSlice";
+import { anthropicModels, openaiModels } from "@/configs/aiModels";
+import { RootState, useAppDispatch, useAppSelector } from "@/store";
+import { saveProjectSettings } from "@/store/currentProjectSlice";
 import { Select } from "./Select";
 import Spinner from "./Spinner";
 import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../configs/instructions";
-import { outlineButtonBlue, textInput } from "../styles/styles";
+import { outlineButtonBlue, textInput } from "@/styles/styles";
 import ProcessIndicator from "./ProcessIndicator";
-import createBaseMessage from "../utils/createBaseMessage";
-import { appendToInputValue, setInputValue } from "../store/chatSlice";
+import createBaseMessage from "@/lib/utils/createBaseMessage";
+import { appendToInputValue, setInputValue } from "@/store/chatSlice";
 import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../store/contextSlice";
 import { FileListButton } from "./FileListButton";
-import { debounce } from "../utils/debounce";
+import { debounce } from "@/lib/utils/debounce";
+import SquareButton from "./SquareButton";
+import { setShowChat } from "@/store/layoutSlice";
+import { handleSendMessage } from "@/store/handleSendMessage";
 
 export const ChatView: React.FC = () => {
   const { currentProjectMessages,
@@ -77,9 +80,12 @@ export const ChatView: React.FC = () => {
 
   return (
     <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
-      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <Brain className="w-8 h-8" />
-        <h2 className="text-lg font-semibold">AI Chat</h2>
+      <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
+        <div className="flex items-center space-x-2">
+          <Brain className="w-8 h-8" />
+          <h2 className="text-lg font-semibold">AI Chat</h2>
+        </div>
+        <SquareButton icon="close" onClick={() => dispatch(setShowChat(false))} />
       </div>
       <div className="flex-1 flex flex-col justify-between overflow-hidden">
         {isLoadingCurrentProjectMessages && <ProcessIndicator />}

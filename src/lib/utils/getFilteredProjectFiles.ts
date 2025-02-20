@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { ITreeData } from "../store/currentProjectSlice";
+import { ITreeData } from "@/store/currentProjectSlice";
 import { getFolderNameFromPath } from "./pathUtils";
 
 interface FilterPattern {
@@ -11,7 +11,7 @@ const initialPatterns: FilterPattern[] = [
   { pattern: "**/node_modules/**", exclude: true },
   { pattern: "**/temp/*", exclude: true },
   { pattern: "**/.git/**", exclude: true },
-  { pattern: "**/.simpler/**", exclude: true },
+  // { pattern: "**/.simpler/**", exclude: true },
   { pattern: "**/.DS_Store", exclude: true },
   { pattern: "**/package-lock.json", exclude: true },
   { pattern: "**/**.lock", exclude: true },

@@ -1,5 +1,5 @@
-import { useAppSelector } from "../store";
-import { IProjectFile } from "../types";
+import { useAppSelector } from "@/store";
+import { IProjectFile } from "@/types";
 import { FileComponent } from './FileComponent';
 
 export const Files = () => {

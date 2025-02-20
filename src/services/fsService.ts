@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { join } from "@tauri-apps/api/path";
 import store from "../store"; //TODO: is this OK to use store in utils?
-import { getFilteredProjectFiles } from "../utils/getFilteredProjectFiles";
+import { getFilteredProjectFiles } from "@/lib/utils/getFilteredProjectFiles";
 import { IProjectFile } from "../types";
 
 export const openFolder = async (path: string | null) => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { IProjectState, IProjectDescription } from '../types';
-import { useAppDispatch, useAppSelector } from '../store';
-import { saveProjectState } from '../store/currentProjectSlice';
+import { IProjectState, IProjectDescription } from '@/types';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { saveProjectState } from '@/store/currentProjectSlice';
 import Textarea from './Textarea';
 
 
@@ -53,7 +53,7 @@ const Descriptions: React.FC = () => {
         <div key={description.id} className="flex-1 justify-between space-x-1">
           <Textarea
             key={description.id}
-            initialValue={description?.description}
+            initialValue={description?.description || ''}
             onSave={(data) => handleChange({ target: { name: 'description', value: data } } as any, description.id)}
             onDelete={() => handleDelete(description.id)}
             placeholder="Enter a description..."

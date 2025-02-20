@@ -1,5 +1,5 @@
 import { fetch, FetchOptions, HttpVerb, Body } from "@tauri-apps/api/http";
-import { logToJSONFile } from "../utils/logger";
+import { logToJSONFile } from "@/lib/utils/logger";
 import { IMessage } from "../types";
 
 export const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";

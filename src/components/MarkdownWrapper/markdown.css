@@ -7,6 +7,7 @@
   /* margin: 1px; */
   /* padding: 4px; */
   /* --markdown-code-bg-color: rgb(92, 139, 165); */
+  display: block;
 }
 
 /* Headings */
@@ -78,7 +79,7 @@
   padding-right: 6px;
   padding-top: 3px;
   padding-bottom: 3px;
-  overflow: auto;
+  overflow: scroll;
   /* font-size: 85%; */
   /* line-height: 1.6; */
   background-color: var(--markdown-code-bg-color);

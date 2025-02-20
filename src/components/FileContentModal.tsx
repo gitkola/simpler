@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProcessIndicator from './ProcessIndicator';
-import { readFile } from '../services/fsService';
-import { useAppSelector } from '../store';
+import { readFile } from '@/services/fsService';
+import { useAppSelector } from '@/store';
 import Editor from './Editor';
 import DiffViewer from './DiffViewer';
 

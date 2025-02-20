@@ -1,9 +1,9 @@
 import React from 'react';
 import { FileTree } from './FileTree';
 import { useFileTree } from './useFileTree';
-import { RootState, useAppDispatch, useAppSelector } from '../../store';
+import { RootState, useAppDispatch, useAppSelector } from '@/store';
 import { IFileTreeState } from './fileTreeInterfaces';
-import { handleOpenFileInEditor } from '../../store/currentProjectSlice';
+import { handleOpenFileInEditor } from '@/store/currentProjectSlice';
 
 const FileTreeExample: React.FC = () => {
   const { fileTree, handleToggle, handleSelect, getSelectedFiles } = useFileTree();

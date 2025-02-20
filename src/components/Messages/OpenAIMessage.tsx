@@ -1,10 +1,10 @@
 import React from "react";
 import Accordion from "../Accordion";
 import OpenAI from "openai";
-import { useAppDispatch } from '../../store';
-import { setFileInModal } from '../../store/layoutSlice';
+import { useAppDispatch } from '@/store';
+import { setFileInModal } from '@/store/layoutSlice';
 import { MessageProjectStateUpdates } from "./MessageProjectStateUpdates";
-import { IMessage } from "../../types";
+import { IMessage } from "@/types";
 import { getProjectStateDescriptions, getProjectStateFiles, getProjectStateRequirements, getProjectStateTasks } from "../../tools/toolFunctions";
 
 export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ message }: { message: OpenAI.ChatCompletion }) => {
@@ -28,7 +28,7 @@ export const OpenAIMessage: React.FC<{ message: OpenAI.ChatCompletion }> = ({ me
               <div className="flex flex-col space-y-2">
                 {paths.map((path: string) => (
                   <button key={path} className='flex opacity-80 hover:opacity-100' onClick={() => { dispatch(setFileInModal({ path })) }}>
-                    <p>{path}</p>
+                    <span>{path}</span>
                   </button>
                 ))}
               </div>

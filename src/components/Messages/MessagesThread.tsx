@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { RootState, useAppSelector } from "../../store";
-import { IMessage } from "../../types";
+import { RootState, useAppSelector } from "@/store";
 import ProcessIndicator from "../ProcessIndicator";
 import Spinner from "../Spinner";
-import Message from "./Message";
-import { createSystemPrompt } from "../../store/currentProjectSlice";
+import { createSystemPrompt } from "@/store/currentProjectSlice";
 import RenderCounter from "../RenderCounter";
-
+// import { RenderMessage } from "../render-message";
+// import { Message } from 'ai'
+import { Thread } from "../ChatUI/Thread";
 function MessagesThread() {
   const {
     currentProjectState,
@@ -18,29 +18,51 @@ function MessagesThread() {
   } = useAppSelector((state: RootState) => state.currentProject);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const context = useAppSelector((state: RootState) => state.context);
-  const { generalInstructions } = useAppSelector((state: RootState) => state.settings.instructions);
-  const systemPrompt = useMemo(() => createSystemPrompt(context, generalInstructions, currentProjectState), [context, generalInstructions, currentProjectState]);
+  const { generalInstructions } = useAppSelector(
+    (state: RootState) => state.settings.instructions
+  );
+  const systemPrompt = useMemo(
+    () => createSystemPrompt(context, generalInstructions, currentProjectState),
+    [context, generalInstructions, currentProjectState]
+  );
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   useEffect(() => {
     setTimeout(scrollToBottom, 10);
-  }, [currentProjectConversation?.length, aiModelRequestInProgress, aiModelRequestError]);
-
+  }, [
+    currentProjectConversation?.length,
+    aiModelRequestInProgress,
+    aiModelRequestError,
+  ]);
+  const messageId = String(Date.now());
   return (
     <>
       <RenderCounter name="MessagesThread" />
       {isLoadingCurrentProjectConversation && <ProcessIndicator />}
-      {currentProjectConversationError && <div className="flex p-4 items-center justify-center bg-red-500">{currentProjectConversationError}</div>}
+      {currentProjectConversationError && (
+        <div className="flex p-4 items-center justify-center bg-red-500">
+          {currentProjectConversationError}
+        </div>
+      )}
       <div className="flex-1 overflow-x-auto overflow-y-scroll">
         <div className="pl-2 pt-2 pr-0.5 space-y-2 h-fit">
-          {context.useSystemMessage && <Message message={{ role: "system", content: systemPrompt }} />}
-          {currentProjectConversation?.map((message, index) => (
-            <Message
+          {/* {context.useSystemMessage && <RenderMessage
+            getIsOpen={(_id) => true}
+            onOpenChange={() => { }}
+            onQuerySelect={() => { }}
+            messageId={messageId} message={{ role: "system", content: systemPrompt, id: messageId }} />}
+          {currentProjectConversation?.map((message: Message, index) => (
+            <RenderMessage
               key={index}
-              message={message as IMessage}
+              getIsOpen={(_id) => true}
+              onOpenChange={() => { }}
+              onQuerySelect={() => { }}
+              messageId={message.id}
+              message={message as Message}
             />
-          ))}
+          ))} */}
+          <Thread />
           {aiModelRequestInProgress && (
             <div className="flex justify-center items-center">
               <Spinner color="white" />

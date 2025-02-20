@@ -1,12 +1,12 @@
 import { CoreToolMessage } from "ai";
-import { IProjectFile, IProjectState } from "../../types";
+import { IProjectFile, IProjectState } from "@/types";
 import Accordion from "../Accordion";
 import Editor from "../Editor";
 import Markdown from "../MarkdownWrapper";
 import AppIcon from "../Icons";
-import { useAppDispatch } from "../../store";
-import { handleSendMessageWithAISDK } from "../../store/currentProjectSlice";
-import { getFileExtension } from "../../utils/pathUtils";
+import { useAppDispatch } from "@/store";
+import { handleSendMessageWithAISDK } from "@/store/handleSendMessageWithAISDK";
+import { getFileExtension } from "@/lib/utils/pathUtils";
 
 interface IGetProjectStateFilesResult {
   files: IProjectFile[];

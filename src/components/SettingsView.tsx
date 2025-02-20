@@ -11,6 +11,8 @@ import {
 } from "../store/settingsSlice";
 import { textInput } from "../styles/styles";
 import { SettingsIcon } from "./Icons";
+import SquareButton from "./SquareButton";
+import { setShowSettings } from "../store/layoutSlice";
 
 const SettingsView: React.FC = () => {
   const settings = useAppSelector((state: RootState) => state.settings);
@@ -38,12 +40,15 @@ const SettingsView: React.FC = () => {
 
   return (
     <div className="flex flex-col border-r border-0.5 min-w-[700px] max-w-[1200px]">
-      <div className="flex p-2 space-x-2 items-center justify-start border-b border-0.5">
-        <SettingsIcon className="w-8 h-8" />
-        <h2 className="text-lg font-semibold">Settings</h2>
+      <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
+        <div className="flex items-center space-x-2">
+          <SettingsIcon className="w-8 h-8" />
+          <h2 className="text-lg font-semibold">Settings</h2>
+        </div>
+        <SquareButton icon="close" onClick={() => dispatch(setShowSettings(false))} />
       </div>
       <div className="flex flex-col h-full overflow-y-scroll">
-        <div className="pl-2 py-2 pr-0.5">
+        <div className="px-[1rem] py-[2rem] ">
           <dl className="space-y-6">
             <div>
               <dt className="font-medium">OpenAI API Key</dt>

@@ -2,16 +2,44 @@ import React from "react";
 import SquareButton from "./SquareButton";
 import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
-import { setShowChat, setShowCodeEditor, setShowFolderTree, setShowProjectInfo, setShowProjectMessages, setShowProjects, setShowProjectState, setShowSettings, setShowProjectFiles, setShowThread } from "../store/layoutSlice";
-import Spinner from './Spinner';
+import {
+  setShowChat,
+  setShowCodeEditor,
+  setShowFolderTree,
+  setShowProjectInfo,
+  setShowProjectMessages,
+  setShowProjects,
+  setShowProjectState,
+  setShowSettings,
+  setShowProjectFiles,
+  setShowThread,
+} from "../store/layoutSlice";
+import Spinner from "./Spinner";
 import { setTheme } from "../store/settingsSlice";
 
 const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector((state) => state.settings);
-  const { showProjects, showFileTree, showSettings, showCodeEditor, showChat, showThread, showProjectState, showProjectInfo, showProjectMessages, showProjectFiles } = useAppSelector((state) => state.layout);
-  const { isLoadingCurrentProjectState, isLoadingCurrentProjectMessages, isLoadingCurrentProjectSettings, isLoadingCurrentProjectOpenedFiles, isLoadingCurrentProjectFileTree } = useAppSelector((state) => state.currentProject);
+  const {
+    showProjects,
+    showFileTree,
+    showSettings,
+    showCodeEditor,
+    showChat,
+    showThread,
+    showProjectState,
+    showProjectInfo,
+    showProjectMessages,
+    showProjectFiles,
+  } = useAppSelector((state) => state.layout);
+  const {
+    isLoadingCurrentProjectState,
+    isLoadingCurrentProjectMessages,
+    isLoadingCurrentProjectSettings,
+    isLoadingCurrentProjectOpenedFiles,
+    isLoadingCurrentProjectFileTree,
+  } = useAppSelector((state) => state.currentProject);
 
   const toggleView = (value: string) => {
     switch (value) {
@@ -79,7 +107,7 @@ const SidePanel: React.FC = () => {
       />
       <SquareButton
         onClick={() => toggleView("code-editor")}
-        icon="code-editor"
+        icon="edit"
         isActive={showCodeEditor}
       />
       <SquareButton
@@ -98,11 +126,15 @@ const SidePanel: React.FC = () => {
         isActive={showSettings}
       />
       <div className="flex-grow" />
-      {(isLoadingCurrentProjectState || isLoadingCurrentProjectMessages || isLoadingCurrentProjectSettings || isLoadingCurrentProjectOpenedFiles || isLoadingCurrentProjectFileTree) &&
+      {(isLoadingCurrentProjectState ||
+        isLoadingCurrentProjectMessages ||
+        isLoadingCurrentProjectSettings ||
+        isLoadingCurrentProjectOpenedFiles ||
+        isLoadingCurrentProjectFileTree) && (
         <div className="w-12 h-12 flex items-center justify-center">
           <Spinner size="sm" color="blue" />
         </div>
-      }
+      )}
       <SquareButton
         onClick={() => dispatch(setTheme(theme === "dark" ? "light" : "dark"))}
         icon={theme === "dark" ? "sun" : "moon"}

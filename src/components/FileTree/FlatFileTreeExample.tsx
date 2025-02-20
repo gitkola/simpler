@@ -1,8 +1,8 @@
 import React from 'react';
 import { FlatFileTree } from './FlatFileTree';
 import { useFlatFileTree } from './useFlatFileTree';
-import { useAppDispatch, useAppSelector } from '../../store';
-import { handleOpenFileInEditor } from '../../store/currentProjectSlice';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { handleOpenFileInEditor } from '@/store/currentProjectSlice';
 
 const FlatFileTreeExample: React.FC = () => {
   const {
