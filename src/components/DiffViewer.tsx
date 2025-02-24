@@ -1,8 +1,7 @@
-import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
-import { DiffEditor } from '@monaco-editor/react';
-import Editor from './Editor';
-import { useAppSelector } from '@/store';
-
+// import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
+import { DiffEditor } from "@monaco-editor/react";
+// import Editor from "./Editor";
+import { useAppSelector } from "@/store";
 
 interface DiffViewerProps {
   oldValue: string;
@@ -10,103 +9,115 @@ interface DiffViewerProps {
   language: string;
 }
 
-export default function DiffViewer({ oldValue, newValue, language }: DiffViewerProps) {
+export default function DiffViewer({
+  oldValue,
+  newValue,
+  language,
+}: DiffViewerProps) {
   const theme = useAppSelector((state) => state.settings.theme);
-  const highlightSyntax = (str: string) => (
-    <Editor language={language} value={str} onChange={() => { }} onKeyDown={() => { }} disabled={true} style={{}} />
-  );
+  // const highlightSyntax = (str: string) => (
+  //   <Editor
+  //     language={language}
+  //     value={str}
+  //     onChange={() => {}}
+  //     onKeyDown={() => {}}
+  //     disabled={true}
+  //     style={{}}
+  //   />
+  // );
   return (
     <DiffEditor
       original={oldValue}
       modified={newValue}
       language={language}
-      theme={theme === 'dark' ? 'vs-dark' : 'light'}
+      theme={theme === "dark" ? "vs-dark" : "light"}
       options={{
         readOnly: true,
         automaticLayout: true,
       }}
     />
   );
-  return (
-    <ReactDiffViewer
-      oldValue={oldValue}
-      newValue={newValue}
-      extraLinesSurroundingDiff={0}
-      splitView={true}
-      compareMethod={DiffMethod.WORDS_WITH_SPACE}
-      disableWordDiff={true}
-      hideLineNumbers={true}
-      showDiffOnly={false}
-      useDarkTheme={theme === 'dark'}
-      renderContent={highlightSyntax}
-      styles={{
-        diffContainer: {
-          overflowX: 'auto',
-          overflowY: 'auto',
-          background: 'none',
-          padding: 0,
-          margin: 0,
-          border: 0,
-          tableLayout: 'fixed',
-        },
-        content: {
-          padding: 0,
-          margin: 0,
-          color: 'blue',
-          tableLayout: 'inherit',
-          border: 0,
-        },
-        diffRemoved: {
-          padding: 0,
-          margin: 0,
-          border: 0,
-          span: {
-            padding: 0,
-            margin: 0,
-            border: 0,
-          },
-        },
-        diffAdded: {
-          padding: 0,
-          margin: 0,
-          border: 0,
-          span: {
-            padding: 0,
-            margin: 0,
-            border: 0,
-          },
-        },
-        line: {
-          padding: 0,
-          margin: 0,
-          background: 'none',
-          border: 0,
-        },
-        contentText: {
-          fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-          padding: 0,
-          margin: 0,
-          border: 0,
-          background: 'none',
-          boxSizing: 'inherit',
-          display: 'inherit',
-          fontSize: 'inherit',
-          fontStyle: 'inherit',
-          fontVariantLigatures: 'inherit',
-          fontWeight: 'inherit',
-          letterSpacing: 'inherit',
-          lineHeight: 'inherit',
-          tabSize: 'inherit',
-          textIndent: 'inherit',
-          textRendering: 'inherit',
-          textTransform: 'inherit',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'keep-all',
-          overflowWrap: 'break-word',
-          outline: 0,
-          userSelect: 'text',
-        },
-      }}
-    />
-  );
+  // return (
+  //   <ReactDiffViewer
+  //     oldValue={oldValue}
+  //     newValue={newValue}
+  //     extraLinesSurroundingDiff={0}
+  //     splitView={true}
+  //     compareMethod={DiffMethod.WORDS_WITH_SPACE}
+  //     disableWordDiff={true}
+  //     hideLineNumbers={true}
+  //     showDiffOnly={false}
+  //     useDarkTheme={theme === "dark"}
+  //     renderContent={highlightSyntax}
+  //     styles={{
+  //       diffContainer: {
+  //         overflowX: "auto",
+  //         overflowY: "auto",
+  //         background: "none",
+  //         padding: 0,
+  //         margin: 0,
+  //         border: 0,
+  //         tableLayout: "fixed",
+  //       },
+  //       content: {
+  //         padding: 0,
+  //         margin: 0,
+  //         color: "blue",
+  //         tableLayout: "inherit",
+  //         border: 0,
+  //       },
+  //       diffRemoved: {
+  //         padding: 0,
+  //         margin: 0,
+  //         border: 0,
+  //         span: {
+  //           padding: 0,
+  //           margin: 0,
+  //           border: 0,
+  //         },
+  //       },
+  //       diffAdded: {
+  //         padding: 0,
+  //         margin: 0,
+  //         border: 0,
+  //         span: {
+  //           padding: 0,
+  //           margin: 0,
+  //           border: 0,
+  //         },
+  //       },
+  //       line: {
+  //         padding: 0,
+  //         margin: 0,
+  //         background: "none",
+  //         border: 0,
+  //       },
+  //       contentText: {
+  //         fontFamily:
+  //           "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+  //         padding: 0,
+  //         margin: 0,
+  //         border: 0,
+  //         background: "none",
+  //         boxSizing: "inherit",
+  //         display: "inherit",
+  //         fontSize: "inherit",
+  //         fontStyle: "inherit",
+  //         fontVariantLigatures: "inherit",
+  //         fontWeight: "inherit",
+  //         letterSpacing: "inherit",
+  //         lineHeight: "inherit",
+  //         tabSize: "inherit",
+  //         textIndent: "inherit",
+  //         textRendering: "inherit",
+  //         textTransform: "inherit",
+  //         whiteSpace: "pre-wrap",
+  //         wordBreak: "keep-all",
+  //         overflowWrap: "break-word",
+  //         outline: 0,
+  //         userSelect: "text",
+  //       },
+  //     }}
+  //   />
+  // );
 }

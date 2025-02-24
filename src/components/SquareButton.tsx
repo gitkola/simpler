@@ -25,7 +25,9 @@ export default function SquareButton({
   return (
     <button
       onClick={onClick}
-      className={`w-12 h-12 flex items-center justify-center active:opacity-40 transition-all duration-100  ${cPrimary(isActive)} ${className} group`}
+      className={`w-12 h-12 flex items-center justify-center active:opacity-40 transition-all duration-100 ${cPrimary(
+        isActive
+      )} ${className} group`}
       disabled={disabled}
     >
       <AppIcon

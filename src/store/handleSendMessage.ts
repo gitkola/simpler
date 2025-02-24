@@ -19,7 +19,7 @@ import createBaseMessage from "@/lib/utils/createBaseMessage";
 import { Message } from "ai";
 
 export const handleSendMessage =
-  (message: IMessage) =>
+  (message: Message) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       dispatch(setAIModelRequestError(null));

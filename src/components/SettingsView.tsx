@@ -39,17 +39,20 @@ const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col border-r border-0.5 min-w-[700px] max-w-[1200px]">
+    <div className="flex flex-1 flex-col border-r border-0.5 min-w-[700px] h-full w-full">
       <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
         <div className="flex items-center space-x-2">
           <SettingsIcon className="w-8 h-8" />
           <h2 className="text-lg font-semibold">Settings</h2>
         </div>
-        <SquareButton icon="close" onClick={() => dispatch(setShowSettings(false))} />
+        <SquareButton
+          icon="close"
+          onClick={() => dispatch(setShowSettings(false))}
+        />
       </div>
-      <div className="flex flex-col h-full overflow-y-scroll">
+      <div className="flex flex-col h-full w-full overflow-y-auto">
         <div className="px-[1rem] py-[2rem] ">
-          <dl className="space-y-6">
+          <dl className="space-y-6 flex flex-1 flex-col">
             <div>
               <dt className="font-medium">OpenAI API Key</dt>
               <dd className="mt-1">
@@ -68,7 +71,9 @@ const SettingsView: React.FC = () => {
                 <input
                   type="password"
                   value={settings.apiKeys.anthropic}
-                  onChange={(e) => handleApiKeyChange("anthropic", e.target.value)}
+                  onChange={(e) =>
+                    handleApiKeyChange("anthropic", e.target.value)
+                  }
                   className={`${textInput}`}
                   placeholder="Enter your Anthropic API key"
                 />
@@ -125,7 +130,7 @@ const SettingsView: React.FC = () => {
                 />
               </dd>
             </div> */}
-            <div>
+            <div className="flex flex-1 flex-col">
               <dt className="font-medium">AI General Instructions</dt>
               <dd className="mt-1">
                 <textarea
@@ -135,15 +140,17 @@ const SettingsView: React.FC = () => {
                   autoSave="off"
                   spellCheck={false}
                   value={settings?.instructions?.generalInstructions}
-                  onChange={(e) => handleGeneralInstructionsChange(e.target.value)}
-                  className={`${textInput}`}
+                  onChange={(e) =>
+                    handleGeneralInstructionsChange(e.target.value)
+                  }
+                  className={`${textInput} h-full flex flex-1`}
                   placeholder="Enter AI General Instructions"
                   rows={24}
                 />
               </dd>
             </div>
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-md text-sm mr-2 hover:shadow-md"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-md text-sm mr-2 hover:shadow-md w-fit"
               onClick={() => dispatch(resetToDefaultInstructions())}
             >
               Reset To Default Instructions

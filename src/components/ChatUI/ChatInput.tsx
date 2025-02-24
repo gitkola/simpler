@@ -4,7 +4,10 @@ import { ArrowUp } from "../Icons";
 import { anthropicModels, openaiModels } from "@/configs/aiModels";
 import { Select } from "../Select";
 import Spinner from "../Spinner";
-import { MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST, MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST } from "../../configs/instructions";
+import {
+  MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST,
+  MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST,
+} from "../../configs/instructions";
 import { outlineButtonBlue, textInput } from "@/styles/styles";
 import ProcessIndicator from "../ProcessIndicator";
 import { FileListButton } from "../FileListButton";
@@ -28,7 +31,15 @@ interface ChatInputProps {
     tasks: boolean;
     filePaths: boolean;
   };
-  onContextChange: (key: 'instructions' | 'descriptions' | 'requirements' | 'tasks' | 'filePaths', value: boolean) => void;
+  onContextChange: (
+    key:
+      | "instructions"
+      | "descriptions"
+      | "requirements"
+      | "tasks"
+      | "filePaths",
+    value: boolean
+  ) => void;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -46,7 +57,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onContextChange,
 }) => {
   const debouncedSetContext = useCallback(
-    debounce((key: string, value: boolean) => onContextChange(key as any, value), 300),
+    debounce(
+      (key: string, value: boolean) => onContextChange(key as any, value),
+      300
+    ),
     []
   );
 
@@ -56,14 +70,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <div className="flex flex-wrap gap-2 items-center">
           <div>Suggestions:</div>
           <button
-            onClick={() => onAppendToInput(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST)}
+            onClick={() =>
+              onAppendToInput(
+                MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_TASKS_REQUEST
+              )
+            }
             className={outlineButtonBlue}
             disabled={isLoading}
           >
             <div>Generate Tasks</div>
           </button>
           <button
-            onClick={() => onAppendToInput(MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST)}
+            onClick={() =>
+              onAppendToInput(
+                MESSAGE_TO_AI_MODEL_GENERATE_PROJECT_FILES_REQUEST
+              )
+            }
             className={outlineButtonBlue}
             disabled={isLoading}
           >
@@ -110,24 +132,34 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             className="flex w-10 h-10 min-w-10 bg-blue-500 text-white rounded-full hover:relative hover:bg-blue-600 hover:shadow-md focus:outline-none disabled:opacity-50 items-center justify-center"
             disabled={isLoading || !inputValue}
           >
-            {isLoading ? <Spinner size="sm" color="white" /> : <ArrowUp size={24} />}
+            {isLoading ? (
+              <Spinner size="sm" color="white" />
+            ) : (
+              <ArrowUp size={24} />
+            )}
           </button>
         </div>
         <div className="flex flex-col">
           {isLoadingSettings && <ProcessIndicator />}
           {settingsError && <div>{settingsError}</div>}
-          {(!isLoadingSettings && currentProjectSettings?.service) && (
+          {!isLoadingSettings && currentProjectSettings?.service && (
             <div className="flex space-x-2">
               <Select
                 name="service"
                 value={currentProjectSettings.service}
                 options={["openai", "anthropic"]}
-                onChange={(e) => onServiceChange(e.target.value as "openai" | "anthropic")}
+                onChange={(e) =>
+                  onServiceChange(e.target.value as "openai" | "anthropic")
+                }
               />
               <Select
                 name="model"
                 value={currentProjectSettings.model}
-                options={currentProjectSettings.service === 'openai' ? openaiModels : anthropicModels}
+                options={
+                  currentProjectSettings.service === "openai"
+                    ? openaiModels
+                    : anthropicModels
+                }
                 onChange={(e) => onModelChange(e.target.value)}
               />
             </div>
@@ -136,4 +168,4 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       </div>
     </div>
   );
-}; 
+};

@@ -1,28 +1,23 @@
-import Anthropic from "@anthropic-ai/sdk";
+// import Anthropic from "@anthropic-ai/sdk";
 import { Message } from "ai";
-import OpenAI from "openai";
+// import OpenAI from "openai";
 
 export type ProjectPathListItem = string;
 
-export type IMessageRole = "user" | "assistant" | "system" | "data";
-export type MessageService = "openai" | "anthropic" | "simpler";
+export type IMessageRole = "user" | "assistant" | "system";
 
 export interface IBaseMessage extends Message {
   id: string;
+  createdAt: Date;
   role: IMessageRole;
   content: string;
-  service?: MessageService;
-  model?: string;
-  context?: Record<string, any>;
+  parts: { type: "text"; text: string }[];
+  // context?: Record<string, any>;
 }
 
-export type IMessage =
-  | Message
-  | IBaseMessage
+export type IMessage = Message | IBaseMessage;
 // | (OpenAI.ChatCompletion & IBaseMessage)
 // | (Anthropic.Message & IBaseMessage);
-
-export type Entity = IProjectState | IMessage;
 
 export interface IProjectDescription {
   id: string;
@@ -37,7 +32,7 @@ export interface IProjectRequirement {
 export interface IProjectTask {
   id: string;
   task?: string;
-  status?: "todo" | "in_progress" | "completed" | "hold" | "no_need";
+  status?: "todo" | "in_progress" | "completed" | "hold" | "canceled";
   suggested_as_next_task?: boolean;
 }
 

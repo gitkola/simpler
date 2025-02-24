@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 
 const RenderCounter = ({ name = "Render count" }) => {
+  return null;
   const renderCount = useRef(0);
 
   useEffect(() => {

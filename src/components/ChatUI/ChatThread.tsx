@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
 // import { IMessage } from "@/types";
-// import { ChatMessage } from "./ChatMessage";
+import { ChatMessage } from "./ChatMessage";
 import Spinner from "../Spinner";
-import { RenderMessage } from "../render-message";
+// import { RenderMessage } from "../render-message";
 import { Message } from "ai";
+import ChatMessages from "../chat-messages";
 
 interface ChatThreadProps {
   messages: Message[];
@@ -43,17 +44,18 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
             {error}
           </div>
         )}
-        {messages?.map((message) => (
-          <RenderMessage
-            key={message.id}
-            message={message}
-            messageId={String(Date.now())}
-            getIsOpen={(_id) => false}
-            onOpenChange={() => {}}
-            onQuerySelect={() => {}}
-          />
-          // <ChatMessage key={message.id} message={message} />
-        ))}
+        {/* {messages?.map((message) => (
+          // <RenderMessage
+          //   key={message.id}
+          //   message={message}
+          //   messageId={String(Date.now())}
+          //   getIsOpen={(_id) => false}
+          //   onOpenChange={() => {}}
+          //   onQuerySelect={() => {}}
+          // />
+          <ChatMessage key={message.id} message={message} />
+        ))} */}
+        {/* <ChatMessages messages={messages} model={model} /> */}
         {aiModelRequestInProgress && (
           <div className="flex justify-center items-center">
             <Spinner color="white" />

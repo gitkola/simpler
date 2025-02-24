@@ -1,20 +1,32 @@
-import { Brain } from "../Icons";
+import { Close, Sparkles } from "../Icons";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
 import { saveProjectSettings } from "@/store/currentProjectSlice";
 import { setInputValue, appendToInputValue } from "@/store/chatSlice";
-import { setInstructionsInContext, setProjectDescriptionsInContext, setProjectFilePathsInContext, setProjectRequirementsInContext, setProjectTasksInContext } from "../../store/contextSlice";
-import SquareButton from "../SquareButton";
-import { setShowChat } from "@/store/layoutSlice";
+import {
+  setInstructionsInContext,
+  setProjectDescriptionsInContext,
+  setProjectFilePathsInContext,
+  setProjectRequirementsInContext,
+  setProjectTasksInContext,
+} from "../../store/contextSlice";
 import { handleSendMessage } from "@/store/handleSendMessage";
-import { ChatThread } from "./ChatThread";
+// import { ChatThread } from "./ChatThread";
 import { ChatInput } from "./ChatInput";
 import createBaseMessage from "@/lib/utils/createBaseMessage";
 import { IProjectSettings } from "@/types";
 import { anthropicModels, openaiModels } from "@/configs/aiModels";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
-import { Thread } from "./Thread";
+// import { Thread } from "./Thread";
+import { ToggleChatViewVisibility } from "@/App";
+import Spinner from "../Spinner";
+import { AISDKMessage } from "../AISDKMessage";
 
-type ContextKey = 'instructions' | 'descriptions' | 'requirements' | 'tasks' | 'filePaths';
+type ContextKey =
+  | "instructions"
+  | "descriptions"
+  | "requirements"
+  | "tasks"
+  | "filePaths";
 type ContextAction = ActionCreatorWithPayload<boolean, string>;
 type ContextActions = Record<ContextKey, ContextAction>;
 
@@ -35,7 +47,7 @@ export const ChatView: React.FC = () => {
     projectDescriptionsInContext,
     projectRequirementsInContext,
     projectTasksInContext,
-    projectFilePathsInContext
+    projectFilePathsInContext,
   } = useAppSelector((state: RootState) => state.context);
   const dispatch = useAppDispatch();
 
@@ -50,13 +62,20 @@ export const ChatView: React.FC = () => {
   const handleServiceChange = async (service: "openai" | "anthropic") => {
     if (service === currentProjectSettings?.service) return;
     const model = service === "openai" ? openaiModels[0] : anthropicModels[0];
-    const newSettings = { ...currentProjectSettings, service, model } as IProjectSettings;
+    const newSettings = {
+      ...currentProjectSettings,
+      service,
+      model,
+    } as IProjectSettings;
     await dispatch(saveProjectSettings(newSettings));
   };
 
   const handleModelChange = async (model: string) => {
     if (model === currentProjectSettings?.model) return;
-    const newSettings = { ...currentProjectSettings, model } as IProjectSettings;
+    const newSettings = {
+      ...currentProjectSettings,
+      model,
+    } as IProjectSettings;
     await dispatch(saveProjectSettings(newSettings));
   };
 
@@ -67,17 +86,18 @@ export const ChatView: React.FC = () => {
     tasks: setProjectTasksInContext,
     filePaths: setProjectFilePathsInContext,
   };
-
   return (
-    <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
+    <div className="flex flex-1 flex-col border-r border-0.5 min-w-[900px]">
       <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
         <div className="flex items-center space-x-2">
-          <Brain className="w-8 h-8" />
+          <Sparkles className="w-8 h-8" />
           <h2 className="text-lg font-semibold">AI Chat</h2>
         </div>
-        <SquareButton icon="close" onClick={() => dispatch(setShowChat(false))} />
+        <ToggleChatViewVisibility>
+          <Close className="w-12 h-12 hover:bg-blue-400/30 p-2" />
+        </ToggleChatViewVisibility>
       </div>
-      <div className="flex-1 flex flex-col justify-between overflow-hidden">
+      <div className="flex flex-1 h-full w-full flex-col justify-between overflow-hidden text-nowrap">
         {/* <ChatThread
           messages={currentProjectMessages || []}
           isLoading={isLoadingCurrentProjectMessages}
@@ -85,7 +105,29 @@ export const ChatView: React.FC = () => {
           aiModelRequestInProgress={aiModelRequestInProgress}
           aiModelRequestError={aiModelRequestError || undefined}
         /> */}
-        <Thread />
+        {/* <Thread /> */}
+        <div className="flex flex-1 flex-col overflow-y-auto">
+          {Array.isArray(currentProjectMessages) &&
+            currentProjectMessages.length > 0 &&
+            currentProjectMessages.map((message, index) => (
+              <AISDKMessage key={index} message={message} />
+            ))}
+          {currentProjectMessagesError && (
+            <div className="flex p-4 items-center justify-center bg-red-500">
+              {currentProjectMessagesError}
+            </div>
+          )}
+          {isLoadingCurrentProjectMessages && (
+            <div className="flex justify-center">
+              <Spinner color="white" />
+            </div>
+          )}
+        </div>
+        {aiModelRequestError && (
+          <div className="flex p-4 items-center justify-center bg-red-500">
+            {aiModelRequestError}
+          </div>
+        )}
         <ChatInput
           inputValue={inputValue}
           onInputChange={(value) => dispatch(setInputValue(value))}

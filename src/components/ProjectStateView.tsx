@@ -1,18 +1,18 @@
 import React from "react";
-import { RootState, useAppDispatch, useAppSelector } from "../store";
+import { RootState, useAppSelector } from "../store";
 import { ProjectState } from "./ProjectState";
 import { Braces } from "./Icons";
 import ProcessIndicator from "./ProcessIndicator";
 import SquareButton from "./SquareButton";
-import { setShowProjectState } from "../store/layoutSlice";
 import RenderCounter from "./RenderCounter";
+import { useVisibility } from "react-visibility-persist";
 
 const ProjectStateView: React.FC = () => {
   const { isLoadingCurrentProjectState, currentProjectStateError } =
     useAppSelector((state: RootState) => state?.currentProject);
-  const dispatch = useAppDispatch();
+  const { toggleVisibility: toggleProjectState } = useVisibility();
   return (
-    <div className="flex flex-col border-r border-0.5 min-w-[700px] max-w-[1200px]">
+    <div className="flex flex-1 flex-col border-r border-0.5 min-w-[700px]">
       <RenderCounter name="Project State" />
       <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
         <div className="flex items-center space-x-2">
@@ -23,7 +23,7 @@ const ProjectStateView: React.FC = () => {
           icon="close"
           className=""
           onClick={() => {
-            dispatch(setShowProjectState(false));
+            toggleProjectState("project-state");
           }}
         />
       </div>

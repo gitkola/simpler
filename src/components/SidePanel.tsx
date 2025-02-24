@@ -2,37 +2,14 @@ import React from "react";
 import SquareButton from "./SquareButton";
 import { useOpenProject } from "../hooks/useOpenProject";
 import { useAppDispatch, useAppSelector } from "../store";
-import {
-  setShowChat,
-  setShowCodeEditor,
-  setShowFolderTree,
-  setShowProjectInfo,
-  setShowProjectMessages,
-  setShowProjects,
-  setShowProjectState,
-  setShowSettings,
-  setShowProjectFiles,
-  setShowThread,
-} from "../store/layoutSlice";
 import Spinner from "./Spinner";
 import { setTheme } from "../store/settingsSlice";
+import { useVisibility } from "react-visibility-persist";
 
 const SidePanel: React.FC = () => {
   const handleOpenProject = useOpenProject();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector((state) => state.settings);
-  const {
-    showProjects,
-    showFileTree,
-    showSettings,
-    showCodeEditor,
-    showChat,
-    showThread,
-    showProjectState,
-    showProjectInfo,
-    showProjectMessages,
-    showProjectFiles,
-  } = useAppSelector((state) => state.layout);
   const {
     isLoadingCurrentProjectState,
     isLoadingCurrentProjectMessages,
@@ -41,32 +18,7 @@ const SidePanel: React.FC = () => {
     isLoadingCurrentProjectFileTree,
   } = useAppSelector((state) => state.currentProject);
 
-  const toggleView = (value: string) => {
-    switch (value) {
-      case "projects":
-        return dispatch(setShowProjects(!showProjects));
-      case "file-tree":
-        return dispatch(setShowFolderTree(!showFileTree));
-      case "settings":
-        return dispatch(setShowSettings(!showSettings));
-      case "code-editor":
-        return dispatch(setShowCodeEditor(!showCodeEditor));
-      case "project-info":
-        return dispatch(setShowProjectInfo(!showProjectInfo));
-      case "project-state":
-        return dispatch(setShowProjectState(!showProjectState));
-      case "messages":
-        return dispatch(setShowProjectMessages(!showProjectMessages));
-      case "ai-chat":
-        return dispatch(setShowChat(!showChat));
-      case "thread":
-        return dispatch(setShowThread(!showThread));
-      case "project-files":
-        return dispatch(setShowProjectFiles(!showProjectFiles));
-      default:
-        return false;
-    }
-  };
+  const { visibilityState: vs, toggleVisibility: toggle } = useVisibility();
 
   return (
     <div className={`flex flex-col h-screen border-r border-opacity-30`}>
@@ -76,54 +28,59 @@ const SidePanel: React.FC = () => {
         isActive={false}
       />
       <SquareButton
-        onClick={() => toggleView("projects")}
+        onClick={() => toggle("projects")}
         icon="projects"
-        isActive={showProjects}
+        isActive={vs["projects"]}
       />
       <SquareButton
-        onClick={() => toggleView("project-info")}
+        onClick={() => toggle("project-info")}
         icon="project-info"
-        isActive={showProjectInfo}
+        isActive={vs["project-info"]}
       />
       <SquareButton
-        onClick={() => toggleView("project-state")}
+        onClick={() => toggle("project-state")}
         icon="project-state"
-        isActive={showProjectState}
+        isActive={vs["project-state"]}
       />
       <SquareButton
-        onClick={() => toggleView("messages")}
-        icon="messages"
-        isActive={showProjectMessages}
+        onClick={() => toggle("messages")}
+        icon="scroll-text"
+        isActive={vs["messages"]}
       />
       <SquareButton
-        onClick={() => toggleView("file-tree")}
+        onClick={() => toggle("file-tree")}
         icon="file-tree"
-        isActive={showFileTree}
+        isActive={vs["file-tree"]}
       />
       <SquareButton
-        onClick={() => toggleView("project-files")}
+        onClick={() => toggle("project-files")}
         icon="files"
-        isActive={showProjectFiles}
+        isActive={vs["project-files"]}
       />
       <SquareButton
-        onClick={() => toggleView("code-editor")}
+        onClick={() => toggle("code-editor")}
         icon="edit"
-        isActive={showCodeEditor}
+        isActive={vs["code-editor"]}
       />
       <SquareButton
-        onClick={() => toggleView("ai-chat")}
+        onClick={() => toggle("chat-view")}
+        icon="sparkles"
+        isActive={vs["chat-view"]}
+      />
+      <SquareButton
+        onClick={() => toggle("ai-chat")}
         icon="ai-chat"
-        isActive={showChat}
+        isActive={vs["ai-chat"]}
       />
       <SquareButton
-        onClick={() => toggleView("thread")}
+        onClick={() => toggle("thread")}
         icon="messages"
-        isActive={showThread}
+        isActive={vs["thread"]}
       />
       <SquareButton
-        onClick={() => toggleView("settings")}
+        onClick={() => toggle("settings")}
         icon="settings"
-        isActive={showSettings}
+        isActive={vs["settings"]}
       />
       <div className="flex-grow" />
       {(isLoadingCurrentProjectState ||

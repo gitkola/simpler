@@ -1,29 +1,46 @@
 import { TreeView } from "@primer/react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import {
-  getFolderNameFromFilePath,
-} from "@/lib/utils/pathUtils";
+import { getFolderNameFromFilePath } from "@/lib/utils/pathUtils";
 import { File, FolderTree } from "./Icons";
 import SquareButton from "./SquareButton";
 import { openFolder } from "@/services/fsService";
-import { handleOpenFileInEditor, handleClickOnFolder, ITreeData, loadProjectFileTree } from "../store/currentProjectSlice";
+import {
+  handleOpenFileInEditor,
+  handleClickOnFolder,
+  ITreeData,
+  loadProjectFileTree,
+} from "../store/currentProjectSlice";
 import ProcessIndicator from "./ProcessIndicator";
-import { setShowFolderTree } from "@/store/layoutSlice";
+// import { setShowFolderTree } from "@/store/layoutSlice";
+import { useVisibility } from "react-visibility-persist";
 
-const treeItemIsFile = (tree: ITreeData) => Array.isArray(tree?.children) === false;
+const treeItemIsFile = (tree: ITreeData) =>
+  Array.isArray(tree?.children) === false;
 
 export default function FileTreeView() {
-  const activeProjectPath = useAppSelector((state) => state.projects.activeProjectPath);
-  const { currentProjectFileTree, isLoadingCurrentProjectFileTree, currentProjectFileTreeError } = useAppSelector((state) => state.currentProject);
+  const { visibilityState, toggleVisibility: toggle } = useVisibility();
+  const activeProjectPath = useAppSelector(
+    (state) => state.projects.activeProjectPath
+  );
+  const {
+    currentProjectFileTree,
+    isLoadingCurrentProjectFileTree,
+    currentProjectFileTreeError,
+  } = useAppSelector((state) => state.currentProject);
   const dispatch = useAppDispatch();
 
   const handleClickTreeItem = async (tree: ITreeData) => {
     if (treeItemIsFile(tree)) {
-      await dispatch(handleOpenFileInEditor(`${activeProjectPath}${tree.path}`));
+      await dispatch(
+        handleOpenFileInEditor(`${activeProjectPath}${tree.path}`)
+      );
+      if (!visibilityState["code-editor"]) {
+        toggle("code-editor");
+      }
     } else {
       dispatch(handleClickOnFolder({ ...tree }));
-    };
-  }
+    }
+  };
 
   const renderTreeItem = (tree: ITreeData) => (
     <TreeView.Item
@@ -47,9 +64,10 @@ export default function FileTreeView() {
             onClick={async (e) => {
               e.stopPropagation();
               await openFolder(
-                `${activeProjectPath}${Array.isArray(tree.children)
-                  ? tree.path
-                  : getFolderNameFromFilePath(tree.path)
+                `${activeProjectPath}${
+                  Array.isArray(tree.children)
+                    ? tree.path
+                    : getFolderNameFromFilePath(tree.path)
                 }`
               );
             }}
@@ -67,24 +85,31 @@ export default function FileTreeView() {
   );
 
   return (
-    <div className="flex flex-col border-r border-0.5 min-w-[400px] max-w-[1200px]">
+    <div className="flex flex-1 flex-col border-r border-0.5 min-w-[400px]">
       <div className="flex items-center justify-between border-b border-0.5">
         <div className="flex items-center ">
           <div className="flex p-2 space-x-2 items-center justify-start">
             <FolderTree className="w-8 h-8" />
             <h2 className="text-lg font-semibold">File Tree</h2>
           </div>
-          <SquareButton icon="refresh" onClick={() => { dispatch(loadProjectFileTree()); }} />
+          <SquareButton
+            icon="refresh"
+            onClick={() => {
+              dispatch(loadProjectFileTree());
+            }}
+          />
         </div>
-        <SquareButton icon="close" className="" onClick={() => { dispatch(setShowFolderTree(false)); }} />
+        <SquareButton
+          icon="close"
+          className=""
+          onClick={() => {
+            toggle("file-tree");
+          }}
+        />
       </div>
-      {
-        isLoadingCurrentProjectFileTree && <ProcessIndicator />
-      }
-      {
-        currentProjectFileTreeError && <div>{currentProjectFileTreeError}</div>
-      }
-      <div className="overflow-y-scroll overflow-x-hidden">
+      {isLoadingCurrentProjectFileTree && <ProcessIndicator />}
+      {currentProjectFileTreeError && <div>{currentProjectFileTreeError}</div>}
+      <div className="overflow-y-auto overflow-x-hidden">
         <nav aria-label="Files">
           <TreeView aria-label="Files" className="">
             {currentProjectFileTree && renderTreeItem(currentProjectFileTree)}

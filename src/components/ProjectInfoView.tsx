@@ -7,18 +7,20 @@ import Descriptions from "./Descriptions";
 import { Info } from "./Icons";
 import ProcessIndicator from "./ProcessIndicator";
 import SquareButton from "./SquareButton";
-import { setShowProjectInfo } from "../store/layoutSlice";
+// import { setShowProjectInfo } from "../store/layoutSlice";
 import RenderCounter from "./RenderCounter";
+import { useVisibility } from "react-visibility-persist";
 
 const ProjectInfoView: React.FC = () => {
+  const { toggleVisibility: toggleProjectInfo } = useVisibility();
   const {
     currentProjectState,
     isLoadingCurrentProjectState,
     currentProjectStateError,
   } = useAppSelector((state: RootState) => state?.currentProject);
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   return (
-    <div className="flex flex-col border-r border-0.5 min-w-[700px] max-w-[1200px]">
+    <div className="flex flex-1 flex-col border-r border-0.5 min-w-[700px]">
       <RenderCounter name="Project Info" />
       <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">
         <div className="flex items-center space-x-2">
@@ -29,7 +31,8 @@ const ProjectInfoView: React.FC = () => {
           icon="close"
           className=""
           onClick={() => {
-            dispatch(setShowProjectInfo(false));
+            // dispatch(setShowProjectInfo(false));
+            toggleProjectInfo("project-info");
           }}
         />
       </div>

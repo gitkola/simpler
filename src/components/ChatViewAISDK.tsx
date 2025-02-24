@@ -32,7 +32,7 @@ export const ChatViewAISDK: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col border-r border-0.5 min-w-[900px] max-w-[1200px]">
+    <div className="flex flex-1 flex-col border-r border-0.5 min-w-[900px] h-full w-full">
       <StyleTag />
       <RenderCounter name="ChatViewAISDK" />
       <div className="flex pl-2 space-x-2 items-center justify-between border-b border-0.5">

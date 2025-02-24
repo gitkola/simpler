@@ -19,7 +19,7 @@ import {
   getTreeData,
 } from "@/lib/utils/getFilteredProjectFiles";
 import { cloneDeep } from "lodash";
-import { setShowCodeEditor } from "./layoutSlice";
+// import { setShowCodeEditor } from "./layoutSlice";
 import { IFileTreeState } from "../components/FileTree/fileTreeInterfaces";
 import { readFilesFromFS, writeFile } from "../services/fsService";
 import { IContextState } from "./contextSlice";
@@ -318,8 +318,9 @@ export const loadProject =
       ]);
       console.log(`Project loaded in ${Date.now() - start}ms`);
     } catch (error) {
-      const errorMessage = `Failed to load project: ${(error as Error).message
-        }`;
+      const errorMessage = `Failed to load project: ${
+        (error as Error).message
+      }`;
       console.log(errorMessage);
       dispatch(setCurrentProjectStateError(errorMessage));
     }
@@ -402,80 +403,81 @@ export const loadProjectOpenedFiles =
 
 export const saveProjectState =
   (newProjectState: IProjectState) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      try {
-        const activeProjectPath = getState().projects.activeProjectPath;
-        if (!activeProjectPath) return;
-        dispatch(fetchCurrentProjectState());
-        await saveProjectStateToFile(activeProjectPath, newProjectState);
-        dispatch(setCurrentProjectState(newProjectState));
-      } catch (error) {
-        console.error("Failed to save project state:", error);
-        dispatch(setCurrentProjectStateError((error as Error).message));
-      }
-    };
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectState());
+      await saveProjectStateToFile(activeProjectPath, newProjectState);
+      dispatch(setCurrentProjectState(newProjectState));
+    } catch (error) {
+      console.error("Failed to save project state:", error);
+      dispatch(setCurrentProjectStateError((error as Error).message));
+    }
+  };
 
 export const saveProjectMessages =
   (newProjectMessages: Message[]) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      try {
-        const activeProjectPath = getState().projects.activeProjectPath;
-        if (!activeProjectPath) return;
-        dispatch(fetchCurrentProjectMessages());
-        await saveProjectMessagesToFile(activeProjectPath, newProjectMessages);
-        dispatch(setCurrentProjectMessages(newProjectMessages));
-      } catch (error) {
-        console.error("Failed to save project messages:", error);
-        dispatch(setCurrentProjectMessagesError((error as Error).message));
-      }
-    };
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectMessages());
+      await saveProjectMessagesToFile(activeProjectPath, newProjectMessages);
+      dispatch(setCurrentProjectMessages(newProjectMessages));
+    } catch (error) {
+      console.error("Failed to save project messages:", error);
+      dispatch(setCurrentProjectMessagesError((error as Error).message));
+    }
+  };
 
 export const saveProjectSettings =
   (newProjectSettings: IProjectSettings) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      try {
-        const activeProjectPath = getState().projects.activeProjectPath;
-        if (!activeProjectPath) return;
-        dispatch(fetchCurrentProjectSettings());
-        await saveProjectSettingsToFile(activeProjectPath, newProjectSettings);
-        dispatch(setCurrentProjectSettings(newProjectSettings));
-      } catch (error) {
-        console.error("Failed to save project settings:", error);
-        dispatch(setCurrentProjectSettingsError((error as Error).message));
-      }
-    };
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectSettings());
+      await saveProjectSettingsToFile(activeProjectPath, newProjectSettings);
+      dispatch(setCurrentProjectSettings(newProjectSettings));
+    } catch (error) {
+      console.error("Failed to save project settings:", error);
+      dispatch(setCurrentProjectSettingsError((error as Error).message));
+    }
+  };
 
 export const handleOpenFileInEditor =
   (path: string) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      try {
-        const openedFiles = getState().currentProject.currentProjectOpenedFiles;
-        if (openedFiles.some((file) => file.path === path && file.isActive))
-          return;
-        let newOpenedFiles;
-        if (!openedFiles.some((file) => file.path === path)) {
-          newOpenedFiles = [...openedFiles, { path, isActive: true }];
-        } else {
-          newOpenedFiles = [...openedFiles];
-        }
-        dispatch(setShowCodeEditor(true));
-        await dispatch(
-          saveProjectOpenedFiles(
-            newOpenedFiles.map((file) => ({
-              path: file.path,
-              isActive: file.path === path,
-            }))
-          )
-        );
-      } catch (error) {
-        const errorMessage = `Failed to handle click on file: ${(error as Error).message
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const openedFiles = getState().currentProject.currentProjectOpenedFiles;
+      if (openedFiles.some((file) => file.path === path && file.isActive))
+        return;
+      let newOpenedFiles;
+      if (!openedFiles.some((file) => file.path === path)) {
+        newOpenedFiles = [...openedFiles, { path, isActive: true }];
+      } else {
+        newOpenedFiles = [...openedFiles];
+      }
+      // dispatch(setShowCodeEditor(true));
+      await dispatch(
+        saveProjectOpenedFiles(
+          newOpenedFiles.map((file) => ({
+            path: file.path,
+            isActive: file.path === path,
+          }))
+        )
+      );
+    } catch (error) {
+      const errorMessage = `Failed to handle click on file: ${
+        (error as Error).message
           ? (error as Error).message
           : JSON.stringify(error, null, 2)
-          }`;
-        console.error(errorMessage, error);
-        dispatch(setCurrentProjectOpenedFilesError(errorMessage));
-      }
-    };
+      }`;
+      console.error(errorMessage, error);
+      dispatch(setCurrentProjectOpenedFilesError(errorMessage));
+    }
+  };
 
 export const handleClickOnFolder =
   (tree: ITreeData) => (dispatch: AppDispatch, getState: () => RootState) => {
@@ -506,28 +508,28 @@ export const handleClickOnFolder =
 
 export const saveProjectOpenedFiles =
   (newProjectOpenedFiles: IFile[]) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      try {
-        const activeProjectPath = getState().projects.activeProjectPath;
-        if (!activeProjectPath) return;
-        dispatch(fetchCurrentProjectOpenedFiles());
-        await saveProjectOpenedFilesToFile(
-          activeProjectPath,
-          newProjectOpenedFiles
-        );
-        dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
-      } catch (error) {
-        console.error("Failed to save project opened files:", error);
-        dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
-      }
-    };
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(fetchCurrentProjectOpenedFiles());
+      await saveProjectOpenedFilesToFile(
+        activeProjectPath,
+        newProjectOpenedFiles
+      );
+      dispatch(setCurrentProjectOpenedFiles(newProjectOpenedFiles));
+    } catch (error) {
+      console.error("Failed to save project opened files:", error);
+      dispatch(setCurrentProjectOpenedFilesError((error as Error).message));
+    }
+  };
 
 export const addMessageToThread =
   (message: Message) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      const messages = getState().currentProject.currentProjectMessages;
-      await dispatch(saveProjectMessages([...messages, message]));
-    };
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    const messages = getState().currentProject.currentProjectMessages;
+    await dispatch(saveProjectMessages([...messages, message]));
+  };
 
 export const createSystemPrompt = (
   context: IContextState,
@@ -548,18 +550,18 @@ export const createSystemPrompt = (
   const filePaths =
     projectFilePathsInContext && Array.isArray(projectState?.files)
       ? projectState.files
-        .map(({ path }) => {
-          if (projectFilesInContext[path]) {
-            return {
-              path,
-              content: projectFilesInContext[path].content!,
-            };
-          } else {
-            return { path };
-          }
-        })
-        ?.filter((file) => (file?.path ? true : false))
-        ?.sort((a, b) => a.path!.localeCompare(b.path!))
+          .map(({ path }) => {
+            if (projectFilesInContext[path]) {
+              return {
+                path,
+                content: projectFilesInContext[path].content!,
+              };
+            } else {
+              return { path };
+            }
+          })
+          ?.filter((file) => (file?.path ? true : false))
+          ?.sort((a, b) => a.path!.localeCompare(b.path!))
       : [];
   const PartialProjectState: IProjectState = {
     descriptions: projectDescriptionsInContext
@@ -579,13 +581,12 @@ ${JSON.stringify({ PartialProjectState }, null, 2)}
 
 ---`;
 
-  const systemPrompt = `${context.instructionsInContext ? generalInstructions + "\n\n" : ""
-    }${PARTIAL_PROJECT_STATE}`;
+  const systemPrompt = `${
+    context.instructionsInContext ? generalInstructions + "\n\n" : ""
+  }${PARTIAL_PROJECT_STATE}`;
 
   return systemPrompt;
 };
-
-
 
 export const handleSyncFilesFromFS =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -607,13 +608,13 @@ export const handleSyncFilesFromFS =
       };
       await dispatch(saveProjectState(updatedProjectState));
     } catch (error) {
-      const errorMessage = `Error while syncing files from FS: ${(error as Error).message
-        }`;
+      const errorMessage = `Error while syncing files from FS: ${
+        (error as Error).message
+      }`;
       console.error(errorMessage);
       dispatch(setCurrentProjectStateError(errorMessage));
     }
   };
-
 
 export const handleSyncFilesToFS =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -629,13 +630,16 @@ export const handleSyncFilesToFS =
         }
       }
     } catch (error) {
-      const errorMessage = `Error while syncing files to FS: ${(error as Error).message}`;
+      const errorMessage = `Error while syncing files to FS: ${
+        (error as Error).message
+      }`;
       console.error(errorMessage);
       dispatch(setCurrentProjectStateError(errorMessage));
     }
   };
 
-export const saveCurrentProjectConversation = (conversation: Message[]) =>
+export const saveCurrentProjectConversation =
+  (conversation: Message[]) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       const activeProjectPath = getState().projects.activeProjectPath;
@@ -664,22 +668,22 @@ export const saveCurrentProjectConversation = (conversation: Message[]) =>
 
 export const loadCurrentProjectConversation =
   (fileName: string) =>
-    async (dispatch: AppDispatch, getState: () => RootState) => {
-      try {
-        const activeProjectPath = getState().projects.activeProjectPath;
-        if (!activeProjectPath) return;
-        dispatch(setCurrentProjectConversationName(fileName));
-        dispatch(fetchCurrentProjectConversation());
-        const conversation = await loadCurrentProjectConversationFromFile(
-          activeProjectPath,
-          fileName
-        );
-        dispatch(setCurrentProjectConversation(conversation));
-      } catch (error) {
-        console.error("Failed to load current project conversation:", error);
-        dispatch(setCurrentProjectConversationError((error as Error).message));
-      }
-    };
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const activeProjectPath = getState().projects.activeProjectPath;
+      if (!activeProjectPath) return;
+      dispatch(setCurrentProjectConversationName(fileName));
+      dispatch(fetchCurrentProjectConversation());
+      const conversation = await loadCurrentProjectConversationFromFile(
+        activeProjectPath,
+        fileName
+      );
+      dispatch(setCurrentProjectConversation(conversation));
+    } catch (error) {
+      console.error("Failed to load current project conversation:", error);
+      dispatch(setCurrentProjectConversationError((error as Error).message));
+    }
+  };
 
 export const loadCurrentProjectConversationsNames =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
